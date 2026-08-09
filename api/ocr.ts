@@ -24,7 +24,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const { text } = await generateText({
-      model: 'anthropic/claude-haiku-4.5',
+      model: 'google/gemini-2.5-flash',
       system: SYSTEM_PROMPT,
       messages: [
         {
