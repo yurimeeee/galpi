@@ -1,10 +1,14 @@
-import { useMemo, useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { useMemo, useRef, useState } from 'react';
+import { ActivityIndicator, Alert, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { captureRef } from 'react-native-view-shot';
+import * as MediaLibrary from 'expo-media-library';
+import * as Sharing from 'expo-sharing';
 import {
   BookCheck,
   Bookmark,
   Share2,
+  Sparkles,
   X,
   Download,
   ChevronLeft,
@@ -15,18 +19,21 @@ import {
   type LucideIcon,
 } from 'lucide-react-native';
 import { Skeleton } from '../galpi/skeleton';
+import { BottomSheet } from '../galpi/bottom-sheet';
+import { GalpiHeaderLogo } from '../galpi/galpi-logo';
 import { colors, type Accent, ACCENT_BG_CLASS } from '../../lib/theme';
 import type { Book } from '../../lib/data/books';
 import type { Sentence } from '../../lib/data/sentences';
 
 type Period = 'month' | 'year';
 type MonthView = 'date' | 'cover';
+type Ratio = '1:1' | '9:16';
 
 const WEEKDAY_LABELS = ['일', '월', '화', '수', '목', '금', '토'];
 const INTENSITY_CLASS = ['bg-secondary', 'bg-galpi-green/50', 'bg-galpi-green', 'bg-galpi-blue', 'bg-galpi-ink'];
 
-/** Sentence.date is stored as "YYYY.MM.DD"; returns null if unparsable. */
-function parseSentenceDate(dateStr: string): Date | null {
+/** "YYYY.MM.DD" → Date, used for both Sentence.date and Book.completedAt. Returns null if unparsable. */
+function parseDotDate(dateStr: string): Date | null {
   const [y, m, d] = dateStr.split('.').map(Number);
   if (!y || !m || !d) return null;
   return new Date(y, m - 1, d);
@@ -34,6 +41,10 @@ function parseSentenceDate(dateStr: string): Date | null {
 
 function dateKey(d: Date): string {
   return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+}
+
+function pad2(n: number): string {
+  return String(n).padStart(2, '0');
 }
 
 function seasonOf(month0: number): '봄' | '여름' | '가을' | '겨울' {
@@ -51,17 +62,66 @@ function intensityFromCount(count: number): number {
   return 4;
 }
 
+/** GitHub-style weekly-column grid of activity intensity for a given year; -1 marks days outside the year. */
+function buildYearHeatmap(sentences: Sentence[], year: number): number[][] {
+  const dayCounts = new Map<string, number>();
+  for (const s of sentences) {
+    const d = parseDotDate(s.date);
+    if (!d || d.getFullYear() !== year) continue;
+    const key = dateKey(d);
+    dayCounts.set(key, (dayCounts.get(key) ?? 0) + 1);
+  }
+
+  const start = new Date(year, 0, 1);
+  const gridStart = new Date(start);
+  gridStart.setDate(gridStart.getDate() - start.getDay());
+  const end = new Date(year, 11, 31);
+  const gridEnd = new Date(end);
+  gridEnd.setDate(gridEnd.getDate() + (6 - end.getDay()));
+
+  const grid: number[][] = [];
+  const day = new Date(gridStart);
+  while (day <= gridEnd) {
+    const col: number[] = [];
+    for (let i = 0; i < 7; i++) {
+      col.push(day.getFullYear() === year ? intensityFromCount(dayCounts.get(dateKey(day)) ?? 0) : -1);
+      day.setDate(day.getDate() + 1);
+    }
+    grid.push(col);
+  }
+  return grid;
+}
+
 function getYearMetrics(books: Book[], sentences: Sentence[], year: number) {
-  const doneCount = books.filter((b) => b.status === 'done').length;
+  const doneCount = books.filter((b) => {
+    const d = b.completedAt ? parseDotDate(b.completedAt) : null;
+    return d && d.getFullYear() === year;
+  }).length;
   const uniqueDays = new Set<string>();
   let galpiCount = 0;
   for (const s of sentences) {
-    const d = parseSentenceDate(s.date);
+    const d = parseDotDate(s.date);
     if (!d || d.getFullYear() !== year) continue;
     galpiCount += 1;
     uniqueDays.add(dateKey(d));
   }
   return { doneCount, galpiCount, readDaysCount: uniqueDays.size };
+}
+
+function getMonthMetrics(books: Book[], sentences: Sentence[], year: number, month: number) {
+  const completedBooks = books.filter((b) => {
+    const d = b.completedAt ? parseDotDate(b.completedAt) : null;
+    return d && d.getFullYear() === year && d.getMonth() === month;
+  });
+  const uniqueDays = new Set<string>();
+  let galpiCount = 0;
+  for (const s of sentences) {
+    const d = parseDotDate(s.date);
+    if (!d || d.getFullYear() !== year || d.getMonth() !== month) continue;
+    galpiCount += 1;
+    uniqueDays.add(dateKey(d));
+  }
+  return { doneCount: completedBooks.length, galpiCount, readDaysCount: uniqueDays.size, completedBooks };
 }
 
 export function StatsReportScreen({ books, sentences }: { books: Book[]; sentences: Sentence[] }) {
@@ -84,14 +144,14 @@ export function StatsReportScreen({ books, sentences }: { books: Book[]; sentenc
         <Text className="text-xl font-black tracking-tight text-foreground">독서 통계</Text>
         <Pressable
           onPress={() => setShareOpen(true)}
-          accessibilityLabel="리포트 공유"
+          accessibilityLabel="리포트 발행"
           className="web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-galpi-ink"
         >
           <Share2 size={16} color={colors.galpiPaper} />
         </Pressable>
       </View>
 
-      <ScrollView className="flex-1 px-6" contentContainerClassName="pb-6">
+      <ScrollView className="flex-1 px-6" contentContainerClassName={period === 'month' ? 'pb-28' : 'pb-6'}>
         {/* 기간 선택 */}
         <View className="mt-2 flex-row gap-1 rounded-2xl bg-secondary p-1">
           {(['month', 'year'] as Period[]).map((key) => {
@@ -118,8 +178,29 @@ export function StatsReportScreen({ books, sentences }: { books: Book[]; sentenc
         )}
       </ScrollView>
 
+      {period === 'month' ? (
+        <View className="absolute inset-x-0 bottom-0 items-center px-6 pb-6">
+          <Pressable
+            onPress={() => setShareOpen(true)}
+            className="web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-2xl bg-galpi-ink py-4"
+            style={({ pressed }) => [
+              {
+                shadowColor: colors.galpiInk,
+                shadowOpacity: 0.25,
+                shadowRadius: 16,
+                shadowOffset: { width: 0, height: 6 },
+              },
+              pressed && { transform: [{ scale: 0.98 }] },
+            ]}
+          >
+            <Sparkles size={15} color={colors.galpiPaper} />
+            <Text className="text-sm font-bold text-galpi-paper">이달의 독서 리포트 발행하기</Text>
+          </Pressable>
+        </View>
+      ) : null}
+
       {shareOpen ? (
-        <ShareModal onClose={() => setShareOpen(false)} books={books} sentences={sentences} year={cursor.getFullYear()} />
+        <ReportPublishModal onClose={() => setShareOpen(false)} period={period} cursor={cursor} books={books} sentences={sentences} />
       ) : null}
     </SafeAreaView>
   );
@@ -184,7 +265,7 @@ function MonthlyView({
     const days = new Map<number, Accent>();
     const galpiByBook = new Map<string, number>();
     for (const s of sentences) {
-      const d = parseSentenceDate(s.date);
+      const d = parseDotDate(s.date);
       if (!d || d.getFullYear() !== year || d.getMonth() !== month) continue;
       const book = bookById.get(s.bookId);
       if (!days.has(d.getDate())) {
@@ -346,38 +427,19 @@ function YearlyView({
 }) {
   const year = cursor.getFullYear();
 
-  const { grid, seasonLabel, topBook, topQuote } = useMemo(() => {
+  const grid = useMemo(() => buildYearHeatmap(sentences, year), [sentences, year]);
+
+  const { seasonLabel, topBook, topQuote } = useMemo(() => {
     const inYear = sentences
-      .map((s) => ({ s, d: parseSentenceDate(s.date) }))
+      .map((s) => ({ s, d: parseDotDate(s.date) }))
       .filter((x): x is { s: Sentence; d: Date } => Boolean(x.d) && x.d!.getFullYear() === year);
 
-    const dayCounts = new Map<string, number>();
     const seasonCounts: Record<string, number> = { 봄: 0, 여름: 0, 가을: 0, 겨울: 0 };
     const bookCounts = new Map<string, number>();
 
     for (const { s, d } of inYear) {
-      const key = dateKey(d);
-      dayCounts.set(key, (dayCounts.get(key) ?? 0) + 1);
       seasonCounts[seasonOf(d.getMonth())] += 1;
       bookCounts.set(s.bookId, (bookCounts.get(s.bookId) ?? 0) + 1);
-    }
-
-    const start = new Date(year, 0, 1);
-    const gridStart = new Date(start);
-    gridStart.setDate(gridStart.getDate() - start.getDay());
-    const end = new Date(year, 11, 31);
-    const gridEnd = new Date(end);
-    gridEnd.setDate(gridEnd.getDate() + (6 - end.getDay()));
-
-    const grid: number[][] = [];
-    const day = new Date(gridStart);
-    while (day <= gridEnd) {
-      const col: number[] = [];
-      for (let i = 0; i < 7; i++) {
-        col.push(day.getFullYear() === year ? intensityFromCount(dayCounts.get(dateKey(day)) ?? 0) : -1);
-        day.setDate(day.getDate() + 1);
-      }
-      grid.push(col);
     }
 
     let seasonLabel: string | null = null;
@@ -403,10 +465,10 @@ function YearlyView({
           .sort((a, b) => b.d.getTime() - a.d.getTime())[0]?.s
       : undefined;
 
-    return { grid, seasonLabel, topBook, topQuote };
+    return { seasonLabel, topBook, topQuote };
   }, [sentences, books, year]);
 
-  const { doneCount, galpiCount, readDaysCount } = getYearMetrics(books, sentences, year);
+  const { doneCount, galpiCount, readDaysCount } = useMemo(() => getYearMetrics(books, sentences, year), [books, sentences, year]);
 
   return (
     <>
@@ -513,32 +575,128 @@ function MetricCard({
   );
 }
 
-/* ---------- 공유 카드 미리보기 모달 ---------- */
-type Ratio = '1:1' | '9:16';
-
-function ShareModal({
+/* ---------- 독서 리포트 발행 모달 ---------- */
+function ReportPublishModal({
   onClose,
+  period,
+  cursor,
   books,
   sentences,
-  year,
 }: {
   onClose: () => void;
+  period: Period;
+  cursor: Date;
   books: Book[];
   sentences: Sentence[];
-  year: number;
 }) {
   const [ratio, setRatio] = useState<Ratio>('1:1');
-  const { doneCount, galpiCount, readDaysCount } = getYearMetrics(books, sentences, year);
+  const [busy, setBusy] = useState<'save' | 'share' | null>(null);
+  const [realCardWidth, setRealCardWidth] = useState(0);
+  const cardRef = useRef<View>(null);
+
+  const year = cursor.getFullYear();
+  const month = cursor.getMonth();
+
+  const monthData = useMemo(() => getMonthMetrics(books, sentences, year, month), [books, sentences, year, month]);
+  const yearData = useMemo(() => getYearMetrics(books, sentences, year), [books, sentences, year]);
+  const heatmap = useMemo(() => buildYearHeatmap(sentences, year), [sentences, year]);
+
+  const metrics = period === 'month' ? monthData : yearData;
+  const dateLabel =
+    period === 'month'
+      ? `${year}.${pad2(month + 1)}.${pad2(new Date(year, month + 1, 0).getDate())}`
+      : `${year}.12.31`;
+  const title = period === 'month' ? `${year}년 ${month + 1}월 독서 리포트` : `${year} 연간 독서 리포트`;
+
+  /**
+   * react-native-view-shot's cross-platform captureRef() always resolves
+   * the ref through RN's findNodeHandle, which react-native-web throws on
+   * ("use the ref property instead") — so the web path renders the card
+   * with html2canvas directly against the DOM node instead.
+   */
+  async function capture(): Promise<string> {
+    if (Platform.OS === 'web') {
+      const { default: html2canvas } = await import('html2canvas');
+      const node = cardRef.current as unknown as HTMLElement;
+      const canvas = await html2canvas(node, { backgroundColor: null });
+      return canvas.toDataURL('image/png', 1);
+    }
+    return captureRef(cardRef, { format: 'png', quality: 1, result: 'tmpfile' });
+  }
+
+  async function handleSaveImage() {
+    if (busy) return;
+    setBusy('save');
+    try {
+      const uri = await capture();
+      if (Platform.OS === 'web') {
+        const link = document.createElement('a');
+        link.href = uri;
+        link.download = `galpi-report-${Date.now()}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        const { status } = await MediaLibrary.requestPermissionsAsync();
+        if (status !== 'granted') {
+          Alert.alert('권한이 필요해요', '사진 보관함 접근 권한을 허용해주세요.');
+          return;
+        }
+        await MediaLibrary.saveToLibraryAsync(uri);
+        Alert.alert('저장 완료', '독서 리포트 이미지를 사진 보관함에 저장했어요.');
+      }
+    } catch {
+      Alert.alert('저장 실패', '이미지를 저장하는 중 문제가 발생했어요.');
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function handleShare() {
+    if (busy) return;
+    setBusy('share');
+    try {
+      const uri = await capture();
+      if (Platform.OS === 'web') {
+        const nav = navigator as Navigator & {
+          share?: (data: ShareData) => Promise<void>;
+          canShare?: (data: ShareData) => boolean;
+        };
+        if (nav.share) {
+          const blob = await (await fetch(uri)).blob();
+          const file = new File([blob], 'galpi-report.png', { type: 'image/png' });
+          if (!nav.canShare || nav.canShare({ files: [file] })) {
+            await nav.share({ files: [file], title: '갈피 독서 리포트' });
+            return;
+          }
+        }
+        Alert.alert('공유하기', '이 브라우저에서는 공유가 지원되지 않아요. 이미지 저장 후 직접 공유해주세요.');
+      } else {
+        if (!(await Sharing.isAvailableAsync())) {
+          Alert.alert('공유 불가', '이 기기에서는 공유 기능을 사용할 수 없어요.');
+          return;
+        }
+        await Sharing.shareAsync(uri, { mimeType: 'image/png', dialogTitle: '독서 리포트 공유하기' });
+      }
+    } catch {
+      Alert.alert('공유 실패', '리포트를 공유하는 중 문제가 발생했어요.');
+    } finally {
+      setBusy(null);
+    }
+  }
 
   return (
-    <View className="absolute inset-0 z-20 justify-end bg-galpi-ink/50 web:backdrop-blur-sm">
-      <Pressable className="web:cursor-pointer flex-1" accessibilityLabel="닫기" onPress={onClose} />
-
-      <View className="rounded-t-3xl bg-background px-5 pb-6 pt-4">
-        <View className="mx-auto mb-4 h-1 w-10 rounded-full bg-border" />
-
+    <BottomSheet
+      onClose={onClose}
+      maxHeight="94%"
+      header={
         <View className="mb-4 flex-row items-center justify-between">
-          <Text className="text-base font-black text-foreground">리포트 공유하기</Text>
+          <View>
+            <Text className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+              Reading Report
+            </Text>
+            <Text className="mt-0.5 text-lg font-black tracking-tight text-foreground">독서 리포트 발행</Text>
+          </View>
           <Pressable
             onPress={onClose}
             accessibilityLabel="닫기"
@@ -547,71 +705,200 @@ function ShareModal({
             <X size={16} color={colors.foreground} />
           </Pressable>
         </View>
+      }
+    >
+      {/* 비율 선택 */}
+      <View className="mb-4 flex-row gap-1 rounded-2xl bg-secondary p-1">
+        {([
+          { key: '1:1' as Ratio, label: '1:1 인스타 피드' },
+          { key: '9:16' as Ratio, label: '9:16 스토리' },
+        ]).map(({ key, label }) => {
+          const active = ratio === key;
+          return (
+            <Pressable
+              key={key}
+              onPress={() => setRatio(key)}
+              className={`web:cursor-pointer flex-1 rounded-xl py-2.5 ${active ? 'bg-card' : ''}`}
+            >
+              <Text className={`text-center text-xs font-bold ${active ? 'text-foreground' : 'text-muted-foreground'}`}>
+                {label}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
 
-        {/* 비율 선택 */}
-        <View className="mb-4 flex-row gap-2">
-          {([
-            { key: '1:1' as Ratio, label: '1:1 인스타그램 피드' },
-            { key: '9:16' as Ratio, label: '9:16 스토리' },
-          ]).map(({ key, label }) => {
-            const active = ratio === key;
-            return (
-              <Pressable
-                key={key}
-                onPress={() => setRatio(key)}
-                className={`web:cursor-pointer flex-1 rounded-xl border py-2.5 ${
-                  active ? 'border-galpi-ink bg-galpi-ink' : 'border-border bg-card'
-                }`}
-              >
-                <Text className={`text-center text-xs font-bold ${active ? 'text-galpi-paper' : 'text-muted-foreground'}`}>
-                  {label}
-                </Text>
-              </Pressable>
-            );
-          })}
+      {/* 발행 카드 미리보기 — 화면엔 작게 보여주고, 캡처는 실제 크기(전체 너비)로 별도 렌더링 */}
+      <View className="items-center rounded-2xl bg-secondary p-4">
+        {/* 실제 크기 측정용 스페이서: 시각적으로는 차지하는 공간이 없음 */}
+        <View className="h-0 w-full" onLayout={(e) => setRealCardWidth(e.nativeEvent.layout.width)} />
+
+        <View
+          className={`justify-between overflow-hidden rounded-3xl bg-card p-5 ${ratio === '1:1' ? 'w-full' : 'w-[58%]'}`}
+          style={{ aspectRatio: ratio === '1:1' ? 1 : 9 / 16 }}
+        >
+          <ReportCardBody
+            dateLabel={dateLabel}
+            title={title}
+            metrics={metrics}
+            period={period}
+            monthData={monthData}
+            heatmap={heatmap}
+          />
         </View>
 
-        {/* 공유 카드 미리보기 */}
-        <View className="items-center rounded-2xl bg-secondary p-4">
-          <View
-            className="justify-between overflow-hidden rounded-2xl bg-galpi-blue p-5"
-            style={ratio === '1:1' ? { width: 208, height: 208 } : { width: 160, height: 284 }}
-          >
-            <View>
-              <Text className="text-[11px] font-black text-galpi-ink/60">갈피 · 나의 독서 기록</Text>
-              <Text className="mt-2 text-sm font-black leading-tight text-galpi-ink">
-                {year}년, 이렇게 읽었어요
-              </Text>
-            </View>
-            <View className="gap-1.5">
-              <ShareStat label="완독" value={`${doneCount}권`} />
-              <ShareStat label="갈피" value={`${galpiCount}개`} />
-              <ShareStat label="읽은 날" value={`${readDaysCount}일`} />
+        {/* 캡처 전용 실제 크기 카드: 화면 밖에 렌더링되어 보이지 않음 */}
+        {realCardWidth > 0 ? (
+          <View pointerEvents="none" style={{ position: 'absolute', left: -99999, top: 0 }}>
+            <View
+              ref={cardRef}
+              collapsable={false}
+              className="justify-between overflow-hidden rounded-3xl bg-card p-5"
+              style={{ width: realCardWidth, aspectRatio: ratio === '1:1' ? 1 : 9 / 16 }}
+            >
+              <ReportCardBody
+                dateLabel={dateLabel}
+                title={title}
+                metrics={metrics}
+                period={period}
+                monthData={monthData}
+                heatmap={heatmap}
+              />
             </View>
           </View>
+        ) : null}
+      </View>
+
+      {/* 액션 버튼 */}
+      <View className="mt-5 flex-row gap-3">
+        <Pressable
+          onPress={handleSaveImage}
+          disabled={busy !== null}
+          className={`web:cursor-pointer flex-1 flex-row items-center justify-center gap-2 rounded-2xl bg-galpi-ink py-3.5 ${busy ? 'opacity-60' : ''}`}
+        >
+          {busy === 'save' ? <ActivityIndicator color={colors.galpiPaper} /> : <Download size={16} color={colors.galpiPaper} />}
+          <Text className="text-sm font-bold text-galpi-paper">이미지 저장하기</Text>
+        </Pressable>
+        <Pressable
+          onPress={handleShare}
+          disabled={busy !== null}
+          className={`web:cursor-pointer flex-1 flex-row items-center justify-center gap-2 rounded-2xl border border-border bg-card py-3.5 ${busy ? 'opacity-60' : ''}`}
+        >
+          {busy === 'share' ? <ActivityIndicator color={colors.foreground} /> : <Share2 size={16} color={colors.foreground} />}
+          <Text className="text-sm font-bold text-foreground">SNS 공유하기</Text>
+        </Pressable>
+      </View>
+    </BottomSheet>
+  );
+}
+
+/** 발행 카드의 실제 내용. 작은 미리보기와 실제 크기 캡처 대상 양쪽에서 그대로 재사용한다. */
+function ReportCardBody({
+  dateLabel,
+  title,
+  metrics,
+  period,
+  monthData,
+  heatmap,
+}: {
+  dateLabel: string;
+  title: string;
+  metrics: { doneCount: number; galpiCount: number; readDaysCount: number };
+  period: Period;
+  monthData: ReturnType<typeof getMonthMetrics>;
+  heatmap: number[][];
+}) {
+  return (
+    <>
+      <View>
+        <View className="flex-row items-center justify-between">
+          <GalpiHeaderLogo markSize={16} wordClassName="text-xs text-foreground" />
+          <Text className="text-[11px] font-semibold text-muted-foreground">{dateLabel}</Text>
         </View>
 
-        {/* 액션 버튼 */}
-        <View className="mt-5 flex-row gap-3">
-          <Pressable className="web:cursor-pointer flex-1 flex-row items-center justify-center gap-2 rounded-2xl border border-border bg-card py-3.5">
-            <Download size={16} color={colors.foreground} />
-            <Text className="text-sm font-bold text-foreground">이미지 저장</Text>
-          </Pressable>
-          <Pressable className="web:cursor-pointer flex-1 flex-row items-center justify-center gap-2 rounded-2xl bg-galpi-ink py-3.5">
-            <Share2 size={16} color={colors.galpiPaper} />
-            <Text className="text-sm font-bold text-galpi-paper">공유하기</Text>
-          </Pressable>
+        <Text className="mt-4 text-lg font-black leading-tight text-foreground">{title}</Text>
+
+        <View className="mt-5 flex-row items-center">
+          <ReportMetric Icon={BookCheck} value={metrics.doneCount} unit="권" label="완독한 책" />
+          <View className="h-9 w-px bg-border" />
+          <ReportMetric Icon={Bookmark} value={metrics.galpiCount} unit="개" label="수집한 갈피" />
+          <View className="h-9 w-px bg-border" />
+          <ReportMetric Icon={CalendarDays} value={metrics.readDaysCount} unit="일" label="읽은 날" />
         </View>
       </View>
+
+      {period === 'month' ? (
+        <View>
+          <Text className="mb-2.5 text-xs font-bold text-foreground">이달 완독한 책</Text>
+          {monthData.completedBooks.length > 0 ? (
+            <View className="flex-row gap-2">
+              {monthData.completedBooks.slice(0, 5).map((book) => (
+                <View
+                  key={book.id}
+                  className={`aspect-square flex-1 items-start justify-end rounded-xl p-2 ${ACCENT_BG_CLASS[book.accent]}`}
+                >
+                  <Bookmark size={13} color={book.accent === 'ink' ? colors.galpiPaper : colors.galpiInk} />
+                </View>
+              ))}
+            </View>
+          ) : (
+            <Text className="text-[11px] leading-relaxed text-muted-foreground">
+              이달 완독한 책이 아직 없어요.
+            </Text>
+          )}
+        </View>
+      ) : (
+        <View className="rounded-2xl bg-galpi-ink p-3.5">
+          <Text className="mb-2.5 text-[11px] font-bold text-galpi-paper/60">연간 독서 활동</Text>
+          <ReportHeatmap grid={heatmap} />
+        </View>
+      )}
+    </>
+  );
+}
+
+function ReportMetric({ Icon, value, unit, label }: { Icon: LucideIcon; value: number; unit: string; label: string }) {
+  return (
+    <View className="flex-1 items-center gap-1.5">
+      <Icon size={16} color={colors.mutedForeground} />
+      <View className="flex-row items-baseline gap-0.5">
+        <Text className="text-lg font-black text-foreground">{value}</Text>
+        <Text className="text-[10px] font-bold text-muted-foreground">{unit}</Text>
+      </View>
+      <Text className="text-[10px] font-medium text-muted-foreground">{label}</Text>
     </View>
   );
 }
 
-function ShareStat({ label, value }: { label: string; value: string }) {
+/**
+ * The report card is a static export, not a scrollable page, so the full
+ * year must always be visible — cell size is derived from the measured
+ * container width instead of a fixed pixel size, which would overflow (and
+ * get clipped by the card's overflow-hidden) once the year has ~52 columns.
+ */
+function ReportHeatmap({ grid }: { grid: number[][] }) {
+  const [width, setWidth] = useState(0);
+  const gap = 2;
+  const cols = grid.length;
+  const cellSize = width > 0 ? Math.max(1.5, (width - (cols - 1) * gap) / cols) : 0;
+
   return (
-    <View className="flex-row items-center justify-between rounded-lg bg-galpi-paper/60 px-2.5 py-1.5">
-      <Text className="text-[11px] font-medium text-galpi-ink/70">{label}</Text>
-      <Text className="text-xs font-black text-galpi-ink">{value}</Text>
+    <View onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
+      {width > 0 ? (
+        <View className="flex-row" style={{ gap }}>
+          {grid.map((col, w) => (
+            <View key={w} style={{ gap }}>
+              {col.map((v, d) => (
+                <View
+                  key={d}
+                  className={v >= 0 ? INTENSITY_CLASS[v] : 'opacity-0'}
+                  style={{ width: cellSize, height: cellSize, borderRadius: Math.max(0.5, cellSize * 0.3) }}
+                />
+              ))}
+            </View>
+          ))}
+        </View>
+      ) : null}
     </View>
   );
 }

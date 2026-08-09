@@ -27,31 +27,36 @@ export function AddChoiceSheet({
   const [step, setStep] = useState<Step>('choice');
 
   return (
-    <BottomSheet onClose={onClose} maxHeight="75%" zIndex={30}>
-      <View className="mb-4 flex-row items-center justify-between">
-        <View className="flex-row items-center gap-2">
-          {step === 'pick-book' ? (
-            <Pressable
-              onPress={() => setStep('choice')}
-              accessibilityLabel="뒤로"
-              className="web:cursor-pointer h-8 w-8 items-center justify-center rounded-full bg-secondary"
-            >
-              <ChevronLeft size={16} color={colors.foreground} />
-            </Pressable>
-          ) : null}
-          <Text className="text-base font-black text-foreground">
-            {step === 'choice' ? '무엇을 하시겠어요?' : '어떤 책에 남길까요?'}
-          </Text>
+    <BottomSheet
+      onClose={onClose}
+      maxHeight="75%"
+      zIndex={30}
+      header={
+        <View className="mb-4 flex-row items-center justify-between">
+          <View className="flex-row items-center gap-2">
+            {step === 'pick-book' ? (
+              <Pressable
+                onPress={() => setStep('choice')}
+                accessibilityLabel="뒤로"
+                className="web:cursor-pointer h-8 w-8 items-center justify-center rounded-full bg-secondary"
+              >
+                <ChevronLeft size={16} color={colors.foreground} />
+              </Pressable>
+            ) : null}
+            <Text className="text-base font-black text-foreground">
+              {step === 'choice' ? '무엇을 하시겠어요?' : '어떤 책에 남길까요?'}
+            </Text>
+          </View>
+          <Pressable
+            onPress={onClose}
+            accessibilityLabel="닫기"
+            className="web:cursor-pointer h-8 w-8 items-center justify-center rounded-full bg-secondary"
+          >
+            <X size={16} color={colors.foreground} />
+          </Pressable>
         </View>
-        <Pressable
-          onPress={onClose}
-          accessibilityLabel="닫기"
-          className="web:cursor-pointer h-8 w-8 items-center justify-center rounded-full bg-secondary"
-        >
-          <X size={16} color={colors.foreground} />
-        </Pressable>
-      </View>
-
+      }
+    >
       {step === 'choice' ? (
         <View className="gap-3">
           <Pressable

@@ -16,19 +16,25 @@ const useNativeDriver = Platform.OS !== 'web';
 /**
  * Backdrop + rounded-top sheet shared by the app's bottom-sheet-style
  * modals. Closes on backdrop tap, on tapping the grab handle, or on
- * dragging the handle down past a distance/velocity threshold — otherwise
- * it springs back to resting position.
+ * dragging the handle/header down past a distance/velocity threshold —
+ * otherwise it springs back to resting position.
+ *
+ * The drag gesture is attached to the handle + `header` slot only (not
+ * `children`), so interactive content below — text inputs, buttons, lists —
+ * keeps receiving its own touches untouched.
  *
  * Wrapped in a `KeyboardAvoidingView` so the sheet rises above the keyboard
  * on iOS instead of letting it cover whichever field is focused.
  */
 export function BottomSheet({
   onClose,
+  header,
   children,
   maxHeight,
   zIndex = 20,
 }: {
   onClose: () => void;
+  header?: React.ReactNode;
   children: React.ReactNode;
   maxHeight?: ViewStyle['maxHeight'];
   zIndex?: number;
@@ -71,16 +77,19 @@ export function BottomSheet({
         style={{ transform: [{ translateY }], maxHeight }}
         className="rounded-t-3xl bg-background px-5 pb-6 pt-2"
       >
-        <Pressable
-          {...panResponder.panHandlers}
-          onPress={onClose}
-          accessibilityLabel="닫기"
-          accessibilityRole="button"
-          hitSlop={12}
-          className="web:cursor-pointer mb-2 items-center py-2.5"
-        >
-          <View className="h-1 w-10 rounded-full bg-border" />
-        </Pressable>
+        <View {...panResponder.panHandlers}>
+          <Pressable
+            onPress={onClose}
+            accessibilityLabel="닫기"
+            accessibilityRole="button"
+            hitSlop={12}
+            className="web:cursor-pointer mb-2 items-center py-2.5"
+          >
+            <View className="h-1 w-10 rounded-full bg-border" />
+          </Pressable>
+
+          {header}
+        </View>
 
         {children}
       </Animated.View>

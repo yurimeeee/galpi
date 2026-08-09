@@ -100,18 +100,21 @@ export function EditProfileModal({
   }
 
   return (
-    <BottomSheet onClose={onClose}>
-      <View className="mb-5 flex-row items-center justify-between">
-        <Text className="text-base font-black text-foreground">프로필 수정</Text>
-        <Pressable
-          onPress={onClose}
-          accessibilityLabel="닫기"
-          className="web:cursor-pointer h-8 w-8 items-center justify-center rounded-full bg-secondary"
-        >
-          <X size={16} color={colors.foreground} />
-        </Pressable>
-      </View>
-
+    <BottomSheet
+      onClose={onClose}
+      header={
+        <View className="mb-5 flex-row items-center justify-between">
+          <Text className="text-base font-black text-foreground">프로필 수정</Text>
+          <Pressable
+            onPress={onClose}
+            accessibilityLabel="닫기"
+            className="web:cursor-pointer h-8 w-8 items-center justify-center rounded-full bg-secondary"
+          >
+            <X size={16} color={colors.foreground} />
+          </Pressable>
+        </View>
+      }
+    >
       {/* 아바타 */}
       <View className="items-center gap-3">
         <View className="h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-secondary">

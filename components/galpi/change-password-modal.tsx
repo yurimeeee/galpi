@@ -40,18 +40,21 @@ export function ChangePasswordModal({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <BottomSheet onClose={onClose}>
-      <View className="mb-5 flex-row items-center justify-between">
-        <Text className="text-base font-black text-foreground">비밀번호 변경</Text>
-        <Pressable
-          onPress={onClose}
-          accessibilityLabel="닫기"
-          className="web:cursor-pointer h-8 w-8 items-center justify-center rounded-full bg-secondary"
-        >
-          <X size={16} color={colors.foreground} />
-        </Pressable>
-      </View>
-
+    <BottomSheet
+      onClose={onClose}
+      header={
+        <View className="mb-5 flex-row items-center justify-between">
+          <Text className="text-base font-black text-foreground">비밀번호 변경</Text>
+          <Pressable
+            onPress={onClose}
+            accessibilityLabel="닫기"
+            className="web:cursor-pointer h-8 w-8 items-center justify-center rounded-full bg-secondary"
+          >
+            <X size={16} color={colors.foreground} />
+          </Pressable>
+        </View>
+      }
+    >
       {isSocialAccount ? (
         <View className="flex-row items-start gap-3 rounded-2xl border border-border bg-card p-4">
           <View className="mt-0.5 h-8 w-8 items-center justify-center rounded-xl bg-secondary">

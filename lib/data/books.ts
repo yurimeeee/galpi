@@ -12,6 +12,8 @@ export type Book = {
   quote?: string;
   /** Cover thumbnail URL, e.g. from Kakao book search. */
   coverUrl?: string;
+  /** Date the book was marked "done", as "YYYY.MM.DD". Set/cleared by updateBookDoc when status changes. */
+  completedAt?: string;
 };
 
 export const STATUS_LABEL: Record<ReadingStatus, string> = {
