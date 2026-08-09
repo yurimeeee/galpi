@@ -15,13 +15,13 @@ export function WebFrame({ children }: PropsWithChildren) {
   // touchable/input first — gives every screen a tap-outside-to-close
   // without each one having to wire it up individually.
   const content = (
-    <Pressable className="flex-1" onPress={() => Keyboard.dismiss()} accessible={false}>
+    <Pressable className="flex-1 min-h-0" onPress={() => Keyboard.dismiss()} accessible={false}>
       {children}
     </Pressable>
   );
 
   if (Platform.OS !== 'web' || width < FRAME_BREAKPOINT) {
-    return <View className="flex-1 bg-background">{content}</View>;
+    return <View className="flex-1 min-h-0 bg-background">{content}</View>;
   }
 
   return (

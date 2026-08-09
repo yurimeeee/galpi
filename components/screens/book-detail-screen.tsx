@@ -42,7 +42,7 @@ export function BookDetailScreen({
   const inkText = book.accent === 'ink' ? colors.galpiPaper : colors.galpiInk;
 
   return (
-    <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-background">
+    <SafeAreaView edges={['top', 'bottom']} className="flex-1 min-h-0 bg-background">
       {/* 상단 바 */}
       <View className="flex-row items-center justify-between px-5 pb-2 pt-2">
         <Pressable
@@ -272,7 +272,7 @@ function StatBit({ label, value }: { label: string; value: string }) {
 
 export function BookDetailSkeleton({ onBack }: { onBack: () => void }) {
   return (
-    <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-background">
+    <SafeAreaView edges={['top', 'bottom']} className="flex-1 min-h-0 bg-background">
       <View className="flex-row items-center justify-between px-5 pb-2 pt-2">
         <Pressable
           onPress={onBack}

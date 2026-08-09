@@ -19,9 +19,13 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export function SignUpScreen({
   onBack,
   onComplete,
+  onOpenTerms,
+  onOpenPrivacy,
 }: {
   onBack: () => void;
   onComplete: (name: string, email: string, password: string) => Promise<void>;
+  onOpenTerms: () => void;
+  onOpenPrivacy: () => void;
 }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -57,7 +61,7 @@ export function SignUpScreen({
   }
 
   return (
-    <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-background">
+    <SafeAreaView edges={['top', 'bottom']} className="flex-1 min-h-0 bg-background">
       {/* 헤더 */}
       <View className="flex-row items-center gap-2 px-4 pt-6">
         <Pressable
@@ -70,7 +74,7 @@ export function SignUpScreen({
         <Text className="text-[17px] font-bold text-foreground">회원가입</Text>
       </View>
 
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} className="flex-1">
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} className="flex-1 min-h-0">
         {/* 폼 */}
         <ScrollView
           className="flex-1 px-7 pt-6"
@@ -123,9 +127,13 @@ export function SignUpScreen({
 
             <View className="mt-1 rounded-2xl border border-border bg-card p-4">
               <CheckOption checked={agree} onToggle={() => setAgree((v) => !v)}>
-                <Text className="font-semibold text-foreground">서비스 이용약관</Text>
+                <Text onPress={onOpenTerms} className="font-semibold text-foreground underline">
+                  서비스 이용약관
+                </Text>
                 {' 및 '}
-                <Text className="font-semibold text-foreground">개인정보 처리방침</Text>
+                <Text onPress={onOpenPrivacy} className="font-semibold text-foreground underline">
+                  개인정보 처리방침
+                </Text>
                 에 동의합니다.
               </CheckOption>
             </View>

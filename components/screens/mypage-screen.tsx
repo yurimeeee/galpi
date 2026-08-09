@@ -38,6 +38,8 @@ export function MyPageScreen({
   loaded = true,
   onLogout,
   onOpenNotificationSettings,
+  onOpenTerms,
+  onOpenPrivacy,
 }: {
   displayName: string;
   email: string;
@@ -48,11 +50,13 @@ export function MyPageScreen({
   loaded?: boolean;
   onLogout: () => void;
   onOpenNotificationSettings: () => void;
+  onOpenTerms: () => void;
+  onOpenPrivacy: () => void;
 }) {
   const [activeModal, setActiveModal] = useState<ActiveModal>('none');
 
   return (
-    <SafeAreaView edges={['top']} className="flex-1 bg-background">
+    <SafeAreaView edges={['top']} className="flex-1 min-h-0 bg-background">
       <ScrollView className="flex-1" contentContainerClassName="pb-10">
         <View className="px-6 pt-2">
           <Text className="text-[22px] font-black tracking-tight text-foreground">마이페이지</Text>
@@ -126,7 +130,8 @@ export function MyPageScreen({
             title="서비스 정보"
             rows={[
               { key: 'notice', label: '공지사항', Icon: Megaphone },
-              { key: 'terms', label: '이용약관', Icon: FileText },
+              { key: 'terms', label: '이용약관', Icon: FileText, onPress: onOpenTerms },
+              { key: 'privacy', label: '개인정보 처리방침', Icon: FileText, onPress: onOpenPrivacy },
               { key: 'ver', label: '현재 버전', Icon: Info, value: 'v1.0.0' },
             ]}
           />

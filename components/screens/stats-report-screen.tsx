@@ -79,7 +79,7 @@ export function StatsReportScreen({ books, sentences }: { books: Book[]; sentenc
   }
 
   return (
-    <SafeAreaView edges={['top']} className="relative flex-1 bg-background">
+    <SafeAreaView edges={['top']} className="relative flex-1 min-h-0 bg-background">
       <View className="flex-row items-center justify-between px-6 pb-2 pt-1">
         <Text className="text-xl font-black tracking-tight text-foreground">독서 통계</Text>
         <Pressable
@@ -127,7 +127,7 @@ export function StatsReportScreen({ books, sentences }: { books: Book[]; sentenc
 
 export function StatsReportSkeleton() {
   return (
-    <SafeAreaView edges={['top']} className="relative flex-1 bg-background">
+    <SafeAreaView edges={['top']} className="relative flex-1 min-h-0 bg-background">
       <View className="flex-row items-center justify-between px-6 pb-2 pt-1">
         <Text className="text-xl font-black tracking-tight text-foreground">독서 통계</Text>
         <View className="items-center justify-center rounded-full h-9 w-9 bg-galpi-ink">

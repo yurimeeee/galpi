@@ -16,6 +16,8 @@ export default function SignUp() {
         await signUpWithEmail(name, email, password);
         router.replace('/library');
       }}
+      onOpenTerms={() => router.push('/terms')}
+      onOpenPrivacy={() => router.push('/privacy')}
     />
   );
 }

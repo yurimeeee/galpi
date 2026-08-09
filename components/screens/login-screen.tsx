@@ -61,8 +61,8 @@ export function LoginScreen({
   }
 
   return (
-    <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-background">
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} className="flex-1">
+    <SafeAreaView edges={['top', 'bottom']} className="flex-1 min-h-0 bg-background">
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} className="flex-1 min-h-0">
         <ScrollView
           className="flex-1"
           contentContainerClassName="px-7 pb-8"

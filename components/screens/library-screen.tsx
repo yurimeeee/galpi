@@ -37,7 +37,7 @@ export function MainLibraryScreen({
   const visible = useMemo(() => (filter === 'all' ? books : books.filter((b) => b.status === filter)), [books, filter]);
 
   return (
-    <SafeAreaView edges={['top']} className="flex-1 bg-background">
+    <SafeAreaView edges={['top']} className="flex-1 min-h-0 bg-background">
       <FlatList
         data={visible}
         keyExtractor={(b) => b.id}
@@ -147,7 +147,7 @@ export function MainLibraryScreen({
 
 export function LibrarySkeleton() {
   return (
-    <SafeAreaView edges={['top']} className="flex-1 bg-background">
+    <SafeAreaView edges={['top']} className="flex-1 min-h-0 bg-background">
       <View className="px-6 pb-6">
         <View className="flex-row items-center justify-between pt-1 pb-4">
           <GalpiHeaderLogo markColor={colors.galpiInk} markSize={28} wordClassName="text-xl text-foreground" />

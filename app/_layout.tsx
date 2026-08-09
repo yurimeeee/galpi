@@ -67,6 +67,8 @@ export default function RootLayout() {
           <Stack.Screen name="add-sentence" options={{ presentation: 'modal' }} />
           <Stack.Screen name="add-book" options={{ presentation: 'modal' }} />
           <Stack.Screen name="notification-settings" />
+          <Stack.Screen name="terms" />
+          <Stack.Screen name="privacy" />
         </Stack>
       </WebFrame>
     </SafeAreaProvider>

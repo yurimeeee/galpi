@@ -56,7 +56,7 @@ export function OnboardingScreen({ onDone }: { onDone: () => void }) {
   }
 
   return (
-    <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-background">
+    <SafeAreaView edges={['top', 'bottom']} className="flex-1 min-h-0 bg-background">
       {/* 상단: 로고 + 건너뛰기 */}
       <View className="flex-row items-center justify-between px-6 pt-6">
         <GalpiHeaderLogo markColor={colors.galpiInk} markSize={24} wordClassName="text-[17px] text-foreground" />

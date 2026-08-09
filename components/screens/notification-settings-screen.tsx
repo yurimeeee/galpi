@@ -17,7 +17,7 @@ export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
   } = useReadingReminder();
 
   return (
-    <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-background">
+    <SafeAreaView edges={['top', 'bottom']} className="flex-1 min-h-0 bg-background">
       <View className="flex-row items-center gap-3 px-5 pb-3 pt-2">
         <Pressable
           onPress={onBack}

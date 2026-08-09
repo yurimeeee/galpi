@@ -29,6 +29,8 @@ export default function MyPage() {
         router.replace('/login');
       }}
       onOpenNotificationSettings={() => router.push('/notification-settings')}
+      onOpenTerms={() => router.push('/terms')}
+      onOpenPrivacy={() => router.push('/privacy')}
     />
   );
 }
