@@ -14,6 +14,9 @@ import {
   ChevronRight,
   type LucideIcon,
 } from 'lucide-react-native';
+import { Skeleton } from '../galpi/skeleton';
+import { EditProfileModal } from '../galpi/edit-profile-modal';
+import { ChangePasswordModal } from '../galpi/change-password-modal';
 import { colors } from '../../lib/theme';
 
 type Row = {
@@ -21,8 +24,10 @@ type Row = {
   label: string;
   Icon: LucideIcon;
   value?: string;
-  toggle?: boolean;
+  onPress?: () => void;
 };
+
+type ActiveModal = 'none' | 'profile' | 'password';
 
 export function MyPageScreen({
   displayName,
@@ -30,16 +35,21 @@ export function MyPageScreen({
   photoURL,
   bookCount,
   galpiCount,
+  loaded = true,
   onLogout,
+  onOpenNotificationSettings,
 }: {
   displayName: string;
   email: string;
   photoURL: string | null;
   bookCount: number;
   galpiCount: number;
+  /** Whether the book/galpi counts below have arrived from Firestore yet. */
+  loaded?: boolean;
   onLogout: () => void;
+  onOpenNotificationSettings: () => void;
 }) {
-  const [reminder, setReminder] = useState(true);
+  const [activeModal, setActiveModal] = useState<ActiveModal>('none');
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-background">
@@ -67,7 +77,10 @@ export function MyPageScreen({
                   {email}
                 </Text>
               </View>
-              <Pressable className="web:cursor-pointer flex-row items-center gap-1 rounded-full bg-galpi-ink px-3.5 py-2">
+              <Pressable
+                onPress={() => setActiveModal('profile')}
+                className="web:cursor-pointer flex-row items-center gap-1 rounded-full bg-galpi-ink px-3.5 py-2"
+              >
                 <Pencil size={14} color={colors.galpiPaper} />
                 <Text className="text-[12px] font-semibold text-galpi-paper">프로필 수정</Text>
               </Pressable>
@@ -75,8 +88,17 @@ export function MyPageScreen({
 
             {/* 독서 요약 칩 */}
             <View className="mt-4 flex-row gap-2.5">
-              <SummaryChip value={String(bookCount)} label="등록한 책" />
-              <SummaryChip value={String(galpiCount)} label="수집한 갈피" />
+              {loaded ? (
+                <>
+                  <SummaryChip value={String(bookCount)} label="등록한 책" />
+                  <SummaryChip value={String(galpiCount)} label="수집한 갈피" />
+                </>
+              ) : (
+                <>
+                  <Skeleton className="h-11 flex-1 rounded-2xl" />
+                  <Skeleton className="h-11 flex-1 rounded-2xl" />
+                </>
+              )}
             </View>
           </View>
         </View>
@@ -86,22 +108,18 @@ export function MyPageScreen({
           <SettingsGroup
             title="계정 및 보안"
             rows={[
-              { key: 'edit', label: '프로필 수정', Icon: UserRound },
-              { key: 'pw', label: '비밀번호 변경', Icon: Lock },
+              { key: 'edit', label: '프로필 수정', Icon: UserRound, onPress: () => setActiveModal('profile') },
+              { key: 'pw', label: '비밀번호 변경', Icon: Lock, onPress: () => setActiveModal('password') },
               { key: 'social', label: '소셜 계정 연동', Icon: Link2 },
             ]}
-            reminder={reminder}
-            onReminder={setReminder}
           />
 
           <SettingsGroup
             title="앱 설정"
             rows={[
-              { key: 'noti', label: '알림 설정', Icon: Bell, toggle: true },
+              { key: 'noti', label: '알림 설정', Icon: Bell, onPress: onOpenNotificationSettings },
               { key: 'backup', label: '데이터 백업 및 복구', Icon: CloudDownload },
             ]}
-            reminder={reminder}
-            onReminder={setReminder}
           />
 
           <SettingsGroup
@@ -111,8 +129,6 @@ export function MyPageScreen({
               { key: 'terms', label: '이용약관', Icon: FileText },
               { key: 'ver', label: '현재 버전', Icon: Info, value: 'v1.0.0' },
             ]}
-            reminder={reminder}
-            onReminder={setReminder}
           />
         </View>
 
@@ -127,6 +143,17 @@ export function MyPageScreen({
           </Pressable>
         </View>
       </ScrollView>
+
+      {activeModal === 'profile' ? (
+        <EditProfileModal
+          displayName={displayName}
+          photoURL={photoURL}
+          onClose={() => setActiveModal('none')}
+        />
+      ) : null}
+      {activeModal === 'password' ? (
+        <ChangePasswordModal onClose={() => setActiveModal('none')} />
+      ) : null}
     </SafeAreaView>
   );
 }
@@ -140,55 +167,41 @@ function SummaryChip({ value, label }: { value: string; label: string }) {
   );
 }
 
-function SettingsGroup({
-  title,
-  rows,
-  reminder,
-  onReminder,
-}: {
-  title: string;
-  rows: Row[];
-  reminder: boolean;
-  onReminder: (v: boolean) => void;
-}) {
+function SettingsGroup({ title, rows }: { title: string; rows: Row[] }) {
   return (
     <View>
       <Text className="mb-2 pl-2 text-[13px] font-bold text-muted-foreground">{title}</Text>
       <View className="overflow-hidden rounded-2xl border border-border bg-card">
-        {rows.map((row, i) => (
-          <View
-            key={row.key}
-            className={`flex-row items-center gap-3 px-4 py-3.5 ${
-              i !== rows.length - 1 ? 'border-b border-border' : ''
-            }`}
-          >
-            <View className="h-9 w-9 items-center justify-center rounded-xl bg-secondary">
-              <row.Icon size={18} color={colors.foreground} strokeWidth={1.8} />
-            </View>
-            <Text className="flex-1 text-[14px] font-medium text-foreground">{row.label}</Text>
+        {rows.map((row, i) => {
+          const content = (
+            <>
+              <View className="h-9 w-9 items-center justify-center rounded-xl bg-secondary">
+                <row.Icon size={18} color={colors.foreground} strokeWidth={1.8} />
+              </View>
+              <Text className="flex-1 text-[14px] font-medium text-foreground">{row.label}</Text>
 
-            {row.toggle ? (
-              <Pressable
-                onPress={() => onReminder(!reminder)}
-                accessibilityRole="switch"
-                accessibilityState={{ checked: reminder }}
-                accessibilityLabel="알림 설정"
-                className={`web:cursor-pointer relative h-6 w-11 justify-center rounded-full ${
-                  reminder ? 'bg-galpi-ink' : 'bg-border'
-                }`}
-              >
-                <View
-                  className="absolute h-5 w-5 rounded-full bg-galpi-paper"
-                  style={{ left: reminder ? 22 : 2 }}
-                />
-              </Pressable>
-            ) : row.value ? (
-              <Text className="text-[13px] text-muted-foreground">{row.value}</Text>
-            ) : (
-              <ChevronRight size={16} color={colors.mutedForeground} />
-            )}
-          </View>
-        ))}
+              {row.value ? (
+                <Text className="text-[13px] text-muted-foreground">{row.value}</Text>
+              ) : row.onPress ? (
+                <ChevronRight size={16} color={colors.mutedForeground} />
+              ) : null}
+            </>
+          );
+
+          const rowClassName = `flex-row items-center gap-3 px-4 py-3.5 ${
+            i !== rows.length - 1 ? 'border-b border-border' : ''
+          }`;
+
+          return row.onPress ? (
+            <Pressable key={row.key} onPress={row.onPress} className={`web:cursor-pointer ${rowClassName}`}>
+              {content}
+            </Pressable>
+          ) : (
+            <View key={row.key} className={rowClassName}>
+              {content}
+            </View>
+          );
+        })}
       </View>
     </View>
   );

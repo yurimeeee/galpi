@@ -14,6 +14,7 @@ import {
   Quote,
   type LucideIcon,
 } from 'lucide-react-native';
+import { Skeleton } from '../galpi/skeleton';
 import { colors, type Accent, ACCENT_BG_CLASS } from '../../lib/theme';
 import type { Book } from '../../lib/data/books';
 import type { Sentence } from '../../lib/data/sentences';
@@ -120,6 +121,43 @@ export function StatsReportScreen({ books, sentences }: { books: Book[]; sentenc
       {shareOpen ? (
         <ShareModal onClose={() => setShareOpen(false)} books={books} sentences={sentences} year={cursor.getFullYear()} />
       ) : null}
+    </SafeAreaView>
+  );
+}
+
+export function StatsReportSkeleton() {
+  return (
+    <SafeAreaView edges={['top']} className="relative flex-1 bg-background">
+      <View className="flex-row items-center justify-between px-6 pb-2 pt-1">
+        <Text className="text-xl font-black tracking-tight text-foreground">독서 통계</Text>
+        <View className="items-center justify-center rounded-full h-9 w-9 bg-galpi-ink">
+          <Share2 size={16} color={colors.galpiPaper} />
+        </View>
+      </View>
+
+      <View className="flex-1 px-6">
+        <View className="mt-2 flex-row gap-1 rounded-2xl bg-secondary p-1">
+          {(['월간', '연간'] as const).map((label, i) => (
+            <View key={label} className={`flex-1 rounded-xl py-2.5 ${i === 0 ? 'bg-card' : ''}`}>
+              <Text className={`text-center text-sm font-bold ${i === 0 ? 'text-foreground' : 'text-muted-foreground'}`}>
+                {label}
+              </Text>
+            </View>
+          ))}
+        </View>
+
+        <View className="mt-6 flex-row items-center justify-between">
+          <Skeleton className="h-8 w-32 rounded-lg" />
+        </View>
+
+        <Skeleton className="mt-4 h-64 w-full rounded-3xl" />
+
+        <View className="mt-6 gap-2.5">
+          {[0, 1, 2].map((i) => (
+            <Skeleton key={i} className="h-16 w-full rounded-2xl" />
+          ))}
+        </View>
+      </View>
     </SafeAreaView>
   );
 }

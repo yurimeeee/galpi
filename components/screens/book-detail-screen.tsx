@@ -11,6 +11,7 @@ import {
   Image as ImageIcon,
   type LucideIcon,
 } from 'lucide-react-native';
+import { Skeleton } from '../galpi/skeleton';
 import { type Book, type ReadingStatus, STATUS_LABEL } from '../../lib/data/books';
 import { ENTRY_LABEL, type EntryType, type Sentence } from '../../lib/data/sentences';
 import { ACCENT_BG_CLASS, colors } from '../../lib/theme';
@@ -266,5 +267,43 @@ function StatBit({ label, value }: { label: string; value: string }) {
       <Text className="text-base font-black text-foreground">{value}</Text>
       <Text className="mt-0.5 text-[10px] font-medium text-muted-foreground">{label}</Text>
     </View>
+  );
+}
+
+export function BookDetailSkeleton({ onBack }: { onBack: () => void }) {
+  return (
+    <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-background">
+      <View className="flex-row items-center justify-between px-5 pb-2 pt-2">
+        <Pressable
+          onPress={onBack}
+          accessibilityLabel="뒤로 가기"
+          className="web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-card"
+        >
+          <ChevronLeft size={20} color={colors.foreground} />
+        </Pressable>
+      </View>
+
+      <View className="px-6 pb-28">
+        <View className="flex-row gap-5">
+          <Skeleton className="h-40 w-28 shrink-0 rounded-2xl" />
+          <View className="min-w-0 flex-1 justify-center gap-2">
+            <Skeleton className="h-5 w-4/5 rounded-md" />
+            <Skeleton className="h-3.5 w-2/5 rounded-md" />
+          </View>
+        </View>
+
+        <View className="mt-5 h-20 rounded-2xl bg-card" />
+
+        <View className="mb-4 mt-8">
+          <Skeleton className="h-5 w-40 rounded-md" />
+        </View>
+
+        <View className="gap-4">
+          {[0, 1, 2].map((i) => (
+            <Skeleton key={i} className="h-32 w-full rounded-2xl" />
+          ))}
+        </View>
+      </View>
+    </SafeAreaView>
   );
 }

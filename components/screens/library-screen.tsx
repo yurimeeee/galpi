@@ -5,6 +5,7 @@ import { Bookmark, Search, ChevronRight, Quote } from 'lucide-react-native';
 import { GalpiHeaderLogo } from '../galpi/galpi-logo';
 import { BookCard } from '../galpi/book-card';
 import { ColorChips } from '../galpi/color-chips';
+import { Skeleton } from '../galpi/skeleton';
 import { StatusFilter, type FilterKey } from '../galpi/status-filter';
 import { type Book } from '../../lib/data/books';
 import { ACCENT_BG_CLASS, colors } from '../../lib/theme';
@@ -140,6 +141,51 @@ export function MainLibraryScreen({
           </Pressable>
         }
       />
+    </SafeAreaView>
+  );
+}
+
+export function LibrarySkeleton() {
+  return (
+    <SafeAreaView edges={['top']} className="flex-1 bg-background">
+      <View className="px-6 pb-6">
+        <View className="flex-row items-center justify-between pt-1 pb-4">
+          <GalpiHeaderLogo markColor={colors.galpiInk} markSize={28} wordClassName="text-xl text-foreground" />
+          <View className="items-center justify-center rounded-full h-9 w-9 bg-card">
+            <Search size={16} color={colors.foreground} />
+          </View>
+        </View>
+
+        <View className="mb-6">
+          <Text className="text-xs font-medium text-muted-foreground">오늘도 한 문장, 갈피에 담다</Text>
+          <Text className="mt-1 text-[26px] font-black leading-[1.25] tracking-tight text-foreground">지금까지 모은 문장</Text>
+          <Skeleton className="mt-1.5 h-8 w-32 rounded-lg" />
+        </View>
+
+        <Skeleton className="mb-7 h-40 w-full rounded-3xl" />
+
+        <View className="flex-row items-center justify-between mb-3">
+          <Text className="text-lg font-black tracking-tight text-foreground">내 서재</Text>
+        </View>
+
+        <View className="flex-row gap-2 mb-5">
+          {[0, 1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-8 w-16 rounded-full" />
+          ))}
+        </View>
+
+        <View className="gap-4">
+          {[0, 1, 2, 3].map((i) => (
+            <View key={i} className="flex-row items-stretch gap-4">
+              <Skeleton className="w-14 h-20 rounded-xl" />
+              <View className="flex-1 justify-center gap-2 pb-4 border-b border-border">
+                <Skeleton className="w-2/3 h-4 rounded-md" />
+                <Skeleton className="w-1/3 h-3 rounded-md" />
+              </View>
+            </View>
+          ))}
+        </View>
+      </View>
     </SafeAreaView>
   );
 }

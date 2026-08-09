@@ -3,13 +3,17 @@ import { Platform } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import {
+  EmailAuthProvider,
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
+  reauthenticateWithCredential,
   signInWithCredential,
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
+  updatePassword,
   updateProfile,
+  type User,
 } from 'firebase/auth';
 import { auth, googleProvider } from './firebase';
 
@@ -66,6 +70,39 @@ export async function signOutUser() {
   await signOut(auth);
 }
 
+/** True when the account has an email/password credential attached (as opposed to Google/Kakao-only). */
+export function isPasswordAccount(user: User | null): boolean {
+  return !!user?.providerData.some((p) => p.providerId === 'password');
+}
+
+/**
+ * Updates the Firebase Auth profile (displayName/photoURL) for the signed-in
+ * user and reloads it so `auth.currentUser` reflects the change immediately —
+ * `updateProfile` mutates the user object in place but doesn't emit an
+ * `onAuthStateChanged` event, so callers must re-sync the store manually.
+ */
+export async function updateUserProfile(changes: {
+  displayName?: string;
+  photoURL?: string | null;
+}): Promise<void> {
+  const user = auth.currentUser;
+  if (!user) throw new Error('로그인이 필요해요.');
+  await updateProfile(user, changes);
+  await user.reload();
+}
+
+/** Re-authenticates with the current password, then sets the new one. */
+export async function changeUserPassword(
+  currentPassword: string,
+  newPassword: string,
+): Promise<void> {
+  const user = auth.currentUser;
+  if (!user || !user.email) throw new Error('로그인이 필요해요.');
+  const credential = EmailAuthProvider.credential(user.email, currentPassword);
+  await reauthenticateWithCredential(user, credential);
+  await updatePassword(user, newPassword);
+}
+
 export function getAuthErrorMessage(error: unknown): string {
   const code = (error as { code?: string } | null)?.code ?? '';
   switch (code) {
@@ -84,6 +121,10 @@ export function getAuthErrorMessage(error: unknown): string {
       return '';
     case 'auth/network-request-failed':
       return '네트워크 연결을 확인해 주세요.';
+    case 'auth/requires-recent-login':
+      return '보안을 위해 다시 로그인한 뒤 시도해 주세요.';
+    case 'auth/too-many-requests':
+      return '시도 횟수가 많아요. 잠시 후 다시 시도해 주세요.';
     default:
       return '문제가 발생했어요. 잠시 후 다시 시도해 주세요.';
   }

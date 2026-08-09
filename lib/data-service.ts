@@ -2,6 +2,7 @@ import {
   collection,
   deleteField,
   doc,
+  getDoc,
   increment,
   onSnapshot,
   orderBy,
@@ -73,6 +74,50 @@ export async function updateBookDoc(
   patch: Partial<Pick<Book, 'status' | 'rating'>>,
 ): Promise<void> {
   await updateDoc(doc(booksCol(uid), bookId), patch);
+}
+
+/**
+ * Uploads a profile avatar (as a `data:image/jpeg;base64,...` URI) to
+ * Firebase Storage and returns its public download URL — mirrors
+ * `uploadSentencePhoto`'s fetch()-through-blob approach.
+ */
+export async function uploadProfilePhoto(uid: string, dataUrl: string): Promise<string> {
+  const photoRef = ref(storage, `users/${uid}/profile/${Date.now()}.jpg`);
+  const blob = await (await fetch(dataUrl)).blob();
+  await uploadBytes(photoRef, blob);
+  return getDownloadURL(photoRef);
+}
+
+/** Upserts fields on the top-level `users/{uid}` profile document. */
+export async function updateUserDoc(
+  uid: string,
+  patch: { displayName?: string; photoURL?: string | null },
+): Promise<void> {
+  await setDoc(doc(db, 'users', uid), withoutUndefined(patch), { merge: true });
+}
+
+export type NotificationPreferences = {
+  dailyReminderEnabled?: boolean;
+  dailyReminderTime?: string;
+  expoPushToken?: string | null;
+};
+
+function notificationPreferencesDoc(uid: string) {
+  return doc(db, 'users', uid, 'userSettings', 'preferences');
+}
+
+export async function getNotificationPreferences(
+  uid: string,
+): Promise<NotificationPreferences | null> {
+  const snap = await getDoc(notificationPreferencesDoc(uid));
+  return snap.exists() ? (snap.data() as NotificationPreferences) : null;
+}
+
+export async function saveNotificationPreferences(
+  uid: string,
+  patch: NotificationPreferences,
+): Promise<void> {
+  await setDoc(notificationPreferencesDoc(uid), withoutUndefined(patch), { merge: true });
 }
 
 /**
