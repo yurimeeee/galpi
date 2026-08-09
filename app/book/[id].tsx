@@ -7,6 +7,7 @@ export default function BookDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const book = useAppStore((s) => s.bookById(id));
   const allSentences = useAppStore((s) => s.sentences);
+  const updateBook = useAppStore((s) => s.updateBook);
 
   if (!book) {
     return <Redirect href="/library" />;
@@ -18,6 +19,9 @@ export default function BookDetail() {
       sentences={sentencesByBook(allSentences, book.id)}
       onBack={() => router.back()}
       onAddSentence={() => router.push(`/add-sentence?bookId=${book.id}`)}
+      onEditSentence={(sentenceId) => router.push(`/edit-sentence?sentenceId=${sentenceId}`)}
+      onChangeStatus={(status) => updateBook(book.id, { status })}
+      onChangeRating={(rating) => updateBook(book.id, { rating })}
     />
   );
 }

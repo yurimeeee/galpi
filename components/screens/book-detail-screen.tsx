@@ -11,7 +11,7 @@ import {
   Image as ImageIcon,
   type LucideIcon,
 } from 'lucide-react-native';
-import { type Book, STATUS_LABEL } from '../../lib/data/books';
+import { type Book, type ReadingStatus, STATUS_LABEL } from '../../lib/data/books';
 import { ENTRY_LABEL, type EntryType, type Sentence } from '../../lib/data/sentences';
 import { ACCENT_BG_CLASS, colors } from '../../lib/theme';
 
@@ -26,11 +26,17 @@ export function BookDetailScreen({
   sentences,
   onBack,
   onAddSentence,
+  onEditSentence,
+  onChangeStatus,
+  onChangeRating,
 }: {
   book: Book;
   sentences: Sentence[];
   onBack: () => void;
   onAddSentence: () => void;
+  onEditSentence: (sentenceId: string) => void;
+  onChangeStatus: (status: ReadingStatus) => void;
+  onChangeRating: (rating: number) => void;
 }) {
   const inkText = book.accent === 'ink' ? colors.galpiPaper : colors.galpiInk;
 
@@ -61,8 +67,10 @@ export function BookDetailScreen({
         renderItem={({ item, index }) => {
           const Icon = ENTRY_ICON[item.type];
           return (
-            <View
-              className={`relative overflow-hidden rounded-2xl bg-card p-4 ${
+            <Pressable
+              onPress={() => onEditSentence(item.id)}
+              accessibilityLabel="갈피 수정하기"
+              className={`web:cursor-pointer relative overflow-hidden rounded-2xl bg-card p-4 ${
                 index % 2 === 0 ? 'ml-0 mr-3' : 'ml-3 mr-0'
               }`}
             >
@@ -116,7 +124,7 @@ export function BookDetailScreen({
               <Text className="mt-2 pl-2 text-[10px] font-medium text-muted-foreground/70">
                 {item.date}
               </Text>
-            </View>
+            </Pressable>
           );
         }}
         ListEmptyComponent={
@@ -154,28 +162,57 @@ export function BookDetailScreen({
 
               {/* 정보 */}
               <View className="min-w-0 flex-1 justify-center">
-                <View className="self-start rounded-full bg-secondary px-2.5 py-1">
-                  <Text className="text-[10px] font-semibold text-muted-foreground">
-                    {STATUS_LABEL[book.status]}
-                  </Text>
-                </View>
-                <Text className="mt-2 text-xl font-black leading-tight text-foreground">
+                <Text className="text-xl font-black leading-tight text-foreground">
                   {book.title}
                 </Text>
                 <Text className="mt-1 text-sm text-muted-foreground">{book.author}</Text>
 
                 <View className="mt-3 flex-row items-center gap-0.5">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star
-                      key={i}
-                      size={16}
-                      color={i < book.rating ? colors.galpiInk : colors.mutedForeground}
-                      fill={i < book.rating ? colors.galpiInk : 'transparent'}
-                      opacity={i < book.rating ? 1 : 0.4}
-                    />
-                  ))}
+                  {Array.from({ length: 5 }).map((_, i) => {
+                    const filled = i < book.rating;
+                    return (
+                      <Pressable
+                        key={i}
+                        onPress={() => onChangeRating(book.rating === i + 1 ? 0 : i + 1)}
+                        accessibilityRole="button"
+                        accessibilityLabel={`별점 ${i + 1}점`}
+                        hitSlop={6}
+                      >
+                        <Star
+                          size={16}
+                          color={filled ? colors.galpiInk : colors.mutedForeground}
+                          fill={filled ? colors.galpiInk : 'transparent'}
+                          opacity={filled ? 1 : 0.4}
+                        />
+                      </Pressable>
+                    );
+                  })}
                 </View>
               </View>
+            </View>
+
+            {/* 읽기 상태 */}
+            <View className="mt-4 flex-row gap-2">
+              {(Object.keys(STATUS_LABEL) as ReadingStatus[]).map((status) => {
+                const active = book.status === status;
+                return (
+                  <Pressable
+                    key={status}
+                    onPress={() => onChangeStatus(status)}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected: active }}
+                    className={`web:cursor-pointer flex-1 items-center rounded-full px-3 py-2 ${
+                      active ? 'bg-galpi-ink' : 'bg-card'
+                    }`}
+                  >
+                    <Text
+                      className={`text-xs font-semibold ${active ? 'text-galpi-paper' : 'text-muted-foreground'}`}
+                    >
+                      {STATUS_LABEL[status]}
+                    </Text>
+                  </Pressable>
+                );
+              })}
             </View>
 
             {/* 진행률 요약 */}

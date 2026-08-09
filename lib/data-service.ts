@@ -1,11 +1,13 @@
 import {
   collection,
+  deleteField,
   doc,
   increment,
   onSnapshot,
   orderBy,
   query,
   setDoc,
+  updateDoc,
   writeBatch,
   type Unsubscribe,
 } from 'firebase/firestore';
@@ -65,6 +67,14 @@ export async function addBookDoc(uid: string, book: Omit<Book, 'id'>, order: num
   await setDoc(doc(booksCol(uid)), withoutUndefined({ ...book, order }));
 }
 
+export async function updateBookDoc(
+  uid: string,
+  bookId: string,
+  patch: Partial<Pick<Book, 'status' | 'rating'>>,
+): Promise<void> {
+  await updateDoc(doc(booksCol(uid), bookId), patch);
+}
+
 /**
  * Uploads a page photo (as a `data:image/jpeg;base64,...` URI) to Firebase
  * Storage and returns its public download URL, for embedding in a Sentence.
@@ -88,5 +98,28 @@ export async function addSentenceDoc(
   const batch = writeBatch(db);
   batch.set(doc(sentencesCol(uid)), withoutUndefined({ ...sentence, date: todayLabel() }));
   batch.update(doc(booksCol(uid), sentence.bookId), { galpiCount: increment(1) });
+  await batch.commit();
+}
+
+export async function updateSentenceDoc(
+  uid: string,
+  sentenceId: string,
+  changes: { page: number; quote: string; memo?: string },
+): Promise<void> {
+  await updateDoc(doc(sentencesCol(uid), sentenceId), {
+    page: changes.page,
+    quote: changes.quote,
+    memo: changes.memo === undefined ? deleteField() : changes.memo,
+  });
+}
+
+/**
+ * Deletes a sentence and decrements the parent book's galpiCount to match —
+ * the inverse of the increment addSentenceDoc performs on create.
+ */
+export async function deleteSentenceDoc(uid: string, sentence: Sentence): Promise<void> {
+  const batch = writeBatch(db);
+  batch.delete(doc(sentencesCol(uid), sentence.id));
+  batch.update(doc(booksCol(uid), sentence.bookId), { galpiCount: increment(-1) });
   await batch.commit();
 }
