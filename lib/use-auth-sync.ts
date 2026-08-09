@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebase';
-import { ensureInitialLibrary, subscribeBooks, subscribeSentences } from './data-service';
+import { subscribeBooks, subscribeSentences } from './data-service';
 import { useAppStore } from './store';
 
 /**
@@ -12,7 +12,7 @@ export function useAuthSync(): { authResolved: boolean } {
   const [authResolved, setAuthResolved] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       useAppStore.getState().setUser(firebaseUser);
 
       if (!firebaseUser) {
@@ -24,11 +24,6 @@ export function useAuthSync(): { authResolved: boolean } {
         return;
       }
 
-      try {
-        await ensureInitialLibrary(firebaseUser.uid);
-      } catch (err) {
-        console.error('Failed to seed initial library', err);
-      }
       useAppStore.setState({ gate: 'app' });
       setAuthResolved(true);
     });

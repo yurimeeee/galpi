@@ -1,7 +1,6 @@
 import {
   collection,
   doc,
-  getDocs,
   increment,
   onSnapshot,
   orderBy,
@@ -11,8 +10,8 @@ import {
   type Unsubscribe,
 } from 'firebase/firestore';
 import { db } from './firebase';
-import { books as sampleBooks, type Book } from './data/books';
-import { sentences as sampleSentences, type Sentence } from './data/sentences';
+import { type Book } from './data/books';
+import { type Sentence } from './data/sentences';
 
 function booksCol(uid: string) {
   return collection(db, 'users', uid, 'books');
@@ -39,26 +38,6 @@ function todayLabel(): string {
   const m = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
   return `${y}.${m}.${day}`;
-}
-
-/**
- * First-login bootstrap: gives every new account the same sample library the
- * app used to ship as hardcoded mock data, so the library isn't empty on day
- * one. No-ops for returning users (checked via the books collection being
- * non-empty) so it never overwrites real edits.
- */
-export async function ensureInitialLibrary(uid: string): Promise<void> {
-  const existing = await getDocs(booksCol(uid));
-  if (!existing.empty) return;
-
-  const batch = writeBatch(db);
-  sampleBooks.forEach(({ id, ...book }, index) => {
-    batch.set(doc(booksCol(uid), id), { ...book, order: index });
-  });
-  sampleSentences.forEach(({ id, ...sentence }) => {
-    batch.set(doc(sentencesCol(uid), id), sentence);
-  });
-  await batch.commit();
 }
 
 export function subscribeBooks(uid: string, onChange: (books: Book[]) => void): Unsubscribe {

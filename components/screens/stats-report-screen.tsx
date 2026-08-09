@@ -4,7 +4,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   BookCheck,
   Bookmark,
-  Clock,
   Share2,
   X,
   Download,
@@ -16,45 +15,67 @@ import {
   type LucideIcon,
 } from 'lucide-react-native';
 import { colors, type Accent, ACCENT_BG_CLASS } from '../../lib/theme';
+import type { Book } from '../../lib/data/books';
+import type { Sentence } from '../../lib/data/sentences';
 
 type Period = 'month' | 'year';
 type MonthView = 'date' | 'cover';
 
-/* ---------- 목업 데이터 ---------- */
-const READ_DAYS: Record<number, Accent> = {
-  2: 'blue', 3: 'blue', 5: 'yellow', 8: 'yellow', 9: 'green', 12: 'green',
-  15: 'ink', 16: 'ink', 17: 'blue', 20: 'yellow', 23: 'green', 24: 'green',
-  27: 'ink', 30: 'blue', 31: 'blue',
-};
-
-type DoneBook = { title: string; author: string; rating: number; accent: Accent };
-const MONTH_DONE: DoneBook[] = [
-  { title: '모순', author: '양귀자', rating: 5, accent: 'green' },
-  { title: '아몬드', author: '손원평', rating: 4, accent: 'ink' },
-  { title: '달러구트 꿈 백화점', author: '이미예', rating: 4, accent: 'blue' },
-  { title: '불편한 편의점', author: '김호연', rating: 3.5, accent: 'yellow' },
-];
-
-const YEAR_METRICS = { done: '38', galpi: '612', hours: '260' };
-
-function makeHeatmap(weeks: number, seed: number): number[][] {
-  const grid: number[][] = [];
-  for (let w = 0; w < weeks; w++) {
-    const col: number[] = [];
-    for (let d = 0; d < 7; d++) {
-      const v = (Math.sin((w * 7 + d) * seed) + 1) / 2;
-      col.push(Math.round(v * 4));
-    }
-    grid.push(col);
-  }
-  return grid;
-}
-
+const WEEKDAY_LABELS = ['일', '월', '화', '수', '목', '금', '토'];
 const INTENSITY_CLASS = ['bg-secondary', 'bg-galpi-green/50', 'bg-galpi-green', 'bg-galpi-blue', 'bg-galpi-ink'];
 
-export function StatsReportScreen() {
+/** Sentence.date is stored as "YYYY.MM.DD"; returns null if unparsable. */
+function parseSentenceDate(dateStr: string): Date | null {
+  const [y, m, d] = dateStr.split('.').map(Number);
+  if (!y || !m || !d) return null;
+  return new Date(y, m - 1, d);
+}
+
+function dateKey(d: Date): string {
+  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+}
+
+function seasonOf(month0: number): '봄' | '여름' | '가을' | '겨울' {
+  if (month0 === 11 || month0 <= 1) return '겨울';
+  if (month0 <= 4) return '봄';
+  if (month0 <= 7) return '여름';
+  return '가을';
+}
+
+function intensityFromCount(count: number): number {
+  if (count <= 0) return 0;
+  if (count === 1) return 1;
+  if (count === 2) return 2;
+  if (count === 3) return 3;
+  return 4;
+}
+
+function getYearMetrics(books: Book[], sentences: Sentence[], year: number) {
+  const doneCount = books.filter((b) => b.status === 'done').length;
+  const uniqueDays = new Set<string>();
+  let galpiCount = 0;
+  for (const s of sentences) {
+    const d = parseSentenceDate(s.date);
+    if (!d || d.getFullYear() !== year) continue;
+    galpiCount += 1;
+    uniqueDays.add(dateKey(d));
+  }
+  return { doneCount, galpiCount, readDaysCount: uniqueDays.size };
+}
+
+export function StatsReportScreen({ books, sentences }: { books: Book[]; sentences: Sentence[] }) {
   const [period, setPeriod] = useState<Period>('month');
   const [shareOpen, setShareOpen] = useState(false);
+  const [cursor, setCursor] = useState(() => new Date());
+
+  const bookById = useMemo(() => new Map(books.map((b) => [b.id, b])), [books]);
+
+  function shiftMonth(delta: number) {
+    setCursor((d) => new Date(d.getFullYear(), d.getMonth() + delta, 1));
+  }
+  function shiftYear(delta: number) {
+    setCursor((d) => new Date(d.getFullYear() + delta, d.getMonth(), 1));
+  }
 
   return (
     <SafeAreaView edges={['top']} className="relative flex-1 bg-background">
@@ -89,21 +110,60 @@ export function StatsReportScreen() {
           })}
         </View>
 
-        {period === 'month' ? <MonthlyView /> : <YearlyView />}
+        {period === 'month' ? (
+          <MonthlyView cursor={cursor} onPrev={() => shiftMonth(-1)} onNext={() => shiftMonth(1)} sentences={sentences} bookById={bookById} />
+        ) : (
+          <YearlyView cursor={cursor} onPrev={() => shiftYear(-1)} onNext={() => shiftYear(1)} books={books} sentences={sentences} />
+        )}
       </ScrollView>
 
-      {shareOpen ? <ShareModal onClose={() => setShareOpen(false)} /> : null}
+      {shareOpen ? (
+        <ShareModal onClose={() => setShareOpen(false)} books={books} sentences={sentences} year={cursor.getFullYear()} />
+      ) : null}
     </SafeAreaView>
   );
 }
 
 /* ---------- 월간 뷰 ---------- */
-function MonthlyView() {
+function MonthlyView({
+  cursor,
+  onPrev,
+  onNext,
+  sentences,
+  bookById,
+}: {
+  cursor: Date;
+  onPrev: () => void;
+  onNext: () => void;
+  sentences: Sentence[];
+  bookById: Map<string, Book>;
+}) {
   const [view, setView] = useState<MonthView>('date');
+  const year = cursor.getFullYear();
+  const month = cursor.getMonth();
 
-  const firstWeekday = new Date(2026, 7, 1).getDay();
-  const daysInMonth = 31;
-  const readCount = Object.keys(READ_DAYS).length;
+  const { readDays, booksThisMonth } = useMemo(() => {
+    const days = new Map<number, Accent>();
+    const galpiByBook = new Map<string, number>();
+    for (const s of sentences) {
+      const d = parseSentenceDate(s.date);
+      if (!d || d.getFullYear() !== year || d.getMonth() !== month) continue;
+      const book = bookById.get(s.bookId);
+      if (!days.has(d.getDate())) {
+        days.set(d.getDate(), book?.accent ?? 'ink');
+      }
+      galpiByBook.set(s.bookId, (galpiByBook.get(s.bookId) ?? 0) + 1);
+    }
+    const list = Array.from(galpiByBook.entries())
+      .map(([bookId, count]) => ({ book: bookById.get(bookId), count }))
+      .filter((entry): entry is { book: Book; count: number } => Boolean(entry.book))
+      .sort((a, b) => b.count - a.count);
+    return { readDays: days, booksThisMonth: list };
+  }, [sentences, bookById, year, month]);
+
+  const firstWeekday = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const readCount = readDays.size;
 
   const cells: (number | null)[] = [
     ...Array.from({ length: firstWeekday }, () => null),
@@ -115,14 +175,14 @@ function MonthlyView() {
       {/* 월 네비게이터 */}
       <View className="mt-6 flex-row items-center justify-between">
         <View className="flex-row items-center gap-3">
-          <Pressable accessibilityLabel="이전 달" className="web:cursor-pointer h-8 w-8 items-center justify-center rounded-full bg-secondary">
+          <Pressable onPress={onPrev} accessibilityLabel="이전 달" className="web:cursor-pointer h-8 w-8 items-center justify-center rounded-full bg-secondary">
             <ChevronLeft size={16} color={colors.foreground} />
           </Pressable>
           <View>
-            <Text className="text-base font-black text-foreground">2026년 8월</Text>
+            <Text className="text-base font-black text-foreground">{year}년 {month + 1}월</Text>
             <Text className="text-[11px] font-medium text-muted-foreground">읽은 날 · {readCount}일</Text>
           </View>
-          <Pressable accessibilityLabel="다음 달" className="web:cursor-pointer h-8 w-8 items-center justify-center rounded-full bg-secondary">
+          <Pressable onPress={onNext} accessibilityLabel="다음 달" className="web:cursor-pointer h-8 w-8 items-center justify-center rounded-full bg-secondary">
             <ChevronRight size={16} color={colors.foreground} />
           </Pressable>
         </View>
@@ -151,7 +211,7 @@ function MonthlyView() {
       {/* 달력 */}
       <View className="mt-4 rounded-3xl bg-card p-4">
         <View className="mb-2 flex-row">
-          {['일', '월', '화', '수', '목', '금', '토'].map((d) => (
+          {WEEKDAY_LABELS.map((d) => (
             <Text key={d} className="w-[14.28%] text-center text-[10px] font-semibold text-muted-foreground">
               {d}
             </Text>
@@ -162,7 +222,7 @@ function MonthlyView() {
             if (day === null) {
               return <View key={`e-${i}`} className="aspect-square w-[14.28%]" />;
             }
-            const accent = READ_DAYS[day];
+            const accent = readDays.get(day);
             const read = Boolean(accent);
 
             if (view === 'cover') {
@@ -196,66 +256,138 @@ function MonthlyView() {
         </View>
       </View>
 
-      {/* 이달 완독 목록 */}
+      {/* 이달 갈피를 남긴 책 */}
       <View className="mt-6">
         <View className="mb-3 flex-row items-baseline justify-between">
-          <Text className="text-base font-black tracking-tight text-foreground">이달 완독한 책</Text>
-          <Text className="text-xs font-medium text-muted-foreground">{MONTH_DONE.length}권</Text>
+          <Text className="text-base font-black tracking-tight text-foreground">이달 갈피를 남긴 책</Text>
+          <Text className="text-xs font-medium text-muted-foreground">{booksThisMonth.length}권</Text>
         </View>
-        <View className="gap-2.5">
-          {MONTH_DONE.map((b) => (
-            <View key={b.title} className="flex-row items-center gap-3 rounded-2xl bg-card p-3">
-              <View className={`h-12 w-9 shrink-0 items-center justify-center rounded-md ${ACCENT_BG_CLASS[b.accent]}`}>
-                <Bookmark size={14} color={b.accent === 'ink' ? colors.galpiPaper : colors.galpiInk} />
+        {booksThisMonth.length === 0 ? (
+          <View className="rounded-2xl border border-dashed border-border bg-card px-6 py-8">
+            <Text className="text-center text-sm leading-relaxed text-muted-foreground">
+              이달 남긴 갈피가 아직 없어요.{'\n'}책장을 펼쳐 첫 문장을 담아보세요.
+            </Text>
+          </View>
+        ) : (
+          <View className="gap-2.5">
+            {booksThisMonth.map(({ book, count }) => (
+              <View key={book.id} className="flex-row items-center gap-3 rounded-2xl bg-card p-3">
+                <View className={`h-12 w-9 shrink-0 items-center justify-center rounded-md ${ACCENT_BG_CLASS[book.accent]}`}>
+                  <Bookmark size={14} color={book.accent === 'ink' ? colors.galpiPaper : colors.galpiInk} />
+                </View>
+                <View className="min-w-0 flex-1">
+                  <Text numberOfLines={1} className="text-sm font-bold text-foreground">{book.title}</Text>
+                  <Text numberOfLines={1} className="text-xs text-muted-foreground">{book.author}</Text>
+                </View>
+                <View className="shrink-0 flex-row items-center gap-1 rounded-full bg-secondary px-2.5 py-1">
+                  <Bookmark size={11} color={colors.mutedForeground} />
+                  <Text className="text-[11px] font-bold text-foreground">{count}개</Text>
+                </View>
               </View>
-              <View className="min-w-0 flex-1">
-                <Text numberOfLines={1} className="text-sm font-bold text-foreground">{b.title}</Text>
-                <Text numberOfLines={1} className="text-xs text-muted-foreground">{b.author}</Text>
-              </View>
-              <StarRating value={b.rating} />
-            </View>
-          ))}
-        </View>
+            ))}
+          </View>
+        )}
       </View>
     </>
   );
 }
 
-function StarRating({ value }: { value: number }) {
-  return (
-    <View className="shrink-0 flex-row items-center gap-1">
-      <View className="flex-row items-center gap-0.5">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <View key={i} className={`h-1.5 w-1.5 rounded-full ${i < Math.round(value) ? 'bg-galpi-ink' : 'bg-border'}`} />
-        ))}
-      </View>
-      <Text className="ml-0.5 font-mono text-[11px] font-bold text-foreground">{value.toFixed(1)}</Text>
-    </View>
-  );
-}
-
 /* ---------- 연간 뷰 ---------- */
-function YearlyView() {
-  const grid = useMemo(() => makeHeatmap(26, 1.3), []);
+function YearlyView({
+  cursor,
+  onPrev,
+  onNext,
+  books,
+  sentences,
+}: {
+  cursor: Date;
+  onPrev: () => void;
+  onNext: () => void;
+  books: Book[];
+  sentences: Sentence[];
+}) {
+  const year = cursor.getFullYear();
+
+  const { grid, seasonLabel, topBook, topQuote } = useMemo(() => {
+    const inYear = sentences
+      .map((s) => ({ s, d: parseSentenceDate(s.date) }))
+      .filter((x): x is { s: Sentence; d: Date } => Boolean(x.d) && x.d!.getFullYear() === year);
+
+    const dayCounts = new Map<string, number>();
+    const seasonCounts: Record<string, number> = { 봄: 0, 여름: 0, 가을: 0, 겨울: 0 };
+    const bookCounts = new Map<string, number>();
+
+    for (const { s, d } of inYear) {
+      const key = dateKey(d);
+      dayCounts.set(key, (dayCounts.get(key) ?? 0) + 1);
+      seasonCounts[seasonOf(d.getMonth())] += 1;
+      bookCounts.set(s.bookId, (bookCounts.get(s.bookId) ?? 0) + 1);
+    }
+
+    const start = new Date(year, 0, 1);
+    const gridStart = new Date(start);
+    gridStart.setDate(gridStart.getDate() - start.getDay());
+    const end = new Date(year, 11, 31);
+    const gridEnd = new Date(end);
+    gridEnd.setDate(gridEnd.getDate() + (6 - end.getDay()));
+
+    const grid: number[][] = [];
+    const day = new Date(gridStart);
+    while (day <= gridEnd) {
+      const col: number[] = [];
+      for (let i = 0; i < 7; i++) {
+        col.push(day.getFullYear() === year ? intensityFromCount(dayCounts.get(dateKey(day)) ?? 0) : -1);
+        day.setDate(day.getDate() + 1);
+      }
+      grid.push(col);
+    }
+
+    let seasonLabel: string | null = null;
+    let seasonMax = 0;
+    for (const [season, count] of Object.entries(seasonCounts)) {
+      if (count > seasonMax) {
+        seasonMax = count;
+        seasonLabel = season;
+      }
+    }
+
+    let topBook: Book | undefined;
+    let topCount = 0;
+    for (const [bookId, count] of bookCounts) {
+      if (count > topCount) {
+        topCount = count;
+        topBook = books.find((b) => b.id === bookId);
+      }
+    }
+    const topQuote = topBook
+      ? inYear
+          .filter((x) => x.s.bookId === topBook!.id)
+          .sort((a, b) => b.d.getTime() - a.d.getTime())[0]?.s
+      : undefined;
+
+    return { grid, seasonLabel, topBook, topQuote };
+  }, [sentences, books, year]);
+
+  const { doneCount, galpiCount, readDaysCount } = getYearMetrics(books, sentences, year);
 
   return (
     <>
       {/* 연 네비게이터 */}
       <View className="mt-6 flex-row items-center gap-3">
-        <Pressable accessibilityLabel="이전 해" className="web:cursor-pointer h-8 w-8 items-center justify-center rounded-full bg-secondary">
+        <Pressable onPress={onPrev} accessibilityLabel="이전 해" className="web:cursor-pointer h-8 w-8 items-center justify-center rounded-full bg-secondary">
           <ChevronLeft size={16} color={colors.foreground} />
         </Pressable>
-        <Text className="text-base font-black text-foreground">2026년</Text>
-        <Pressable accessibilityLabel="다음 해" className="web:cursor-pointer h-8 w-8 items-center justify-center rounded-full bg-secondary">
+        <Text className="text-base font-black text-foreground">{year}년</Text>
+        <Pressable onPress={onNext} accessibilityLabel="다음 해" className="web:cursor-pointer h-8 w-8 items-center justify-center rounded-full bg-secondary">
           <ChevronRight size={16} color={colors.foreground} />
         </Pressable>
       </View>
 
       {/* 핵심 지표 카드 */}
       <View className="mt-5 flex-row gap-3">
-        <MetricCard Icon={BookCheck} value={YEAR_METRICS.done} unit="권" label="완독한 책" toneClass="bg-galpi-green" />
-        <MetricCard Icon={Bookmark} value={YEAR_METRICS.galpi} unit="개" label="남긴 갈피" toneClass="bg-galpi-yellow" />
-        <MetricCard Icon={Clock} value={YEAR_METRICS.hours} unit="시간" label="총 독서 시간" toneClass="bg-galpi-blue" />
+        <MetricCard Icon={BookCheck} value={String(doneCount)} unit="권" label="완독한 책" toneClass="bg-galpi-green" />
+        <MetricCard Icon={Bookmark} value={String(galpiCount)} unit="개" label="남긴 갈피" toneClass="bg-galpi-yellow" />
+        <MetricCard Icon={CalendarDays} value={String(readDaysCount)} unit="일" label="읽은 날" toneClass="bg-galpi-blue" />
       </View>
 
       {/* 활동 히트맵 */}
@@ -275,28 +407,42 @@ function YearlyView() {
           {grid.map((col, w) => (
             <View key={w} className="gap-1">
               {col.map((v, d) => (
-                <View key={d} className={`h-3 w-3 rounded-[3px] ${INTENSITY_CLASS[v]}`} />
+                <View key={d} className={`h-3 w-3 rounded-[3px] ${v >= 0 ? INTENSITY_CLASS[v] : ''}`} />
               ))}
             </View>
           ))}
         </ScrollView>
 
         <Text className="mt-4 text-xs leading-relaxed text-muted-foreground">
-          올 한 해, 꾸준히 책장을 넘겼어요. 가장 활발했던 계절은{' '}
-          <Text className="font-bold text-foreground">겨울</Text>이에요.
+          {seasonLabel ? (
+            <>
+              {year}년, 가장 활발했던 계절은{' '}
+              <Text className="font-bold text-foreground">{seasonLabel}</Text>이에요.
+            </>
+          ) : (
+            `아직 ${year}년의 독서 기록이 없어요.`
+          )}
         </Text>
       </View>
 
-      {/* 올해의 문장 */}
+      {/* 올해 가장 많이 담은 책 */}
       <View className="mt-5 rounded-3xl bg-galpi-ink p-5">
         <View className="flex-row items-center gap-1.5">
           <Quote size={12} color={colors.galpiPaper} opacity={0.6} />
-          <Text className="text-[11px] font-bold text-galpi-paper/60">가장 많이 꺼내본 갈피</Text>
+          <Text className="text-[11px] font-bold text-galpi-paper/60">올해 가장 많이 담은 책</Text>
         </View>
-        <Text className="mt-3 text-base font-bold leading-relaxed text-galpi-paper">
-          “가장 평범한 하루가 누군가에게는 간절히 되찾고 싶은 어제였다.”
-        </Text>
-        <Text className="mt-3 text-xs text-galpi-paper/50">달러구트 꿈 백화점 · P.201</Text>
+        {topBook && topQuote ? (
+          <>
+            <Text className="mt-3 text-base font-bold leading-relaxed text-galpi-paper">
+              "{topQuote.quote}"
+            </Text>
+            <Text className="mt-3 text-xs text-galpi-paper/50">{topBook.title} · P.{topQuote.page}</Text>
+          </>
+        ) : (
+          <Text className="mt-3 text-sm leading-relaxed text-galpi-paper/70">
+            아직 이 해에 남긴 문장이 없어요.
+          </Text>
+        )}
       </View>
     </>
   );
@@ -332,8 +478,19 @@ function MetricCard({
 /* ---------- 공유 카드 미리보기 모달 ---------- */
 type Ratio = '1:1' | '9:16';
 
-function ShareModal({ onClose }: { onClose: () => void }) {
+function ShareModal({
+  onClose,
+  books,
+  sentences,
+  year,
+}: {
+  onClose: () => void;
+  books: Book[];
+  sentences: Sentence[];
+  year: number;
+}) {
   const [ratio, setRatio] = useState<Ratio>('1:1');
+  const { doneCount, galpiCount, readDaysCount } = getYearMetrics(books, sentences, year);
 
   return (
     <View className="absolute inset-0 z-20 justify-end bg-galpi-ink/50 web:backdrop-blur-sm">
@@ -385,13 +542,13 @@ function ShareModal({ onClose }: { onClose: () => void }) {
             <View>
               <Text className="text-[11px] font-black text-galpi-ink/60">갈피 · 나의 독서 기록</Text>
               <Text className="mt-2 text-sm font-black leading-tight text-galpi-ink">
-                2026년, 이렇게 읽었어요
+                {year}년, 이렇게 읽었어요
               </Text>
             </View>
             <View className="gap-1.5">
-              <ShareStat label="완독" value={`${YEAR_METRICS.done}권`} />
-              <ShareStat label="갈피" value={`${YEAR_METRICS.galpi}개`} />
-              <ShareStat label="독서" value={`${YEAR_METRICS.hours}시간`} />
+              <ShareStat label="완독" value={`${doneCount}권`} />
+              <ShareStat label="갈피" value={`${galpiCount}개`} />
+              <ShareStat label="읽은 날" value={`${readDaysCount}일`} />
             </View>
           </View>
         </View>
