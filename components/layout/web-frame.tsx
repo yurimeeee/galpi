@@ -13,12 +13,17 @@ export function WebFrame({ children }: PropsWithChildren) {
 
   // Dismisses the keyboard on any tap that isn't claimed by a nested
   // touchable/input first — gives every screen a tap-outside-to-close
-  // without each one having to wire it up individually.
-  const content = (
-    <Pressable className="flex-1 min-h-0" onPress={() => Keyboard.dismiss()} accessible={false}>
-      {children}
-    </Pressable>
-  );
+  // without each one having to wire it up individually. Native-only:
+  // on web, Pressable's onPress is a bubbling DOM click, so wrapping
+  // inputs in it would blur them the instant they're focused.
+  const content =
+    Platform.OS === 'web' ? (
+      <View className="flex-1 min-h-0">{children}</View>
+    ) : (
+      <Pressable className="flex-1 min-h-0" onPress={() => Keyboard.dismiss()} accessible={false}>
+        {children}
+      </Pressable>
+    );
 
   if (Platform.OS !== 'web' || width < FRAME_BREAKPOINT) {
     return <View className="flex-1 min-h-0 bg-background">{content}</View>;
