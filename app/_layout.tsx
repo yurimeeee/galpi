@@ -64,6 +64,7 @@ export default function RootLayout() {
           <Stack.Screen name="signup" />
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="book/[id]" />
+          <Stack.Screen name="reading-timer" />
           <Stack.Screen name="add-sentence" options={{ presentation: 'modal' }} />
           <Stack.Screen name="add-book" options={{ presentation: 'modal' }} />
           <Stack.Screen name="notification-settings" />

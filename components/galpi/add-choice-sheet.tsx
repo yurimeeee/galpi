@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { FlatList, Image, Pressable, Text, View } from 'react-native';
-import { Bookmark, ChevronLeft, Plus, X } from 'lucide-react-native';
+import { Bookmark, ChevronLeft, Plus, Timer, X } from 'lucide-react-native';
 import { BottomSheet } from './bottom-sheet';
 import { type Book } from '../../lib/data/books';
 import { ACCENT_BG_CLASS, colors } from '../../lib/theme';
@@ -8,21 +8,25 @@ import { ACCENT_BG_CLASS, colors } from '../../lib/theme';
 type Step = 'choice' | 'pick-book';
 
 /**
- * Bottom sheet opened by the center nav "+" button: first asks whether the
- * user wants to add a brand-new book or leave a 갈피 (quote) on one they
- * already have, then — for the latter — lets them pick which book (with a
- * fallback into "새 책 추가" if the one they want isn't in the library yet).
+ * Bottom sheet opened by the center nav "+" button: lets the user leave a
+ * 갈피 (quote) on a book they're reading, start a reading timer session, or
+ * add a brand-new book. Picking "갈피 남기기" moves to a book-picker step
+ * (with a fallback into "새 책 추가" if the one they want isn't in the
+ * library yet); the timer defaults to the active reading book and lets the
+ * user switch books from within the timer screen itself.
  */
 export function AddChoiceSheet({
   books,
   onClose,
   onAddNewBook,
   onPickBook,
+  onStartTimer,
 }: {
   books: Book[];
   onClose: () => void;
   onAddNewBook: () => void;
   onPickBook: (book: Book) => void;
+  onStartTimer: () => void;
 }) {
   const [step, setStep] = useState<Step>('choice');
 
@@ -70,6 +74,21 @@ export function AddChoiceSheet({
               <Text className="text-sm font-bold text-galpi-paper">갈피 남기기</Text>
               <Text className="mt-0.5 text-[12px] text-galpi-paper/70">
                 읽고 있는 책에 문장을 담아요
+              </Text>
+            </View>
+          </Pressable>
+
+          <Pressable
+            onPress={onStartTimer}
+            className="web:cursor-pointer flex-row items-center gap-3 rounded-2xl border border-border bg-card p-4"
+          >
+            <View className="h-10 w-10 items-center justify-center rounded-xl bg-galpi-blue">
+              <Timer size={18} color={colors.galpiInk} />
+            </View>
+            <View className="flex-1">
+              <Text className="text-sm font-bold text-foreground">독서 타이머 시작</Text>
+              <Text className="mt-0.5 text-[12px] text-muted-foreground">
+                집중해서 읽고 갈피를 남겨요
               </Text>
             </View>
           </Pressable>

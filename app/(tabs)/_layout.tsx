@@ -37,6 +37,11 @@ export default function TabsLayout() {
     router.push(`/add-sentence?bookId=${book.id}`);
   }
 
+  function handleStartTimer() {
+    setAddSheetOpen(false);
+    router.push('/reading-timer');
+  }
+
   return (
     <View className="flex-1 bg-background">
       <View className="min-h-0 flex-1">
@@ -50,6 +55,7 @@ export default function TabsLayout() {
           onClose={() => setAddSheetOpen(false)}
           onAddNewBook={handleAddNewBook}
           onPickBook={handlePickBook}
+          onStartTimer={handleStartTimer}
         />
       ) : null}
     </View>

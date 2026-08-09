@@ -26,6 +26,7 @@ export default function BookDetail() {
       onBack={() => router.back()}
       onAddSentence={() => router.push(`/add-sentence?bookId=${book.id}`)}
       onEditSentence={(sentenceId) => router.push(`/edit-sentence?sentenceId=${sentenceId}`)}
+      onStartTimer={() => router.push(`/reading-timer?bookId=${book.id}`)}
       onChangeStatus={(status) => {
         updateBook(book.id, { status });
         // 아직 읽지 않은 책을 "읽는 중"으로 바꾸는 순간 = 독서 시작

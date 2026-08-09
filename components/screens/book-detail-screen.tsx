@@ -6,6 +6,7 @@ import {
   Bookmark,
   Star,
   Plus,
+  Timer,
   Type,
   Camera,
   Image as ImageIcon,
@@ -30,6 +31,7 @@ export function BookDetailScreen({
   onEditSentence,
   onChangeStatus,
   onChangeRating,
+  onStartTimer,
 }: {
   book: Book;
   sentences: Sentence[];
@@ -38,6 +40,7 @@ export function BookDetailScreen({
   onEditSentence: (sentenceId: string) => void;
   onChangeStatus: (status: ReadingStatus) => void;
   onChangeRating: (rating: number) => void;
+  onStartTimer: () => void;
 }) {
   const inkText = book.accent === 'ink' ? colors.galpiPaper : colors.galpiInk;
 
@@ -52,12 +55,21 @@ export function BookDetailScreen({
         >
           <ChevronLeft size={20} color={colors.foreground} />
         </Pressable>
-        <Pressable
-          accessibilityLabel="공유하기"
-          className="web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-card"
-        >
-          <Share2 size={16} color={colors.foreground} />
-        </Pressable>
+        <View className="flex-row gap-2">
+          <Pressable
+            onPress={onStartTimer}
+            accessibilityLabel="독서 타이머"
+            className="web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-card"
+          >
+            <Timer size={16} color={colors.foreground} />
+          </Pressable>
+          <Pressable
+            accessibilityLabel="공유하기"
+            className="web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-card"
+          >
+            <Share2 size={16} color={colors.foreground} />
+          </Pressable>
+        </View>
       </View>
 
       <FlatList
