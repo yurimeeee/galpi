@@ -12,9 +12,11 @@ import { ACCENT_BG_CLASS, colors } from '../../lib/theme';
 export function MainLibraryScreen({
   books,
   onOpenBook,
+  onAddBook,
 }: {
   books: Book[];
   onOpenBook: (book: Book) => void;
+  onAddBook: () => void;
 }) {
   const [filter, setFilter] = useState<FilterKey>('all');
 
@@ -31,10 +33,7 @@ export function MainLibraryScreen({
   const featured = books.find((b) => b.status === 'reading') ?? books[0];
   const totalGalpi = books.reduce((sum, b) => sum + b.galpiCount, 0);
 
-  const visible = useMemo(
-    () => (filter === 'all' ? books : books.filter((b) => b.status === filter)),
-    [books, filter],
-  );
+  const visible = useMemo(() => (filter === 'all' ? books : books.filter((b) => b.status === filter)), [books, filter]);
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-background">
@@ -44,22 +43,19 @@ export function MainLibraryScreen({
         contentContainerClassName="px-6 pb-6"
         ItemSeparatorComponent={() => <View className="h-4" />}
         renderItem={({ item }) => (
-          <Pressable
-            onPress={() => onOpenBook(item)}
-            className="web:cursor-pointer"
-            style={({ pressed }) => pressed && { transform: [{ scale: 0.99 }] }}
-          >
+          <Pressable onPress={() => onOpenBook(item)} className="web:cursor-pointer" style={({ pressed }) => pressed && { transform: [{ scale: 0.99 }] }}>
             <BookCard book={item} />
           </Pressable>
         )}
         ListHeaderComponent={
           <View>
             {/* 헤더 */}
-            <View className="flex-row items-center justify-between pb-4 pt-1">
+            <View className="flex-row items-center justify-between pt-1 pb-4">
               <GalpiHeaderLogo markColor={colors.galpiInk} markSize={28} wordClassName="text-xl text-foreground" />
               <Pressable
+                onPress={onAddBook}
                 accessibilityLabel="책 검색"
-                className="web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-card"
+                className="items-center justify-center rounded-full web:cursor-pointer h-9 w-9 bg-card"
               >
                 <Search size={16} color={colors.foreground} />
               </Pressable>
@@ -67,17 +63,11 @@ export function MainLibraryScreen({
 
             {/* 에디토리얼 인사말 */}
             <View className="mb-6">
-              <Text className="text-xs font-medium text-muted-foreground">
-                오늘도 한 문장, 갈피에 담다
-              </Text>
-              <Text className="mt-1 text-[26px] font-black leading-[1.25] tracking-tight text-foreground">
-                지금까지 모은 문장
-              </Text>
+              <Text className="text-xs font-medium text-muted-foreground">오늘도 한 문장, 갈피에 담다</Text>
+              <Text className="mt-1 text-[26px] font-black leading-[1.25] tracking-tight text-foreground">지금까지 모은 문장</Text>
               <View className="mt-1.5 flex-row">
                 <View className="rounded-lg bg-galpi-yellow px-2 py-0.5">
-                  <Text className="text-[26px] font-black leading-[1.25] tracking-tight text-foreground">
-                    {totalGalpi}개의 갈피
-                  </Text>
+                  <Text className="text-[26px] font-black leading-[1.25] tracking-tight text-foreground">{totalGalpi}개의 갈피</Text>
                 </View>
               </View>
             </View>
@@ -91,30 +81,22 @@ export function MainLibraryScreen({
                   style={({ pressed }) => pressed && { transform: [{ scale: 0.99 }] }}
                 >
                   <View className="flex-row items-center justify-between">
-                    <View className="rounded-full bg-galpi-ink/10 px-3 py-1">
+                    <View className="px-3 py-1 rounded-full bg-galpi-ink/10">
                       <Text className="text-[11px] font-bold text-galpi-ink">지금 읽는 중</Text>
                     </View>
                     <View className="flex-row items-center gap-1">
                       <Bookmark size={12} color={colors.galpiInk} opacity={0.7} />
-                      <Text className="text-[11px] font-semibold text-galpi-ink/70">
-                        {featured.galpiCount}개
-                      </Text>
+                      <Text className="text-[11px] font-semibold text-galpi-ink/70">{featured.galpiCount}개</Text>
                     </View>
                   </View>
 
-                  <Text className="mt-4 text-xl font-black leading-tight text-galpi-ink">
-                    {featured.title}
-                  </Text>
-                  <Text className="mt-0.5 text-xs font-medium text-galpi-ink/60">
-                    {featured.author}
-                  </Text>
+                  <Text className="mt-4 text-xl font-black leading-tight text-galpi-ink">{featured.title}</Text>
+                  <Text className="mt-0.5 text-xs font-medium text-galpi-ink/60">{featured.author}</Text>
 
                   {featured.quote ? (
-                    <View className="mt-4 flex-row gap-2 rounded-2xl bg-galpi-paper/60 p-3">
+                    <View className="flex-row gap-2 p-3 mt-4 rounded-2xl bg-galpi-paper/60">
                       <Quote size={14} color={colors.galpiInk} opacity={0.5} />
-                      <Text className="flex-1 text-xs leading-relaxed text-galpi-ink/80">
-                        {featured.quote}
-                      </Text>
+                      <Text className="flex-1 text-xs leading-relaxed text-galpi-ink/80">{featured.quote}</Text>
                     </View>
                   ) : null}
 
@@ -122,28 +104,18 @@ export function MainLibraryScreen({
                   <View className="mt-4">
                     <View className="mb-1.5 flex-row items-center justify-between">
                       <Text className="text-[11px] font-semibold text-galpi-ink/70">읽은 정도</Text>
-                      <Text className="text-[11px] font-semibold text-galpi-ink/70">
-                        {featured.progress}%
-                      </Text>
+                      <Text className="text-[11px] font-semibold text-galpi-ink/70">{featured.progress}%</Text>
                     </View>
                     <View className="h-1.5 w-full overflow-hidden rounded-full bg-galpi-ink/15">
-                      <View
-                        className="h-full rounded-full bg-galpi-ink"
-                        style={{ width: `${featured.progress}%` }}
-                      />
+                      <View className="h-full rounded-full bg-galpi-ink" style={{ width: `${featured.progress}%` }} />
                     </View>
                   </View>
                 </Pressable>
               </View>
             ) : null}
 
-            {/* 컬러칩 팔레트 */}
-            <View className="mb-7">
-              <ColorChips />
-            </View>
-
             {/* 내 서재 */}
-            <View className="mb-3 flex-row items-center justify-between">
+            <View className="flex-row items-center justify-between mb-3">
               <Text className="text-lg font-black tracking-tight text-foreground">내 서재</Text>
               <Pressable className="web:cursor-pointer flex-row items-center gap-0.5">
                 <Text className="text-xs font-medium text-muted-foreground">전체보기</Text>
@@ -157,13 +129,14 @@ export function MainLibraryScreen({
           </View>
         }
         ListFooterComponent={
-          <Pressable className="web:cursor-pointer mt-5 w-full flex-row items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-card py-4">
-            <View className="h-5 w-5 items-center justify-center rounded-full bg-galpi-green">
+          <Pressable
+            onPress={onAddBook}
+            className="flex-row items-center justify-center w-full gap-2 py-4 mt-5 border border-dashed web:cursor-pointer rounded-2xl border-border bg-card"
+          >
+            <View className="items-center justify-center w-5 h-5 rounded-full bg-galpi-green">
               <Text className="text-galpi-ink">+</Text>
             </View>
-            <Text className="text-sm font-semibold text-muted-foreground">
-              새로운 책 추가하기
-            </Text>
+            <Text className="text-sm font-semibold text-muted-foreground">새로운 책 추가하기</Text>
           </Pressable>
         }
       />

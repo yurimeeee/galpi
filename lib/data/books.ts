@@ -10,6 +10,8 @@ export type Book = {
   progress: number; // 0 ~ 100
   accent: 'blue' | 'green' | 'yellow' | 'ink';
   quote?: string;
+  /** Cover thumbnail URL, e.g. from Kakao book search. Absent for seed/mock books. */
+  coverUrl?: string;
 };
 
 export const STATUS_LABEL: Record<ReadingStatus, string> = {

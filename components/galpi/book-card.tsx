@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native';
+import { View, Text, Image } from 'react-native';
 import { Bookmark, Star } from 'lucide-react-native';
 import { type Book, STATUS_LABEL } from '../../lib/data/books';
 import { ACCENT_BG_CLASS, colors } from '../../lib/theme';
@@ -24,15 +24,21 @@ export function BookCard({ book }: { book: Book }) {
 
   return (
     <View className="flex-row items-stretch gap-4">
-      {/* 책등(spine) 형태의 색 블록 */}
-      <View className={`relative w-14 shrink-0 overflow-hidden rounded-xl ${ACCENT_BG_CLASS[book.accent]}`}>
-        <View className="absolute left-2 top-0 bottom-0 w-px bg-galpi-ink/10" />
+      {/* 표지 이미지 또는 책등(spine) 형태의 색 블록 */}
+      <View className={`relative w-14 shrink-0 overflow-hidden rounded-xl ${book.coverUrl ? 'bg-secondary' : ACCENT_BG_CLASS[book.accent]}`}>
+        {book.coverUrl ? (
+          <Image source={{ uri: book.coverUrl }} className="absolute inset-0 h-full w-full" resizeMode="cover" />
+        ) : (
+          <View className="absolute left-2 top-0 bottom-0 w-px bg-galpi-ink/10" />
+        )}
         <View className="flex-1 items-end justify-end p-2">
-          <Bookmark
-            size={14}
-            color={book.accent === 'ink' ? colors.galpiPaper : colors.galpiInk}
-            opacity={book.accent === 'ink' ? 1 : 0.7}
-          />
+          <View className={book.coverUrl ? 'rounded-full bg-galpi-ink/50 p-1' : undefined}>
+            <Bookmark
+              size={14}
+              color={book.coverUrl || book.accent === 'ink' ? colors.galpiPaper : colors.galpiInk}
+              opacity={book.coverUrl ? 1 : book.accent === 'ink' ? 1 : 0.7}
+            />
+          </View>
         </View>
       </View>
 

@@ -6,6 +6,7 @@ import {
   onSnapshot,
   orderBy,
   query,
+  setDoc,
   writeBatch,
   type Unsubscribe,
 } from 'firebase/firestore';
@@ -73,6 +74,15 @@ export function subscribeSentences(
   return onSnapshot(query(sentencesCol(uid), orderBy('date', 'desc')), (snap) => {
     onChange(snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Sentence, 'id'>) })));
   });
+}
+
+/**
+ * `subscribeBooks` orders by the `order` field, and Firestore's orderBy()
+ * silently excludes documents missing that field — so `order` must always
+ * be written or the new book would never show up in the library.
+ */
+export async function addBookDoc(uid: string, book: Omit<Book, 'id'>, order: number): Promise<void> {
+  await setDoc(doc(booksCol(uid)), withoutUndefined({ ...book, order }));
 }
 
 export async function addSentenceDoc(

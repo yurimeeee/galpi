@@ -36,3 +36,6 @@ export const ACCENT_BG_CLASS: Record<Accent, string> = {
   yellow: 'bg-galpi-yellow',
   ink: 'bg-galpi-ink',
 };
+
+/** Rotation order for auto-assigning a spine color to newly added books. */
+export const ACCENT_CYCLE: Accent[] = ['blue', 'green', 'yellow', 'ink'];

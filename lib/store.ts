@@ -1,12 +1,14 @@
 import { create } from 'zustand';
 import type { User } from 'firebase/auth';
-import { addSentenceDoc } from './data-service';
+import { addBookDoc, addSentenceDoc } from './data-service';
 import { type Book } from './data/books';
 import { type Sentence } from './data/sentences';
+import { ACCENT_CYCLE } from './theme';
 
 export type Gate = 'loading' | 'onboarding' | 'login' | 'signup' | 'app';
 
 type NewSentence = Omit<Sentence, 'id' | 'date'>;
+type NewBook = { title: string; author: string; coverUrl?: string };
 
 type AppState = {
   gate: Gate;
@@ -23,6 +25,7 @@ type AppState = {
   goToLogin: () => void;
 
   addSentence: (sentence: NewSentence) => Promise<void>;
+  addBook: (book: NewBook) => Promise<void>;
 
   bookById: (id: string) => Book | undefined;
   /** The book currently being read — default target for "갈피 남기기". */
@@ -47,6 +50,24 @@ export const useAppStore = create<AppState>((set, get) => ({
     const uid = get().user?.uid;
     if (!uid) return;
     await addSentenceDoc(uid, sentence);
+  },
+
+  addBook: async ({ title, author, coverUrl }) => {
+    const { user, books } = get();
+    const uid = user?.uid;
+    if (!uid) return;
+    const order = books.length;
+    const book: Omit<Book, 'id'> = {
+      title,
+      author,
+      rating: 0,
+      galpiCount: 0,
+      status: 'wish',
+      progress: 0,
+      accent: ACCENT_CYCLE[order % ACCENT_CYCLE.length],
+      coverUrl,
+    };
+    await addBookDoc(uid, book, order);
   },
 
   bookById: (id) => get().books.find((b) => b.id === id),

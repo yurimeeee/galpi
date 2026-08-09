@@ -1,4 +1,4 @@
-import { FlatList, Pressable, Text, View } from 'react-native';
+import { FlatList, Image, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   ChevronLeft,
@@ -121,7 +121,7 @@ export function BookDetailScreen({
             <View className="flex-row gap-5">
               {/* 표지 */}
               <View
-                className={`h-40 w-28 shrink-0 justify-between overflow-hidden rounded-2xl ${ACCENT_BG_CLASS[book.accent]} p-3`}
+                className={`h-40 w-28 shrink-0 overflow-hidden rounded-2xl ${book.coverUrl ? 'bg-secondary' : `justify-between ${ACCENT_BG_CLASS[book.accent]} p-3`}`}
                 style={{
                   shadowColor: colors.galpiInk,
                   shadowOpacity: 0.1,
@@ -129,10 +129,16 @@ export function BookDetailScreen({
                   shadowOffset: { width: 0, height: 8 },
                 }}
               >
-                <Bookmark size={16} color={inkText} opacity={0.7} />
-                <Text className="text-[11px] font-black leading-tight" style={{ color: inkText }}>
-                  {book.title}
-                </Text>
+                {book.coverUrl ? (
+                  <Image source={{ uri: book.coverUrl }} className="h-full w-full" resizeMode="cover" />
+                ) : (
+                  <>
+                    <Bookmark size={16} color={inkText} opacity={0.7} />
+                    <Text className="text-[11px] font-black leading-tight" style={{ color: inkText }}>
+                      {book.title}
+                    </Text>
+                  </>
+                )}
               </View>
 
               {/* 정보 */}

@@ -65,6 +65,7 @@ export default function RootLayout() {
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="book/[id]" />
           <Stack.Screen name="add-sentence" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="add-book" options={{ presentation: 'modal' }} />
         </Stack>
       </WebFrame>
     </SafeAreaProvider>

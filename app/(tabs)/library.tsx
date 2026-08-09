@@ -10,5 +10,9 @@ export default function Library() {
     router.push(`/book/${book.id}`);
   }
 
-  return <MainLibraryScreen books={books} onOpenBook={openBook} />;
+  function addBook() {
+    router.push('/add-book');
+  }
+
+  return <MainLibraryScreen books={books} onOpenBook={openBook} onAddBook={addBook} />;
 }
