@@ -25,6 +25,10 @@ const useNativeDriver = Platform.OS !== 'web';
  *
  * Wrapped in a `KeyboardAvoidingView` so the sheet rises above the keyboard
  * on iOS instead of letting it cover whichever field is focused.
+ *
+ * The animated transform lives on a plain (unstyled) `Animated.View` —
+ * NativeWind's className interop isn't wired up for it (see `skeleton.tsx`)
+ * — with the rounded/background/padding classes on a nested plain `View`.
  */
 export function BottomSheet({
   onClose,
@@ -73,25 +77,24 @@ export function BottomSheet({
     >
       <Pressable className="web:cursor-pointer flex-1" accessibilityLabel="닫기" onPress={onClose} />
 
-      <Animated.View
-        style={{ transform: [{ translateY }], maxHeight }}
-        className="rounded-t-3xl bg-background px-5 pb-6 pt-2"
-      >
-        <View {...panResponder.panHandlers}>
-          <Pressable
-            onPress={onClose}
-            accessibilityLabel="닫기"
-            accessibilityRole="button"
-            hitSlop={12}
-            className="web:cursor-pointer mb-2 items-center py-2.5"
-          >
-            <View className="h-1 w-10 rounded-full bg-border" />
-          </Pressable>
+      <Animated.View style={{ transform: [{ translateY }], maxHeight }}>
+        <View className="rounded-t-3xl bg-background px-5 pb-6 pt-2">
+          <View {...panResponder.panHandlers}>
+            <Pressable
+              onPress={onClose}
+              accessibilityLabel="닫기"
+              accessibilityRole="button"
+              hitSlop={12}
+              className="web:cursor-pointer mb-2 items-center py-2.5"
+            >
+              <View className="h-1 w-10 rounded-full bg-border" />
+            </Pressable>
 
-          {header}
+            {header}
+          </View>
+
+          {children}
         </View>
-
-        {children}
       </Animated.View>
     </KeyboardAvoidingView>
   );
