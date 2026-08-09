@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Platform, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { captureRef } from 'react-native-view-shot';
 import * as MediaLibrary from 'expo-media-library';
@@ -21,7 +21,7 @@ import {
 import { Skeleton } from '../galpi/skeleton';
 import { BottomSheet } from '../galpi/bottom-sheet';
 import { GalpiHeaderLogo } from '../galpi/galpi-logo';
-import { colors, type Accent, ACCENT_BG_CLASS } from '../../lib/theme';
+import { colors, ACCENT_BG_CLASS } from '../../lib/theme';
 import type { Book } from '../../lib/data/books';
 import type { Sentence } from '../../lib/data/sentences';
 
@@ -262,14 +262,14 @@ function MonthlyView({
   const month = cursor.getMonth();
 
   const { readDays, booksThisMonth } = useMemo(() => {
-    const days = new Map<number, Accent>();
+    const days = new Map<number, Book | undefined>();
     const galpiByBook = new Map<string, number>();
     for (const s of sentences) {
       const d = parseDotDate(s.date);
       if (!d || d.getFullYear() !== year || d.getMonth() !== month) continue;
       const book = bookById.get(s.bookId);
       if (!days.has(d.getDate())) {
-        days.set(d.getDate(), book?.accent ?? 'ink');
+        days.set(d.getDate(), book);
       }
       galpiByBook.set(s.bookId, (galpiByBook.get(s.bookId) ?? 0) + 1);
     }
@@ -341,19 +341,24 @@ function MonthlyView({
             if (day === null) {
               return <View key={`e-${i}`} className="aspect-square w-[14.28%]" />;
             }
-            const accent = readDays.get(day);
-            const read = Boolean(accent);
+            const book = readDays.get(day);
+            const read = readDays.has(day);
 
             if (view === 'cover') {
+              const accent = book?.accent ?? 'ink';
               return (
                 <View key={day} className="aspect-square w-[14.28%] p-[3px]">
                   <View
-                    className={`flex-1 items-center justify-center rounded-lg ${
-                      read ? ACCENT_BG_CLASS[accent!] : ''
+                    className={`relative flex-1 items-center justify-center overflow-hidden rounded-lg ${
+                      read ? (book?.coverUrl ? 'bg-secondary' : ACCENT_BG_CLASS[accent]) : ''
                     }`}
                   >
                     {read ? (
-                      <Bookmark size={14} color={accent === 'ink' ? colors.galpiPaper : colors.galpiInk} />
+                      book?.coverUrl ? (
+                        <Image source={{ uri: book.coverUrl }} className="absolute inset-0 h-full w-full" resizeMode="cover" />
+                      ) : (
+                        <Bookmark size={14} color={accent === 'ink' ? colors.galpiPaper : colors.galpiInk} />
+                      )
                     ) : (
                       <Text className="text-[10px] font-bold text-muted-foreground/40">{day}</Text>
                     )}
@@ -618,7 +623,7 @@ function ReportPublishModal({
     if (Platform.OS === 'web') {
       const { default: html2canvas } = await import('html2canvas');
       const node = cardRef.current as unknown as HTMLElement;
-      const canvas = await html2canvas(node, { backgroundColor: null });
+      const canvas = await html2canvas(node, { backgroundColor: null, useCORS: true });
       return canvas.toDataURL('image/png', 1);
     }
     return captureRef(cardRef, { format: 'png', quality: 1, result: 'tmpfile' });
@@ -835,9 +840,20 @@ function ReportCardBody({
               {monthData.completedBooks.slice(0, 5).map((book) => (
                 <View
                   key={book.id}
-                  className={`aspect-square flex-1 items-start justify-end rounded-xl p-2 ${ACCENT_BG_CLASS[book.accent]}`}
+                  className={`relative aspect-square flex-1 items-start justify-end overflow-hidden rounded-xl p-2 ${
+                    book.coverUrl ? 'bg-secondary' : ACCENT_BG_CLASS[book.accent]
+                  }`}
                 >
-                  <Bookmark size={13} color={book.accent === 'ink' ? colors.galpiPaper : colors.galpiInk} />
+                  {book.coverUrl ? (
+                    <Image source={{ uri: book.coverUrl }} className="absolute inset-0 h-full w-full" resizeMode="cover" />
+                  ) : null}
+                  <View className={book.coverUrl ? 'rounded-full bg-galpi-ink/50 p-1' : undefined}>
+                    <Bookmark
+                      size={13}
+                      color={book.coverUrl || book.accent === 'ink' ? colors.galpiPaper : colors.galpiInk}
+                      opacity={book.coverUrl ? 1 : book.accent === 'ink' ? 1 : 0.7}
+                    />
+                  </View>
                 </View>
               ))}
             </View>
