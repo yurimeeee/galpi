@@ -1,5 +1,15 @@
 import { useState } from 'react';
-import { Alert, Image, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import {
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronLeft, Trash2, Check } from 'lucide-react-native';
 import type { Sentence } from '../../lib/data/sentences';
@@ -72,75 +82,81 @@ export function EditSentenceScreen({
         </Pressable>
       </View>
 
-      <ScrollView className="flex-1 px-5 py-5" keyboardShouldPersistTaps="handled">
-        <View className="gap-4">
-          {sentence.type === 'photo' && sentence.photoUrl ? (
-            <Field label="페이지 사진">
-              <View className="h-40 w-full overflow-hidden rounded-2xl bg-secondary">
-                <Image
-                  source={{ uri: sentence.photoUrl }}
-                  className="h-full w-full"
-                  resizeMode="cover"
-                  accessibilityLabel="촬영한 페이지 미리보기"
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} className="flex-1">
+        <ScrollView
+          className="flex-1 px-5 py-5"
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+        >
+          <View className="gap-4">
+            {sentence.type === 'photo' && sentence.photoUrl ? (
+              <Field label="페이지 사진">
+                <View className="h-40 w-full overflow-hidden rounded-2xl bg-secondary">
+                  <Image
+                    source={{ uri: sentence.photoUrl }}
+                    className="h-full w-full"
+                    resizeMode="cover"
+                    accessibilityLabel="촬영한 페이지 미리보기"
+                  />
+                </View>
+              </Field>
+            ) : null}
+
+            <Field label="문장">
+              <TextInput
+                value={quote}
+                onChangeText={setQuote}
+                multiline
+                numberOfLines={5}
+                placeholder="마음에 담고 싶은 문장을 적어주세요."
+                placeholderTextColor={colors.mutedForeground}
+                textAlignVertical="top"
+                className="w-full rounded-2xl border border-border bg-card p-4 text-[15px] leading-relaxed text-foreground focus:border-galpi-ink"
+                style={{ minHeight: 120 }}
+              />
+            </Field>
+
+            <Field label="페이지">
+              <View className="flex-row items-center gap-2 rounded-2xl border border-border bg-card px-4 py-3.5">
+                <Text className="font-mono text-sm font-bold text-muted-foreground">P.</Text>
+                <TextInput
+                  value={page}
+                  onChangeText={setPage}
+                  keyboardType="numeric"
+                  placeholder="124"
+                  placeholderTextColor={colors.mutedForeground}
+                  className="flex-1 font-mono text-sm text-foreground"
                 />
               </View>
             </Field>
-          ) : null}
 
-          <Field label="문장">
-            <TextInput
-              value={quote}
-              onChangeText={setQuote}
-              multiline
-              numberOfLines={5}
-              placeholder="마음에 담고 싶은 문장을 적어주세요."
-              placeholderTextColor={colors.mutedForeground}
-              textAlignVertical="top"
-              className="w-full rounded-2xl border border-border bg-card p-4 text-[15px] leading-relaxed text-foreground focus:border-galpi-ink"
-              style={{ minHeight: 120 }}
-            />
-          </Field>
-
-          <Field label="페이지">
-            <View className="flex-row items-center gap-2 rounded-2xl border border-border bg-card px-4 py-3.5">
-              <Text className="font-mono text-sm font-bold text-muted-foreground">P.</Text>
+            <Field label="메모">
               <TextInput
-                value={page}
-                onChangeText={setPage}
-                keyboardType="numeric"
-                placeholder="124"
+                value={memo}
+                onChangeText={setMemo}
+                multiline
+                numberOfLines={3}
+                placeholder="이 문장에 대한 생각을 남겨보세요. (선택)"
                 placeholderTextColor={colors.mutedForeground}
-                className="flex-1 font-mono text-sm text-foreground"
+                textAlignVertical="top"
+                className="w-full rounded-2xl border border-border bg-card p-4 text-sm leading-relaxed text-foreground focus:border-galpi-ink"
+                style={{ minHeight: 80 }}
               />
-            </View>
-          </Field>
+            </Field>
+          </View>
+        </ScrollView>
 
-          <Field label="메모">
-            <TextInput
-              value={memo}
-              onChangeText={setMemo}
-              multiline
-              numberOfLines={3}
-              placeholder="이 문장에 대한 생각을 남겨보세요. (선택)"
-              placeholderTextColor={colors.mutedForeground}
-              textAlignVertical="top"
-              className="w-full rounded-2xl border border-border bg-card p-4 text-sm leading-relaxed text-foreground focus:border-galpi-ink"
-              style={{ minHeight: 80 }}
-            />
-          </Field>
+        <View className="border-t border-border bg-card/80 px-5 py-4 web:backdrop-blur">
+          <Pressable
+            onPress={handleSave}
+            className="web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-2xl bg-galpi-ink py-4"
+            style={({ pressed }) => pressed && { transform: [{ scale: 0.98 }] }}
+          >
+            <Check size={16} color={colors.galpiPaper} />
+            <Text className="text-sm font-bold text-galpi-paper">수정 완료</Text>
+          </Pressable>
         </View>
-      </ScrollView>
-
-      <View className="border-t border-border bg-card/80 px-5 py-4 web:backdrop-blur">
-        <Pressable
-          onPress={handleSave}
-          className="web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-2xl bg-galpi-ink py-4"
-          style={({ pressed }) => pressed && { transform: [{ scale: 0.98 }] }}
-        >
-          <Check size={16} color={colors.galpiPaper} />
-          <Text className="text-sm font-bold text-galpi-paper">수정 완료</Text>
-        </Pressable>
-      </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ActivityIndicator, FlatList, Image, Pressable, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, FlatList, Image, Keyboard, Pressable, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronLeft, Plus, Search, BookOpen } from 'lucide-react-native';
 import { searchKakaoBooks, type KakaoBookResult } from '../../lib/kakao-books';
@@ -24,6 +24,7 @@ export function AddBookScreen({
   async function handleSearch() {
     const q = query.trim();
     if (!q || status === 'loading') return;
+    Keyboard.dismiss();
     setStatus('loading');
     setErrorMessage('');
     setAddError('');

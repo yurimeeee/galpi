@@ -1,5 +1,13 @@
 import { useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 import { GalpiHeaderLogo } from '../galpi/galpi-logo';
@@ -54,97 +62,100 @@ export function LoginScreen({
 
   return (
     <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-background">
-      <ScrollView
-        className="flex-1"
-        contentContainerClassName="px-7 pb-8"
-        keyboardShouldPersistTaps="handled"
-      >
-        {/* 브랜드 헤더 */}
-        <View className="items-center pt-16">
-          <GalpiHeaderLogo
-            className="flex-col gap-3"
-            markColor={colors.galpiInk}
-            markSize={44}
-            wordClassName="text-2xl text-foreground"
-          />
-          <Text className="mt-3 text-[13px] text-muted-foreground">
-            책 속 문장을 갈피에 담다
-          </Text>
-        </View>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} className="flex-1">
+        <ScrollView
+          className="flex-1"
+          contentContainerClassName="px-7 pb-8"
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+        >
+          {/* 브랜드 헤더 */}
+          <View className="items-center pt-16">
+            <GalpiHeaderLogo
+              className="flex-col gap-3"
+              markColor={colors.galpiInk}
+              markSize={44}
+              wordClassName="text-2xl text-foreground"
+            />
+            <Text className="mt-3 text-[13px] text-muted-foreground">
+              책 속 문장을 갈피에 담다
+            </Text>
+          </View>
 
-        {/* 폼 */}
-        <View className="mt-12 gap-4">
-          <TextField
-            label="이메일"
-            keyboardType="email-address"
-            placeholder="이메일 주소를 입력해 주세요"
-            value={email}
-            onChange={setEmail}
-          />
-          <PasswordField
-            label="비밀번호"
-            placeholder="비밀번호를 입력해 주세요"
-            value={password}
-            onChange={setPassword}
-          />
+          {/* 폼 */}
+          <View className="mt-12 gap-4">
+            <TextField
+              label="이메일"
+              keyboardType="email-address"
+              placeholder="이메일 주소를 입력해 주세요"
+              value={email}
+              onChange={setEmail}
+            />
+            <PasswordField
+              label="비밀번호"
+              placeholder="비밀번호를 입력해 주세요"
+              value={password}
+              onChange={setPassword}
+            />
 
-          {error ? (
-            <Text className="pl-1 text-[12px] text-destructive">{error}</Text>
-          ) : null}
+            {error ? (
+              <Text className="pl-1 text-[12px] text-destructive">{error}</Text>
+            ) : null}
 
-          <View className="flex-row items-center justify-between">
-            <CheckOption checked={remember} onToggle={() => setRemember((v) => !v)}>
-              이메일 저장
-            </CheckOption>
-            <Pressable className="web:cursor-pointer">
-              <Text className="text-[13px] font-medium text-muted-foreground">
-                비밀번호 재설정
-              </Text>
+            <View className="flex-row items-center justify-between">
+              <CheckOption checked={remember} onToggle={() => setRemember((v) => !v)}>
+                이메일 저장
+              </CheckOption>
+              <Pressable className="web:cursor-pointer">
+                <Text className="text-[13px] font-medium text-muted-foreground">
+                  비밀번호 재설정
+                </Text>
+              </Pressable>
+            </View>
+
+            <Pressable
+              onPress={handleEmailLogin}
+              disabled={!canSubmit}
+              className={`web:cursor-pointer mt-2 w-full flex-row items-center justify-center gap-2 rounded-2xl bg-galpi-ink py-4 ${
+                !canSubmit ? 'opacity-60' : ''
+              }`}
+              style={({ pressed }) => pressed && canSubmit && { transform: [{ scale: 0.98 }] }}
+            >
+              {submitting === 'email' ? <ActivityIndicator size="small" color={colors.galpiPaper} /> : null}
+              <Text className="text-center text-[15px] font-bold text-galpi-paper">로그인</Text>
             </Pressable>
           </View>
 
-          <Pressable
-            onPress={handleEmailLogin}
-            disabled={!canSubmit}
-            className={`web:cursor-pointer mt-2 w-full flex-row items-center justify-center gap-2 rounded-2xl bg-galpi-ink py-4 ${
-              !canSubmit ? 'opacity-60' : ''
-            }`}
-            style={({ pressed }) => pressed && canSubmit && { transform: [{ scale: 0.98 }] }}
-          >
-            {submitting === 'email' ? <ActivityIndicator size="small" color={colors.galpiPaper} /> : null}
-            <Text className="text-center text-[15px] font-bold text-galpi-paper">로그인</Text>
-          </Pressable>
-        </View>
+          {/* 구분선 */}
+          <View className="my-7 flex-row items-center gap-4">
+            <View className="h-px flex-1 bg-border" />
+            <Text className="text-[12px] text-muted-foreground">또는</Text>
+            <View className="h-px flex-1 bg-border" />
+          </View>
 
-        {/* 구분선 */}
-        <View className="my-7 flex-row items-center gap-4">
-          <View className="h-px flex-1 bg-border" />
-          <Text className="text-[12px] text-muted-foreground">또는</Text>
-          <View className="h-px flex-1 bg-border" />
-        </View>
+          {/* 소셜 로그인 */}
+          <View className="gap-3">
+            <Pressable
+              onPress={handleGoogleLogin}
+              disabled={submitting !== null}
+              className={`web:cursor-pointer w-full flex-row items-center justify-center gap-3 rounded-2xl border border-input bg-card py-3.5 ${
+                submitting !== null ? 'opacity-60' : ''
+              }`}
+            >
+              {submitting === 'google' ? <ActivityIndicator size="small" color={colors.foreground} /> : <GoogleMark />}
+              <Text className="text-[14px] font-semibold text-foreground">Google로 시작하기</Text>
+            </Pressable>
+          </View>
 
-        {/* 소셜 로그인 */}
-        <View className="gap-3">
-          <Pressable
-            onPress={handleGoogleLogin}
-            disabled={submitting !== null}
-            className={`web:cursor-pointer w-full flex-row items-center justify-center gap-3 rounded-2xl border border-input bg-card py-3.5 ${
-              submitting !== null ? 'opacity-60' : ''
-            }`}
-          >
-            {submitting === 'google' ? <ActivityIndicator size="small" color={colors.foreground} /> : <GoogleMark />}
-            <Text className="text-[14px] font-semibold text-foreground">Google로 시작하기</Text>
-          </Pressable>
-        </View>
-
-        {/* 회원가입 링크 */}
-        <View className="mt-8 flex-row items-center justify-center">
-          <Text className="text-[13px] text-muted-foreground">아직 계정이 없으신가요? </Text>
-          <Pressable onPress={onSignUp} className="web:cursor-pointer">
-            <Text className="text-[13px] font-bold text-foreground">회원가입</Text>
-          </Pressable>
-        </View>
-      </ScrollView>
+          {/* 회원가입 링크 */}
+          <View className="mt-8 flex-row items-center justify-center">
+            <Text className="text-[13px] text-muted-foreground">아직 계정이 없으신가요? </Text>
+            <Pressable onPress={onSignUp} className="web:cursor-pointer">
+              <Text className="text-[13px] font-bold text-foreground">회원가입</Text>
+            </Pressable>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

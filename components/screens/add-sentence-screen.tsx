@@ -1,5 +1,16 @@
 import { useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Image, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -142,45 +153,51 @@ export function AddSentenceScreen({
         </View>
       </View>
 
-      <ScrollView className="flex-1 px-5 py-5" keyboardShouldPersistTaps="handled">
-        {mode === 'text' ? (
-          <TextMode text={text} setText={setText} page={page} setPage={setPage} memo={memo} setMemo={setMemo} />
-        ) : null}
-        {mode === 'scan' ? (
-          <ScanMode quote={scanQuote} onQuoteChange={setScanQuote} page={page} setPage={setPage} />
-        ) : null}
-        {mode === 'photo' ? (
-          <PhotoMode
-            photoUri={photoUri}
-            setPhotoUri={setPhotoUri}
-            memo={memo}
-            setMemo={setMemo}
-            page={page}
-            setPage={setPage}
-          />
-        ) : null}
-      </ScrollView>
-
-      {/* 저장 버튼 */}
-      <View className="border-t border-border bg-card/80 px-5 py-4 web:backdrop-blur">
-        <Pressable
-          onPress={handleSave}
-          disabled={savingPhoto}
-          className={`web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-2xl bg-galpi-ink py-4 ${
-            savingPhoto ? 'opacity-60' : ''
-          }`}
-          style={({ pressed }) => pressed && { transform: [{ scale: 0.98 }] }}
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} className="flex-1">
+        <ScrollView
+          className="flex-1 px-5 py-5"
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
         >
-          {savingPhoto ? (
-            <ActivityIndicator color={colors.galpiPaper} />
-          ) : (
-            <Check size={16} color={colors.galpiPaper} />
-          )}
-          <Text className="text-sm font-bold text-galpi-paper">
-            {savingPhoto ? '사진 저장 중...' : '갈피 저장하기'}
-          </Text>
-        </Pressable>
-      </View>
+          {mode === 'text' ? (
+            <TextMode text={text} setText={setText} page={page} setPage={setPage} memo={memo} setMemo={setMemo} />
+          ) : null}
+          {mode === 'scan' ? (
+            <ScanMode quote={scanQuote} onQuoteChange={setScanQuote} page={page} setPage={setPage} />
+          ) : null}
+          {mode === 'photo' ? (
+            <PhotoMode
+              photoUri={photoUri}
+              setPhotoUri={setPhotoUri}
+              memo={memo}
+              setMemo={setMemo}
+              page={page}
+              setPage={setPage}
+            />
+          ) : null}
+        </ScrollView>
+
+        {/* 저장 버튼 */}
+        <View className="border-t border-border bg-card/80 px-5 py-4 web:backdrop-blur">
+          <Pressable
+            onPress={handleSave}
+            disabled={savingPhoto}
+            className={`web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-2xl bg-galpi-ink py-4 ${
+              savingPhoto ? 'opacity-60' : ''
+            }`}
+            style={({ pressed }) => pressed && { transform: [{ scale: 0.98 }] }}
+          >
+            {savingPhoto ? (
+              <ActivityIndicator color={colors.galpiPaper} />
+            ) : (
+              <Check size={16} color={colors.galpiPaper} />
+            )}
+            <Text className="text-sm font-bold text-galpi-paper">
+              {savingPhoto ? '사진 저장 중...' : '갈피 저장하기'}
+            </Text>
+          </Pressable>
+        </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

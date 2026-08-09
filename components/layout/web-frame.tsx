@@ -1,5 +1,5 @@
 import { PropsWithChildren } from 'react';
-import { Platform, useWindowDimensions, View } from 'react-native';
+import { Keyboard, Platform, Pressable, useWindowDimensions, View } from 'react-native';
 
 const FRAME_BREAKPOINT = 640; // matches source's `sm:` breakpoint
 
@@ -11,8 +11,17 @@ const FRAME_BREAKPOINT = 640; // matches source's `sm:` breakpoint
 export function WebFrame({ children }: PropsWithChildren) {
   const { width, height } = useWindowDimensions();
 
+  // Dismisses the keyboard on any tap that isn't claimed by a nested
+  // touchable/input first — gives every screen a tap-outside-to-close
+  // without each one having to wire it up individually.
+  const content = (
+    <Pressable className="flex-1" onPress={() => Keyboard.dismiss()} accessible={false}>
+      {children}
+    </Pressable>
+  );
+
   if (Platform.OS !== 'web' || width < FRAME_BREAKPOINT) {
-    return <View className="flex-1 bg-background">{children}</View>;
+    return <View className="flex-1 bg-background">{content}</View>;
   }
 
   return (
@@ -34,7 +43,7 @@ export function WebFrame({ children }: PropsWithChildren) {
           shadowOffset: { width: 0, height: 20 },
         }}
       >
-        {children}
+        {content}
       </View>
     </View>
   );

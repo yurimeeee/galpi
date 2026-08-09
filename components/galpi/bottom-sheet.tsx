@@ -1,5 +1,13 @@
 import { useRef } from 'react';
-import { Animated, PanResponder, Platform, Pressable, View, type ViewStyle } from 'react-native';
+import {
+  Animated,
+  KeyboardAvoidingView,
+  PanResponder,
+  Platform,
+  Pressable,
+  View,
+  type ViewStyle,
+} from 'react-native';
 
 const DISMISS_DISTANCE = 80;
 const DISMISS_VELOCITY = 1.2;
@@ -10,6 +18,9 @@ const useNativeDriver = Platform.OS !== 'web';
  * modals. Closes on backdrop tap, on tapping the grab handle, or on
  * dragging the handle down past a distance/velocity threshold — otherwise
  * it springs back to resting position.
+ *
+ * Wrapped in a `KeyboardAvoidingView` so the sheet rises above the keyboard
+ * on iOS instead of letting it cover whichever field is focused.
  */
 export function BottomSheet({
   onClose,
@@ -49,7 +60,8 @@ export function BottomSheet({
   ).current;
 
   return (
-    <View
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       className="absolute inset-0 justify-end bg-galpi-ink/50 web:backdrop-blur-sm"
       style={{ zIndex }}
     >
@@ -72,6 +84,6 @@ export function BottomSheet({
 
         {children}
       </Animated.View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
