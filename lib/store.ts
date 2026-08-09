@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import type { User } from 'firebase/auth';
-import { addBookDoc, addSentenceDoc } from './data-service';
+import { addBookDoc, addSentenceDoc, uploadSentencePhoto as uploadSentencePhotoDoc } from './data-service';
 import { type Book } from './data/books';
 import { type Sentence } from './data/sentences';
 import { ACCENT_CYCLE } from './theme';
@@ -26,6 +26,7 @@ type AppState = {
 
   addSentence: (sentence: NewSentence) => Promise<void>;
   addBook: (book: NewBook) => Promise<void>;
+  uploadSentencePhoto: (dataUrl: string) => Promise<string>;
 
   bookById: (id: string) => Book | undefined;
   /** The book currently being read — default target for "갈피 남기기". */
@@ -68,6 +69,12 @@ export const useAppStore = create<AppState>((set, get) => ({
       coverUrl,
     };
     await addBookDoc(uid, book, order);
+  },
+
+  uploadSentencePhoto: async (dataUrl) => {
+    const uid = get().user?.uid;
+    if (!uid) throw new Error('로그인이 필요해요.');
+    return uploadSentencePhotoDoc(uid, dataUrl);
   },
 
   bookById: (id) => get().books.find((b) => b.id === id),

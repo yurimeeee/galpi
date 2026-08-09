@@ -82,14 +82,25 @@ export function BookDetailScreen({
               </View>
 
               {item.type === 'photo' ? (
-                <View
-                  className={`mt-3 ml-2 h-24 justify-end gap-1.5 overflow-hidden rounded-xl ${ACCENT_BG_CLASS[book.accent]} p-3`}
-                  accessibilityLabel="촬영한 페이지 미리보기"
-                >
-                  <View className={`h-1.5 w-3/5 rounded-full ${book.accent === 'ink' ? 'bg-galpi-paper/40' : 'bg-galpi-ink/25'}`} />
-                  <View className={`h-1.5 w-4/5 rounded-full ${book.accent === 'ink' ? 'bg-galpi-paper/40' : 'bg-galpi-ink/25'}`} />
-                  <View className={`h-1.5 w-2/5 rounded-full ${book.accent === 'ink' ? 'bg-galpi-paper/40' : 'bg-galpi-ink/25'}`} />
-                </View>
+                item.photoUrl ? (
+                  <View className="mt-3 ml-2 h-40 overflow-hidden rounded-xl bg-secondary">
+                    <Image
+                      source={{ uri: item.photoUrl }}
+                      className="h-full w-full"
+                      resizeMode="cover"
+                      accessibilityLabel="촬영한 페이지 미리보기"
+                    />
+                  </View>
+                ) : (
+                  <View
+                    className={`mt-3 ml-2 h-24 justify-end gap-1.5 overflow-hidden rounded-xl ${ACCENT_BG_CLASS[book.accent]} p-3`}
+                    accessibilityLabel="촬영한 페이지 미리보기"
+                  >
+                    <View className={`h-1.5 w-3/5 rounded-full ${book.accent === 'ink' ? 'bg-galpi-paper/40' : 'bg-galpi-ink/25'}`} />
+                    <View className={`h-1.5 w-4/5 rounded-full ${book.accent === 'ink' ? 'bg-galpi-paper/40' : 'bg-galpi-ink/25'}`} />
+                    <View className={`h-1.5 w-2/5 rounded-full ${book.accent === 'ink' ? 'bg-galpi-paper/40' : 'bg-galpi-ink/25'}`} />
+                  </View>
+                )
               ) : null}
 
               <Text className="mt-3 pl-2 text-[15px] font-semibold leading-relaxed text-foreground">

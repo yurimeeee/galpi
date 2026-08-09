@@ -12,6 +12,7 @@ export type Sentence = {
   page: number;
   quote: string;
   memo?: string;
+  photoUrl?: string;
   type: EntryType;
   date: string;
 };

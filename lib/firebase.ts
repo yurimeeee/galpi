@@ -8,6 +8,7 @@ import { type Auth, getAuth, initializeAuth, GoogleAuthProvider } from 'firebase
 // @ts-expect-error — see comment above.
 import { getReactNativePersistence } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
 import { type Analytics, isSupported as isAnalyticsSupported } from 'firebase/analytics';
 
 const firebaseConfig = {
@@ -43,6 +44,7 @@ function createAuth(): Auth {
 
 export const auth = createAuth();
 export const db = getFirestore(app);
+export const storage = getStorage(app);
 export const googleProvider = new GoogleAuthProvider();
 
 /**

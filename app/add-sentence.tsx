@@ -5,6 +5,7 @@ import { useAppStore } from '../lib/store';
 export default function AddSentence() {
   const { bookId } = useLocalSearchParams<{ bookId?: string }>();
   const addSentence = useAppStore((s) => s.addSentence);
+  const uploadSentencePhoto = useAppStore((s) => s.uploadSentencePhoto);
   const bookById = useAppStore((s) => s.bookById);
   const activeReadingBook = useAppStore((s) => s.activeReadingBook);
 
@@ -22,6 +23,7 @@ export default function AddSentence() {
       onSave={(sentence) => {
         addSentence(sentence).catch((err) => console.error('Failed to save sentence', err));
       }}
+      onUploadPhoto={uploadSentencePhoto}
     />
   );
 }

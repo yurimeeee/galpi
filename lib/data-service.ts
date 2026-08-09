@@ -9,7 +9,8 @@ import {
   writeBatch,
   type Unsubscribe,
 } from 'firebase/firestore';
-import { db } from './firebase';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { db, storage } from './firebase';
 import { type Book } from './data/books';
 import { type Sentence } from './data/sentences';
 
@@ -62,6 +63,22 @@ export function subscribeSentences(
  */
 export async function addBookDoc(uid: string, book: Omit<Book, 'id'>, order: number): Promise<void> {
   await setDoc(doc(booksCol(uid)), withoutUndefined({ ...book, order }));
+}
+
+/**
+ * Uploads a page photo (as a `data:image/jpeg;base64,...` URI) to Firebase
+ * Storage and returns its public download URL, for embedding in a Sentence.
+ *
+ * React Native's Blob polyfill can't construct a blob directly from raw
+ * bytes/base64 (uploadString/uploadBytes with a Uint8Array throws "Creating
+ * blobs from 'ArrayBuffer' and 'ArrayBufferView' are not supported"), but it
+ * *can* produce one via fetch() — so route the data URL through fetch first.
+ */
+export async function uploadSentencePhoto(uid: string, dataUrl: string): Promise<string> {
+  const photoRef = ref(storage, `users/${uid}/sentence-photos/${Date.now()}.jpg`);
+  const blob = await (await fetch(dataUrl)).blob();
+  await uploadBytes(photoRef, blob);
+  return getDownloadURL(photoRef);
 }
 
 export async function addSentenceDoc(

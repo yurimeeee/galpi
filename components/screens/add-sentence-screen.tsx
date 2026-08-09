@@ -1,8 +1,9 @@
 import { useRef, useState } from 'react';
-import { ActivityIndicator, Image, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImageManipulator from 'expo-image-manipulator';
+import * as ImagePicker from 'expo-image-picker';
 import {
   ChevronLeft,
   Type,
@@ -11,6 +12,7 @@ import {
   ScanLine,
   Check,
   RotateCcw,
+  Images,
   type LucideIcon,
 } from 'lucide-react-native';
 import type { EntryType, Sentence } from '../../lib/data/sentences';
@@ -28,20 +30,24 @@ export function AddSentenceScreen({
   bookTitle,
   onBack,
   onSave,
+  onUploadPhoto,
 }: {
   bookId: string;
   bookTitle: string;
   onBack: () => void;
   onSave: (sentence: Omit<Sentence, 'id' | 'date'>) => void;
+  onUploadPhoto: (dataUrl: string) => Promise<string>;
 }) {
   const [mode, setMode] = useState<EntryType>('text');
   const [scanQuote, setScanQuote] = useState('');
+  const [photoUri, setPhotoUri] = useState<string | null>(null);
+  const [savingPhoto, setSavingPhoto] = useState(false);
 
   const [text, setText] = useState('');
   const [page, setPage] = useState('');
   const [memo, setMemo] = useState('');
 
-  function handleSave() {
+  async function handleSave() {
     if (mode === 'text') {
       onSave({
         bookId,
@@ -50,6 +56,7 @@ export function AddSentenceScreen({
         memo: memo.trim() || undefined,
         type: 'text',
       });
+      onBack();
     } else if (mode === 'scan') {
       onSave({
         bookId,
@@ -57,15 +64,39 @@ export function AddSentenceScreen({
         quote: scanQuote.trim() || '마음에 담고 싶은 문장',
         type: 'scan',
       });
+      onBack();
     } else {
-      onSave({
-        bookId,
-        page: Number(page) || 0,
-        quote: memo.trim() || '페이지 사진으로 남긴 갈피',
-        type: 'photo',
-      });
+      if (!photoUri) {
+        Alert.alert('페이지 사진을 선택해주세요', '사진을 찍거나 앨범에서 골라주세요.');
+        return;
+      }
+      setSavingPhoto(true);
+      try {
+        const resized = await ImageManipulator.manipulateAsync(
+          photoUri,
+          [{ resize: { width: 1400 } }],
+          { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG, base64: true },
+        );
+        if (!resized.base64) throw new Error('이미지 처리에 실패했어요.');
+
+        const photoUrl = await onUploadPhoto(`data:image/jpeg;base64,${resized.base64}`);
+        onSave({
+          bookId,
+          page: Number(page) || 0,
+          quote: memo.trim() || '페이지 사진으로 남긴 갈피',
+          photoUrl,
+          type: 'photo',
+        });
+        onBack();
+      } catch (err) {
+        Alert.alert(
+          '사진 저장에 실패했어요',
+          err instanceof Error ? err.message : '잠시 후 다시 시도해주세요.',
+        );
+      } finally {
+        setSavingPhoto(false);
+      }
     }
-    onBack();
   }
 
   return (
@@ -118,18 +149,36 @@ export function AddSentenceScreen({
         {mode === 'scan' ? (
           <ScanMode quote={scanQuote} onQuoteChange={setScanQuote} page={page} setPage={setPage} />
         ) : null}
-        {mode === 'photo' ? <PhotoMode memo={memo} setMemo={setMemo} page={page} setPage={setPage} /> : null}
+        {mode === 'photo' ? (
+          <PhotoMode
+            photoUri={photoUri}
+            setPhotoUri={setPhotoUri}
+            memo={memo}
+            setMemo={setMemo}
+            page={page}
+            setPage={setPage}
+          />
+        ) : null}
       </ScrollView>
 
       {/* 저장 버튼 */}
       <View className="border-t border-border bg-card/80 px-5 py-4 web:backdrop-blur">
         <Pressable
           onPress={handleSave}
-          className="web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-2xl bg-galpi-ink py-4"
+          disabled={savingPhoto}
+          className={`web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-2xl bg-galpi-ink py-4 ${
+            savingPhoto ? 'opacity-60' : ''
+          }`}
           style={({ pressed }) => pressed && { transform: [{ scale: 0.98 }] }}
         >
-          <Check size={16} color={colors.galpiPaper} />
-          <Text className="text-sm font-bold text-galpi-paper">갈피 저장하기</Text>
+          {savingPhoto ? (
+            <ActivityIndicator color={colors.galpiPaper} />
+          ) : (
+            <Check size={16} color={colors.galpiPaper} />
+          )}
+          <Text className="text-sm font-bold text-galpi-paper">
+            {savingPhoto ? '사진 저장 중...' : '갈피 저장하기'}
+          </Text>
         </Pressable>
       </View>
     </SafeAreaView>
@@ -420,26 +469,85 @@ function ScanMode({
 
 /* ---------- 페이지 사진 ---------- */
 function PhotoMode({
+  photoUri,
+  setPhotoUri,
   memo,
   setMemo,
   page,
   setPage,
 }: {
+  photoUri: string | null;
+  setPhotoUri: (v: string | null) => void;
   memo: string;
   setMemo: (v: string) => void;
   page: string;
   setPage: (v: string) => void;
 }) {
+  async function takePhoto() {
+    const permission = await ImagePicker.requestCameraPermissionsAsync();
+    if (!permission.granted) {
+      Alert.alert('카메라 권한이 필요해요', '기기 설정에서 갈피의 카메라 접근을 허용해주세요.');
+      return;
+    }
+    const result = await ImagePicker.launchCameraAsync({ quality: 0.8 });
+    if (!result.canceled && result.assets[0]) {
+      setPhotoUri(result.assets[0].uri);
+    }
+  }
+
+  async function pickFromLibrary() {
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permission.granted) {
+      Alert.alert('사진 접근 권한이 필요해요', '기기 설정에서 갈피의 사진 보관함 접근을 허용해주세요.');
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      quality: 0.8,
+    });
+    if (!result.canceled && result.assets[0]) {
+      setPhotoUri(result.assets[0].uri);
+    }
+  }
+
   return (
     <View className="gap-4">
       <Field label="페이지 사진">
-        <View className="aspect-[3/4] w-full items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-border bg-card">
-          <View className="h-14 w-14 items-center justify-center rounded-2xl bg-galpi-green">
-            <ImageIcon size={24} color={colors.galpiInk} />
+        {photoUri ? (
+          <View className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl bg-galpi-ink">
+            <Image source={{ uri: photoUri }} style={{ flex: 1 }} resizeMode="cover" />
+            <Pressable
+              onPress={() => setPhotoUri(null)}
+              className="web:cursor-pointer absolute right-3 top-3 flex-row items-center gap-1 rounded-full bg-galpi-ink/70 px-3 py-1.5"
+            >
+              <RotateCcw size={12} color={colors.galpiPaper} />
+              <Text className="text-[11px] font-bold text-galpi-paper">다시 선택</Text>
+            </Pressable>
           </View>
-          <Text className="text-sm font-semibold text-foreground">사진 불러오기</Text>
-          <Text className="text-xs text-muted-foreground">책 페이지를 통째로 기록해요</Text>
-        </View>
+        ) : (
+          <View className="aspect-[3/4] w-full items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-border bg-card p-6">
+            <View className="h-14 w-14 items-center justify-center rounded-2xl bg-galpi-green">
+              <ImageIcon size={24} color={colors.galpiInk} />
+            </View>
+            <Text className="text-sm font-semibold text-foreground">책 페이지를 통째로 기록해요</Text>
+            <View className="w-full max-w-[220px] gap-2">
+              <Pressable
+                onPress={takePhoto}
+                className="web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-xl bg-galpi-ink py-3"
+              >
+                <Camera size={14} color={colors.galpiPaper} />
+                <Text className="text-xs font-bold text-galpi-paper">사진 찍기</Text>
+              </Pressable>
+              <Pressable
+                onPress={pickFromLibrary}
+                className="web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-xl border border-border bg-background py-3"
+              >
+                <Images size={14} color={colors.foreground} />
+                <Text className="text-xs font-bold text-foreground">앨범에서 선택</Text>
+              </Pressable>
+            </View>
+          </View>
+        )}
       </Field>
 
       <Field label="페이지">
