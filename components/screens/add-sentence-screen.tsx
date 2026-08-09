@@ -1,6 +1,8 @@
-import { useState } from 'react';
-import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { useRef, useState } from 'react';
+import { ActivityIndicator, Image, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { CameraView, useCameraPermissions } from 'expo-camera';
+import * as ImageManipulator from 'expo-image-manipulator';
 import {
   ChevronLeft,
   Type,
@@ -8,23 +10,18 @@ import {
   Image as ImageIcon,
   ScanLine,
   Check,
+  RotateCcw,
   type LucideIcon,
 } from 'lucide-react-native';
 import type { EntryType, Sentence } from '../../lib/data/sentences';
 import { colors } from '../../lib/theme';
+import { scanBookText } from '../../lib/ocr';
 
 const MODES: { key: EntryType; label: string; Icon: LucideIcon }[] = [
   { key: 'text', label: '직접 입력', Icon: Type },
   { key: 'scan', label: '카메라 스캔', Icon: Camera },
   { key: 'photo', label: '페이지 사진', Icon: ImageIcon },
 ];
-
-// 스캔 모드에서 추출된 것처럼 보이는 목업 텍스트 조각
-const SCANNED_TOKENS = [
-  '가장', '평범한', '하루가', '누군가에게는',
-  '간절히', '되찾고', '싶은', '어제였다.',
-];
-const SCANNED_SENTENCE = '가장 평범한 하루가 누군가에게는 간절히 되찾고 싶은 어제였다.';
 
 export function AddSentenceScreen({
   bookId,
@@ -38,17 +35,11 @@ export function AddSentenceScreen({
   onSave: (sentence: Omit<Sentence, 'id' | 'date'>) => void;
 }) {
   const [mode, setMode] = useState<EntryType>('text');
-  const [selected, setSelected] = useState<number[]>([0, 1, 2, 3, 4, 5, 6, 7]);
+  const [scanQuote, setScanQuote] = useState('');
 
   const [text, setText] = useState('');
   const [page, setPage] = useState('');
   const [memo, setMemo] = useState('');
-
-  function toggleToken(i: number) {
-    setSelected((prev) =>
-      prev.includes(i) ? prev.filter((x) => x !== i) : [...prev, i].sort((a, b) => a - b),
-    );
-  }
 
   function handleSave() {
     if (mode === 'text') {
@@ -63,7 +54,7 @@ export function AddSentenceScreen({
       onSave({
         bookId,
         page: Number(page) || 0,
-        quote: selected.map((i) => SCANNED_TOKENS[i]).join(' ') || SCANNED_SENTENCE,
+        quote: scanQuote.trim() || '마음에 담고 싶은 문장',
         type: 'scan',
       });
     } else {
@@ -125,13 +116,7 @@ export function AddSentenceScreen({
           <TextMode text={text} setText={setText} page={page} setPage={setPage} memo={memo} setMemo={setMemo} />
         ) : null}
         {mode === 'scan' ? (
-          <ScanMode
-            tokens={SCANNED_TOKENS}
-            selected={selected}
-            onToggle={toggleToken}
-            page={page}
-            setPage={setPage}
-          />
+          <ScanMode quote={scanQuote} onQuoteChange={setScanQuote} page={page} setPage={setPage} />
         ) : null}
         {mode === 'photo' ? <PhotoMode memo={memo} setMemo={setMemo} page={page} setPage={setPage} /> : null}
       </ScrollView>
@@ -215,76 +200,206 @@ function TextMode({
 }
 
 /* ---------- 카메라 스캔 (OCR) ---------- */
+type ScanPhase = 'live' | 'processing' | 'reviewing' | 'error';
+
 function ScanMode({
-  tokens,
-  selected,
-  onToggle,
+  quote,
+  onQuoteChange,
   page,
   setPage,
 }: {
-  tokens: string[];
-  selected: number[];
-  onToggle: (i: number) => void;
+  quote: string;
+  onQuoteChange: (v: string) => void;
   page: string;
   setPage: (v: string) => void;
 }) {
-  const corners = [
-    { top: 12, left: 12 },
-    { top: 12, right: 12 },
-    { bottom: 12, left: 12 },
-    { bottom: 12, right: 12 },
-  ];
+  const [permission, requestPermission] = useCameraPermissions();
+  const cameraRef = useRef<CameraView>(null);
+
+  const [phase, setPhase] = useState<ScanPhase>('live');
+  const [photoUri, setPhotoUri] = useState<string | null>(null);
+  const [tokens, setTokens] = useState<string[]>([]);
+  const [selected, setSelected] = useState<number[]>([]);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  function toggleToken(i: number) {
+    setSelected((prev) => {
+      const next = prev.includes(i) ? prev.filter((x) => x !== i) : [...prev, i].sort((a, b) => a - b);
+      onQuoteChange(next.map((idx) => tokens[idx]).join(' '));
+      return next;
+    });
+  }
+
+  function retake() {
+    setPhase('live');
+    setPhotoUri(null);
+    setTokens([]);
+    setSelected([]);
+    setErrorMessage('');
+    onQuoteChange('');
+  }
+
+  async function handleCapture() {
+    if (!cameraRef.current) return;
+    try {
+      const photo = await cameraRef.current.takePictureAsync({ quality: 0.6, skipProcessing: true });
+      if (!photo?.uri) throw new Error('촬영에 실패했어요.');
+      setPhotoUri(photo.uri);
+      setPhase('processing');
+
+      const resized = await ImageManipulator.manipulateAsync(
+        photo.uri,
+        [{ resize: { width: 1200 } }],
+        { compress: 0.6, format: ImageManipulator.SaveFormat.JPEG, base64: true },
+      );
+      if (!resized.base64) throw new Error('이미지 처리에 실패했어요.');
+
+      const result = await scanBookText(`data:image/jpeg;base64,${resized.base64}`);
+      if (!result.tokens.length) {
+        setErrorMessage('문장을 인식하지 못했어요. 문장이 잘 보이도록 다시 촬영해주세요.');
+        setPhase('error');
+        return;
+      }
+
+      setTokens(result.tokens);
+      const all = result.tokens.map((_, i) => i);
+      setSelected(all);
+      onQuoteChange(result.sentence);
+      setPhase('reviewing');
+    } catch (err) {
+      setErrorMessage(err instanceof Error ? err.message : '문장 인식에 실패했어요. 다시 시도해주세요.');
+      setPhase('error');
+    }
+  }
+
+  if (!permission) {
+    return (
+      <View className="aspect-[4/3] items-center justify-center rounded-2xl bg-galpi-ink">
+        <ActivityIndicator color={colors.galpiPaper} />
+      </View>
+    );
+  }
+
+  if (!permission.granted) {
+    return (
+      <View className="gap-4">
+        <View className="aspect-[4/3] items-center justify-center gap-3 rounded-2xl bg-galpi-ink px-8">
+          <Camera size={28} color={colors.galpiPaper} />
+          <Text className="text-center text-sm leading-relaxed text-galpi-paper/80">
+            {permission.canAskAgain
+              ? '문장을 스캔하려면 카메라 접근을 허용해주세요.'
+              : '카메라 권한이 꺼져 있어요. 기기 설정에서 갈피의 카메라 접근을 허용해주세요.'}
+          </Text>
+          {permission.canAskAgain ? (
+            <Pressable
+              onPress={requestPermission}
+              className="web:cursor-pointer rounded-xl bg-galpi-yellow px-4 py-2.5"
+            >
+              <Text className="text-sm font-bold text-galpi-ink">카메라 허용하기</Text>
+            </Pressable>
+          ) : null}
+        </View>
+      </View>
+    );
+  }
+
+  const showLiveCamera = phase === 'live' || phase === 'processing';
 
   return (
     <View className="gap-4">
-      {/* 카메라 프리뷰 */}
       <View className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-galpi-ink">
-        <View className="flex-1 items-center justify-center px-8">
-          <Text className="text-center text-sm leading-relaxed text-galpi-paper/40">
-            가장 평범한 하루가 누군가에게는 간절히 되찾고 싶은 어제였다.
-          </Text>
-        </View>
-        {/* 하이라이트 박스 */}
-        <View
-          className="absolute inset-x-8 h-16 rounded-lg border-2 border-galpi-yellow"
-          style={{ top: '50%', marginTop: -32 }}
-        >
-          <View className="absolute -top-6 left-0 flex-row items-center gap-1">
-            <ScanLine size={12} color={colors.galpiYellow} />
-            <Text className="text-[11px] font-bold" style={{ color: colors.galpiYellow }}>
-              문장 인식 중
-            </Text>
-          </View>
-        </View>
-        {/* 코너 마커 */}
-        {corners.map((pos, i) => (
+        {showLiveCamera ? (
+          <CameraView ref={cameraRef} style={{ flex: 1 }} facing="back" />
+        ) : photoUri ? (
+          <Image source={{ uri: photoUri }} style={{ flex: 1 }} resizeMode="cover" />
+        ) : null}
+
+        {/* 스캔 가이드 프레임 */}
+        {phase === 'live' ? (
           <View
-            key={i}
-            className="absolute h-4 w-4 border-galpi-paper/60"
-            style={{ ...pos, borderWidth: 2 }}
-          />
-        ))}
+            className="absolute inset-x-8 h-16 rounded-lg border-2 border-galpi-yellow"
+            style={{ top: '50%', marginTop: -32 }}
+            pointerEvents="none"
+          >
+            <View className="absolute -top-6 left-0 flex-row items-center gap-1">
+              <ScanLine size={12} color={colors.galpiYellow} />
+              <Text className="text-[11px] font-bold" style={{ color: colors.galpiYellow }}>
+                문장을 프레임 안에 맞춰주세요
+              </Text>
+            </View>
+          </View>
+        ) : null}
+
+        {/* 촬영 버튼 */}
+        {phase === 'live' ? (
+          <View className="absolute inset-x-0 bottom-4 items-center">
+            <Pressable
+              onPress={handleCapture}
+              accessibilityLabel="촬영하기"
+              className="web:cursor-pointer h-16 w-16 items-center justify-center rounded-full border-4 border-galpi-paper/70 bg-galpi-paper/20"
+            >
+              <View className="h-12 w-12 rounded-full bg-galpi-paper" />
+            </Pressable>
+          </View>
+        ) : null}
+
+        {/* 처리 중 오버레이 */}
+        {phase === 'processing' ? (
+          <View className="absolute inset-0 items-center justify-center gap-2 bg-galpi-ink/70">
+            <ActivityIndicator color={colors.galpiYellow} />
+            <Text className="text-xs font-bold text-galpi-paper">문장 인식 중...</Text>
+          </View>
+        ) : null}
+
+        {/* 다시 촬영 버튼 */}
+        {phase === 'reviewing' || phase === 'error' ? (
+          <Pressable
+            onPress={retake}
+            className="web:cursor-pointer absolute right-3 top-3 flex-row items-center gap-1 rounded-full bg-galpi-ink/70 px-3 py-1.5"
+          >
+            <RotateCcw size={12} color={colors.galpiPaper} />
+            <Text className="text-[11px] font-bold text-galpi-paper">다시 촬영</Text>
+          </Pressable>
+        ) : null}
       </View>
 
-      {/* 추출된 텍스트 (선택 가능) */}
-      <Field label="인식된 텍스트 · 담을 단어를 눌러 선택">
-        <View className="flex-row flex-wrap gap-1.5 rounded-2xl border border-border bg-card p-4">
-          {tokens.map((t, i) => {
-            const on = selected.includes(i);
-            return (
-              <Pressable
-                key={i}
-                onPress={() => onToggle(i)}
-                className={`web:cursor-pointer rounded-lg px-2 py-1 ${on ? 'bg-galpi-yellow' : 'bg-secondary'}`}
-              >
-                <Text className={`text-sm font-medium ${on ? 'text-galpi-ink' : 'text-muted-foreground'}`}>
-                  {t}
-                </Text>
-              </Pressable>
-            );
-          })}
+      {phase === 'error' ? (
+        <View className="gap-2 rounded-2xl border border-destructive/30 bg-destructive/5 p-4">
+          <Text className="text-sm font-semibold text-destructive">{errorMessage}</Text>
+          <Pressable onPress={retake} className="web:cursor-pointer self-start rounded-lg bg-galpi-ink px-3 py-2">
+            <Text className="text-xs font-bold text-galpi-paper">다시 촬영하기</Text>
+          </Pressable>
         </View>
-      </Field>
+      ) : null}
+
+      {phase === 'reviewing' ? (
+        <Field label="인식된 텍스트 · 담을 단어를 눌러 선택">
+          <View className="flex-row flex-wrap gap-1.5 rounded-2xl border border-border bg-card p-4">
+            {tokens.map((t, i) => {
+              const on = selected.includes(i);
+              return (
+                <Pressable
+                  key={i}
+                  onPress={() => toggleToken(i)}
+                  className={`web:cursor-pointer rounded-lg px-2 py-1 ${on ? 'bg-galpi-yellow' : 'bg-secondary'}`}
+                >
+                  <Text className={`text-sm font-medium ${on ? 'text-galpi-ink' : 'text-muted-foreground'}`}>
+                    {t}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        </Field>
+      ) : null}
+
+      {quote ? (
+        <Field label="담을 문장">
+          <View className="rounded-2xl border border-border bg-card p-4">
+            <Text className="text-sm leading-relaxed text-foreground">{quote}</Text>
+          </View>
+        </Field>
+      ) : null}
 
       <Field label="페이지">
         <View className="flex-row items-center gap-2 rounded-2xl border border-border bg-card px-4 py-3.5">

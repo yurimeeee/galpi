@@ -30,7 +30,13 @@
     "plugins": [
       "expo-router",
       "expo-font",
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "갈피가 책 문장을 스캔할 수 있도록 카메라 접근을 허용해주세요."
+        }
+      ]
     ]
   }
 }
