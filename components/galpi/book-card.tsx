@@ -26,8 +26,8 @@ export function BookCard({ book }: { book: Book }) {
     <View className="flex-row items-stretch gap-4">
       {/* 책등(spine) 형태의 색 블록 */}
       <View className={`relative w-14 shrink-0 overflow-hidden rounded-xl ${ACCENT_BG_CLASS[book.accent]}`}>
-        <View className="absolute left-2 top-0 h-full w-px bg-galpi-ink/10" />
-        <View className="h-full items-end justify-end p-2">
+        <View className="absolute left-2 top-0 bottom-0 w-px bg-galpi-ink/10" />
+        <View className="flex-1 items-end justify-end p-2">
           <Bookmark
             size={14}
             color={book.accent === 'ink' ? colors.galpiPaper : colors.galpiInk}
