@@ -1,20 +1,22 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Image, Pressable, ScrollView, Text, View } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Circle } from 'react-native-svg';
 import {
   ChevronLeft,
   Play,
   Pause,
   RotateCcw,
-  Plus,
   ChevronRight,
   BookOpen,
   Coffee,
   Bookmark,
+  X,
 } from 'lucide-react-native';
+import { BottomSheet } from '../galpi/bottom-sheet';
 import { SessionSummaryModal } from '../galpi/session-summary-modal';
 import { type Book } from '../../lib/data/books';
+import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
 import { ACCENT_BG_CLASS, colors } from '../../lib/theme';
 
 type Phase = 'focus' | 'rest';
@@ -50,6 +52,8 @@ export function ReadingTimerScreen({
   onBack: () => void;
 }) {
   const [book, setBook] = useState<Book>(initialBook);
+  const [showBookPicker, setShowBookPicker] = useState(false);
+  const readingBooks = books.filter((b) => b.status !== 'wish');
   const [presetKey, setPresetKey] = useState('25/5');
   const [customFocus, setCustomFocus] = useState(15);
 
@@ -63,7 +67,6 @@ export function ReadingTimerScreen({
   const [running, setRunning] = useState(false);
   const [sessionsDone, setSessionsDone] = useState(0);
   const [focusSeconds, setFocusSeconds] = useState(0);
-  const [captured, setCaptured] = useState(0);
   const [showSummary, setShowSummary] = useState(false);
 
   const phaseTotal = (phase === 'focus' ? preset.focus : preset.rest) * 60;
@@ -131,9 +134,10 @@ export function ReadingTimerScreen({
   const dashOffset = CIRC * (1 - progress);
 
   const isRest = phase === 'rest';
+  const insets = useSafeAreaInsets();
 
   return (
-    <SafeAreaView edges={['top', 'bottom']} className="relative flex-1 min-h-0 bg-background">
+    <SafeAreaView edges={['top']} className="relative flex-1 min-h-0 bg-background">
       {/* 헤더 */}
       <View className="flex-row items-center justify-between px-4 pb-1 pt-2">
         <Pressable
@@ -154,7 +158,7 @@ export function ReadingTimerScreen({
 
       <ScrollView className="flex-1 min-h-0" contentContainerClassName="px-6 pb-4">
         {/* 대상 책 선택 카드 */}
-        <BookSelector book={book} books={books} onChange={setBook} />
+        <BookSelector book={book} onPress={() => setShowBookPicker(true)} />
 
         {/* 상태 Pill + 세션 카운터 */}
         <View className="mb-4 mt-6 flex-row items-center justify-center gap-2">
@@ -188,7 +192,9 @@ export function ReadingTimerScreen({
             </Svg>
           </View>
           <View className="items-center">
-            <Text className="font-mono text-6xl font-black tracking-tight tabular-nums text-foreground">
+            <Text
+              className="font-mono text-6xl font-black leading-[1.2] tracking-tight tabular-nums text-foreground"
+            >
               {fmt(secondsLeft)}
             </Text>
             <Text className="mt-2 text-xs font-medium text-muted-foreground">
@@ -223,7 +229,10 @@ export function ReadingTimerScreen({
       </ScrollView>
 
       {/* 하단 컨트롤 바 */}
-      <View className="border-t border-border bg-card/90 px-6 py-4 web:backdrop-blur">
+      <View
+        className="border-t border-border bg-card/90 px-6 pt-4 web:backdrop-blur"
+        style={{ paddingBottom: Math.max(insets.bottom, 16) }}
+      >
         <View className="mb-3 flex-row items-center gap-3">
           <Pressable
             onPress={handleReset}
@@ -242,27 +251,46 @@ export function ReadingTimerScreen({
             <Text className="text-base font-bold text-galpi-paper">{running ? '일시정지' : '독서 시작'}</Text>
           </Pressable>
         </View>
-        <Pressable
-          onPress={() => setCaptured((c) => c + 1)}
-          className="web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-2xl bg-galpi-yellow py-3.5"
-          style={({ pressed }) => pressed && { transform: [{ scale: 0.98 }] }}
-        >
-          <Plus size={16} color={colors.galpiInk} />
-          <Text className="text-sm font-bold text-galpi-ink">이 순간 갈피 남기기</Text>
-          {captured > 0 ? (
-            <View className="ml-1 rounded-full bg-galpi-ink px-2 py-0.5">
-              <Text className="text-[11px] font-bold text-galpi-paper">{captured}</Text>
-            </View>
-          ) : null}
-        </Pressable>
       </View>
+
+      {showBookPicker ? (
+        <BottomSheet
+          onClose={() => setShowBookPicker(false)}
+          maxHeight="75%"
+          header={
+            <View className="mb-2 flex-row items-center justify-between">
+              <Text className="text-base font-black text-foreground">읽을 책 선택</Text>
+              <Pressable
+                onPress={() => setShowBookPicker(false)}
+                accessibilityLabel="닫기"
+                className="web:cursor-pointer h-8 w-8 items-center justify-center rounded-full bg-secondary"
+              >
+                <X size={16} color={colors.foreground} />
+              </Pressable>
+            </View>
+          }
+        >
+          <View className="gap-2">
+            {readingBooks.map((b) => (
+              <BookPickerRow
+                key={b.id}
+                book={b}
+                onPress={() => {
+                  setBook(b);
+                  setShowBookPicker(false);
+                }}
+              />
+            ))}
+          </View>
+        </BottomSheet>
+      ) : null}
 
       {showSummary ? (
         <SessionSummaryModal
           book={book}
           totalSeconds={focusSeconds}
           sessionsDone={sessionsDone}
-          sentencesCaptured={captured}
+          sentencesCaptured={0}
           onClose={() => setShowSummary(false)}
           onSave={() => {
             setShowSummary(false);
@@ -275,79 +303,87 @@ export function ReadingTimerScreen({
 }
 
 /* ---------- 대상 책 선택 카드 ---------- */
-function BookSelector({
-  book,
-  books,
-  onChange,
-}: {
-  book: Book;
-  books: Book[];
-  onChange: (b: Book) => void;
-}) {
-  const [open, setOpen] = useState(false);
-  const readingBooks = books.filter((b) => b.status !== 'wish');
+function BookSelector({ book, onPress }: { book: Book; onPress: () => void }) {
+  const { showCover, onCoverError } = useCoverFallback(book.coverUrl);
 
   return (
-    <View className="relative mt-2">
-      <View className="flex-row items-center gap-3 rounded-2xl border border-border bg-card p-3">
-        <View className={`h-16 w-12 shrink-0 items-center justify-end rounded-lg ${ACCENT_BG_CLASS[book.accent]} p-2`}>
-          <Bookmark size={14} color={book.accent === 'ink' ? colors.galpiPaper : colors.galpiInk} />
+    <View className="mt-2 flex-row items-center gap-3 rounded-2xl border border-border bg-card p-3">
+      <View
+        className={`relative h-16 w-12 shrink-0 items-center justify-end overflow-hidden rounded-lg ${
+          showCover ? 'bg-secondary' : ACCENT_BG_CLASS[book.accent]
+        } p-2`}
+      >
+        {showCover ? (
+          <Image
+            source={{ uri: book.coverUrl }}
+            className="absolute inset-0 h-full w-full"
+            resizeMode="cover"
+            onError={onCoverError}
+          />
+        ) : null}
+        <View className={showCover ? 'rounded-full bg-galpi-ink/50 p-1' : undefined}>
+          <Bookmark
+            size={14}
+            color={showCover || book.accent === 'ink' ? colors.galpiPaper : colors.galpiInk}
+            opacity={showCover ? 1 : book.accent === 'ink' ? 1 : 0.7}
+          />
         </View>
-        <View className="min-w-0 flex-1">
-          <Text className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">읽을 책 선택</Text>
-          <Text numberOfLines={1} className="mt-0.5 text-sm font-bold text-foreground">
-            {book.title}
-          </Text>
-          <Text numberOfLines={1} className="mt-0.5 text-xs text-muted-foreground">
-            {book.author} · {book.progress}% 진행 중
-          </Text>
-        </View>
-        <Pressable
-          onPress={() => setOpen((o) => !o)}
-          className="web:cursor-pointer shrink-0 rounded-full bg-secondary px-3 py-1.5"
-        >
-          <Text className="text-xs font-bold text-foreground">책 변경</Text>
-        </Pressable>
       </View>
-
-      {open ? (
-        <View
-          className="absolute inset-x-0 top-full z-10 mt-2 overflow-hidden rounded-2xl border border-border bg-card"
-          style={{
-            shadowColor: colors.galpiInk,
-            shadowOpacity: 0.15,
-            shadowRadius: 16,
-            shadowOffset: { width: 0, height: 8 },
-            elevation: 8,
-          }}
-        >
-          {readingBooks.map((b, i) => (
-            <Pressable
-              key={b.id}
-              onPress={() => {
-                onChange(b);
-                setOpen(false);
-              }}
-              className={`web:cursor-pointer flex-row items-center gap-3 px-3 py-2.5 ${
-                i < readingBooks.length - 1 ? 'border-b border-border' : ''
-              }`}
-            >
-              <View className={`h-10 w-8 items-center justify-end rounded-md ${ACCENT_BG_CLASS[b.accent]} p-1`}>
-                <Bookmark size={12} color={b.accent === 'ink' ? colors.galpiPaper : colors.galpiInk} />
-              </View>
-              <View className="min-w-0 flex-1">
-                <Text numberOfLines={1} className="text-sm font-bold text-foreground">
-                  {b.title}
-                </Text>
-                <Text numberOfLines={1} className="text-xs text-muted-foreground">
-                  {b.author}
-                </Text>
-              </View>
-            </Pressable>
-          ))}
-        </View>
-      ) : null}
+      <View className="min-w-0 flex-1">
+        <Text className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">읽을 책 선택</Text>
+        <Text numberOfLines={1} className="mt-0.5 text-sm font-bold text-foreground">
+          {book.title}
+        </Text>
+        <Text numberOfLines={1} className="mt-0.5 text-xs text-muted-foreground">
+          {book.author} · {book.progress}% 진행 중
+        </Text>
+      </View>
+      <Pressable onPress={onPress} className="web:cursor-pointer shrink-0 rounded-full bg-secondary px-3 py-1.5">
+        <Text className="text-xs font-bold text-foreground">책 변경</Text>
+      </Pressable>
     </View>
+  );
+}
+
+/* ---------- 책 선택 시트의 각 행 ---------- */
+function BookPickerRow({ book, onPress }: { book: Book; onPress: () => void }) {
+  const { showCover, onCoverError } = useCoverFallback(book.coverUrl);
+
+  return (
+    <Pressable
+      onPress={onPress}
+      className="web:cursor-pointer flex-row items-center gap-3 rounded-2xl border border-border bg-card p-3"
+    >
+      <View
+        className={`relative h-12 w-9 shrink-0 items-center justify-end overflow-hidden rounded-md ${
+          showCover ? 'bg-secondary' : ACCENT_BG_CLASS[book.accent]
+        } p-1`}
+      >
+        {showCover ? (
+          <Image
+            source={{ uri: book.coverUrl }}
+            className="absolute inset-0 h-full w-full"
+            resizeMode="cover"
+            onError={onCoverError}
+          />
+        ) : null}
+        <View className={showCover ? 'rounded-full bg-galpi-ink/50 p-0.5' : undefined}>
+          <Bookmark
+            size={12}
+            color={showCover || book.accent === 'ink' ? colors.galpiPaper : colors.galpiInk}
+            opacity={showCover ? 1 : book.accent === 'ink' ? 1 : 0.7}
+          />
+        </View>
+      </View>
+      <View className="min-w-0 flex-1">
+        <Text numberOfLines={1} className="text-sm font-bold text-foreground">
+          {book.title}
+        </Text>
+        <Text numberOfLines={1} className="text-xs text-muted-foreground">
+          {book.author}
+        </Text>
+      </View>
+    </Pressable>
   );
 }
 
