@@ -1,9 +1,13 @@
 import { useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Image, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { captureRef } from 'react-native-view-shot';
-import * as MediaLibrary from 'expo-media-library';
-import * as Sharing from 'expo-sharing';
+import {
+  captureViewAsImage,
+  saveImageToDevice,
+  shareImage,
+  MediaPermissionError,
+  ShareUnavailableError,
+} from '../../lib/share-image';
 import {
   BookCheck,
   Bookmark,
@@ -634,45 +638,21 @@ function ReportPublishModal({
       : `${year}.12.31`;
   const title = period === 'month' ? `${year}년 ${month + 1}월 독서 리포트` : `${year} 연간 독서 리포트`;
 
-  /**
-   * react-native-view-shot's cross-platform captureRef() always resolves
-   * the ref through RN's findNodeHandle, which react-native-web throws on
-   * ("use the ref property instead") — so the web path renders the card
-   * with html2canvas directly against the DOM node instead.
-   */
-  async function capture(): Promise<string> {
-    if (Platform.OS === 'web') {
-      const { default: html2canvas } = await import('html2canvas');
-      const node = cardRef.current as unknown as HTMLElement;
-      const canvas = await html2canvas(node, { backgroundColor: null, useCORS: true });
-      return canvas.toDataURL('image/png', 1);
-    }
-    return captureRef(cardRef, { format: 'png', quality: 1, result: 'tmpfile' });
-  }
-
   async function handleSaveImage() {
     if (busy) return;
     setBusy('save');
     try {
-      const uri = await capture();
-      if (Platform.OS === 'web') {
-        const link = document.createElement('a');
-        link.href = uri;
-        link.download = `galpi-report-${Date.now()}.png`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } else {
-        const { status } = await MediaLibrary.requestPermissionsAsync();
-        if (status !== 'granted') {
-          Alert.alert('권한이 필요해요', '사진 보관함 접근 권한을 허용해주세요.');
-          return;
-        }
-        await MediaLibrary.saveToLibraryAsync(uri);
+      const uri = await captureViewAsImage(cardRef);
+      await saveImageToDevice(uri, `galpi-report-${Date.now()}.png`);
+      if (Platform.OS !== 'web') {
         Alert.alert('저장 완료', '독서 리포트 이미지를 사진 보관함에 저장했어요.');
       }
-    } catch {
-      Alert.alert('저장 실패', '이미지를 저장하는 중 문제가 발생했어요.');
+    } catch (err) {
+      if (err instanceof MediaPermissionError) {
+        Alert.alert('권한이 필요해요', err.message);
+      } else {
+        Alert.alert('저장 실패', '이미지를 저장하는 중 문제가 발생했어요.');
+      }
     } finally {
       setBusy(null);
     }
@@ -682,30 +662,18 @@ function ReportPublishModal({
     if (busy) return;
     setBusy('share');
     try {
-      const uri = await capture();
-      if (Platform.OS === 'web') {
-        const nav = navigator as Navigator & {
-          share?: (data: ShareData) => Promise<void>;
-          canShare?: (data: ShareData) => boolean;
-        };
-        if (nav.share) {
-          const blob = await (await fetch(uri)).blob();
-          const file = new File([blob], 'galpi-report.png', { type: 'image/png' });
-          if (!nav.canShare || nav.canShare({ files: [file] })) {
-            await nav.share({ files: [file], title: '갈피 독서 리포트' });
-            return;
-          }
-        }
-        Alert.alert('공유하기', '이 브라우저에서는 공유가 지원되지 않아요. 이미지 저장 후 직접 공유해주세요.');
+      const uri = await captureViewAsImage(cardRef);
+      await shareImage(uri, {
+        filename: 'galpi-report.png',
+        title: '갈피 독서 리포트',
+        dialogTitle: '독서 리포트 공유하기',
+      });
+    } catch (err) {
+      if (err instanceof ShareUnavailableError) {
+        Alert.alert('공유하기', err.message);
       } else {
-        if (!(await Sharing.isAvailableAsync())) {
-          Alert.alert('공유 불가', '이 기기에서는 공유 기능을 사용할 수 없어요.');
-          return;
-        }
-        await Sharing.shareAsync(uri, { mimeType: 'image/png', dialogTitle: '독서 리포트 공유하기' });
+        Alert.alert('공유 실패', '리포트를 공유하는 중 문제가 발생했어요.');
       }
-    } catch {
-      Alert.alert('공유 실패', '리포트를 공유하는 중 문제가 발생했어요.');
     } finally {
       setBusy(null);
     }

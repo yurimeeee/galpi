@@ -16,7 +16,7 @@ export default function EditSentence() {
   return (
     <EditSentenceScreen
       sentence={sentence}
-      bookTitle={book.title}
+      book={book}
       onBack={() => router.back()}
       onSave={(changes) => updateSentence(sentence.id, changes)}
       onDelete={() => deleteSentence(sentence.id)}

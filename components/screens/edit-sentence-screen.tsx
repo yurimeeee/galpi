@@ -12,19 +12,21 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronLeft, Trash2, Check } from 'lucide-react-native';
+import { ChevronLeft, Share2, Trash2, Check } from 'lucide-react-native';
+import { SentenceCardModal } from '../galpi/sentence-card-modal';
+import type { Book } from '../../lib/data/books';
 import type { Sentence } from '../../lib/data/sentences';
 import { colors } from '../../lib/theme';
 
 export function EditSentenceScreen({
   sentence,
-  bookTitle,
+  book,
   onBack,
   onSave,
   onDelete,
 }: {
   sentence: Sentence;
-  bookTitle: string;
+  book: Book;
   onBack: () => void;
   onSave: (changes: { page: number; quote: string; memo?: string }) => Promise<void>;
   onDelete: () => Promise<void>;
@@ -33,6 +35,7 @@ export function EditSentenceScreen({
   const [page, setPage] = useState(String(sentence.page || ''));
   const [memo, setMemo] = useState(sentence.memo ?? '');
   const [busy, setBusy] = useState(false);
+  const [cardOpen, setCardOpen] = useState(false);
 
   async function handleSave() {
     if (busy) return;
@@ -90,18 +93,28 @@ export function EditSentenceScreen({
           <View className="min-w-0">
             <Text className="text-base font-black text-foreground">갈피 수정하기</Text>
             <Text numberOfLines={1} className="text-xs text-muted-foreground">
-              {bookTitle}
+              {book.title}
             </Text>
           </View>
         </View>
-        <Pressable
-          onPress={handleDelete}
-          disabled={busy}
-          accessibilityLabel="갈피 삭제"
-          className={`web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-card ${busy ? 'opacity-60' : ''}`}
-        >
-          <Trash2 size={16} color={colors.destructive} />
-        </Pressable>
+        <View className="flex-row gap-2">
+          <Pressable
+            onPress={() => setCardOpen(true)}
+            disabled={busy}
+            accessibilityLabel="갈피 카드로 공유"
+            className={`web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-card ${busy ? 'opacity-60' : ''}`}
+          >
+            <Share2 size={16} color={colors.foreground} />
+          </Pressable>
+          <Pressable
+            onPress={handleDelete}
+            disabled={busy}
+            accessibilityLabel="갈피 삭제"
+            className={`web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-card ${busy ? 'opacity-60' : ''}`}
+          >
+            <Trash2 size={16} color={colors.destructive} />
+          </Pressable>
+        </View>
       </View>
 
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} className="flex-1 min-h-0">
@@ -186,6 +199,10 @@ export function EditSentenceScreen({
           </Pressable>
         </View>
       </KeyboardAvoidingView>
+
+      {cardOpen ? (
+        <SentenceCardModal book={book} sentence={sentence} onClose={() => setCardOpen(false)} />
+      ) : null}
     </SafeAreaView>
   );
 }
