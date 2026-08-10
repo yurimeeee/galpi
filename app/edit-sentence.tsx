@@ -18,12 +18,8 @@ export default function EditSentence() {
       sentence={sentence}
       bookTitle={book.title}
       onBack={() => router.back()}
-      onSave={(changes) => {
-        updateSentence(sentence.id, changes).catch((err) => console.error('Failed to update sentence', err));
-      }}
-      onDelete={() => {
-        deleteSentence(sentence.id).catch((err) => console.error('Failed to delete sentence', err));
-      }}
+      onSave={(changes) => updateSentence(sentence.id, changes)}
+      onDelete={() => deleteSentence(sentence.id)}
     />
   );
 }

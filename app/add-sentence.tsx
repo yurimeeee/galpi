@@ -20,9 +20,7 @@ export default function AddSentence() {
       bookId={book.id}
       bookTitle={book.title}
       onBack={() => router.back()}
-      onSave={(sentence) => {
-        addSentence(sentence).catch((err) => console.error('Failed to save sentence', err));
-      }}
+      onSave={addSentence}
       onUploadPhoto={uploadSentencePhoto}
     />
   );

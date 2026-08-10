@@ -46,67 +46,67 @@ export function AddSentenceScreen({
   bookId: string;
   bookTitle: string;
   onBack: () => void;
-  onSave: (sentence: Omit<Sentence, 'id' | 'date'>) => void;
+  onSave: (sentence: Omit<Sentence, 'id' | 'date'>) => Promise<void>;
   onUploadPhoto: (dataUrl: string) => Promise<string>;
 }) {
   const [mode, setMode] = useState<EntryType>('text');
   const [scanQuote, setScanQuote] = useState('');
   const [photoUri, setPhotoUri] = useState<string | null>(null);
-  const [savingPhoto, setSavingPhoto] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const [text, setText] = useState('');
   const [page, setPage] = useState('');
   const [memo, setMemo] = useState('');
 
   async function handleSave() {
-    if (mode === 'text') {
-      onSave({
-        bookId,
-        page: Number(page) || 0,
-        quote: text.trim() || '마음에 담고 싶은 문장',
-        memo: memo.trim() || undefined,
-        type: 'text',
-      });
-      onBack();
-    } else if (mode === 'scan') {
-      onSave({
-        bookId,
-        page: Number(page) || 0,
-        quote: scanQuote.trim() || '마음에 담고 싶은 문장',
-        type: 'scan',
-      });
-      onBack();
-    } else {
-      if (!photoUri) {
-        Alert.alert('페이지 사진을 선택해주세요', '사진을 찍거나 앨범에서 골라주세요.');
-        return;
-      }
-      setSavingPhoto(true);
-      try {
+    if (saving) return;
+    if (mode === 'photo' && !photoUri) {
+      Alert.alert('페이지 사진을 선택해주세요', '사진을 찍거나 앨범에서 골라주세요.');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      if (mode === 'text') {
+        await onSave({
+          bookId,
+          page: Number(page) || 0,
+          quote: text.trim() || '마음에 담고 싶은 문장',
+          memo: memo.trim() || undefined,
+          type: 'text',
+        });
+      } else if (mode === 'scan') {
+        await onSave({
+          bookId,
+          page: Number(page) || 0,
+          quote: scanQuote.trim() || '마음에 담고 싶은 문장',
+          type: 'scan',
+        });
+      } else {
         const resized = await ImageManipulator.manipulateAsync(
-          photoUri,
+          photoUri!,
           [{ resize: { width: 1400 } }],
           { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG, base64: true },
         );
         if (!resized.base64) throw new Error('이미지 처리에 실패했어요.');
 
         const photoUrl = await onUploadPhoto(`data:image/jpeg;base64,${resized.base64}`);
-        onSave({
+        await onSave({
           bookId,
           page: Number(page) || 0,
           quote: memo.trim() || '페이지 사진으로 남긴 갈피',
           photoUrl,
           type: 'photo',
         });
-        onBack();
-      } catch (err) {
-        Alert.alert(
-          '사진 저장에 실패했어요',
-          err instanceof Error ? err.message : '잠시 후 다시 시도해주세요.',
-        );
-      } finally {
-        setSavingPhoto(false);
       }
+      onBack();
+    } catch (err) {
+      Alert.alert(
+        '갈피 저장에 실패했어요',
+        err instanceof Error ? err.message : '잠시 후 다시 시도해주세요.',
+      );
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -181,19 +181,19 @@ export function AddSentenceScreen({
         <View className="border-t border-border bg-card/80 px-5 py-4 web:backdrop-blur">
           <Pressable
             onPress={handleSave}
-            disabled={savingPhoto}
+            disabled={saving}
             className={`web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-2xl bg-galpi-ink py-4 ${
-              savingPhoto ? 'opacity-60' : ''
+              saving ? 'opacity-60' : ''
             }`}
             style={({ pressed }) => pressed && { transform: [{ scale: 0.98 }] }}
           >
-            {savingPhoto ? (
+            {saving ? (
               <ActivityIndicator color={colors.galpiPaper} />
             ) : (
               <Check size={16} color={colors.galpiPaper} />
             )}
             <Text className="text-sm font-bold text-galpi-paper">
-              {savingPhoto ? '사진 저장 중...' : '갈피 저장하기'}
+              {saving ? '저장 중...' : '갈피 저장하기'}
             </Text>
           </Pressable>
         </View>

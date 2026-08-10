@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
   Image,
   KeyboardAvoidingView,
@@ -25,20 +26,31 @@ export function EditSentenceScreen({
   sentence: Sentence;
   bookTitle: string;
   onBack: () => void;
-  onSave: (changes: { page: number; quote: string; memo?: string }) => void;
-  onDelete: () => void;
+  onSave: (changes: { page: number; quote: string; memo?: string }) => Promise<void>;
+  onDelete: () => Promise<void>;
 }) {
   const [quote, setQuote] = useState(sentence.quote);
   const [page, setPage] = useState(String(sentence.page || ''));
   const [memo, setMemo] = useState(sentence.memo ?? '');
+  const [busy, setBusy] = useState(false);
 
-  function handleSave() {
-    onSave({
-      page: Number(page) || 0,
-      quote: quote.trim() || sentence.quote,
-      memo: memo.trim() || undefined,
-    });
-    onBack();
+  async function handleSave() {
+    if (busy) return;
+    setBusy(true);
+    try {
+      await onSave({
+        page: Number(page) || 0,
+        quote: quote.trim() || sentence.quote,
+        memo: memo.trim() || undefined,
+      });
+      onBack();
+    } catch (err) {
+      Alert.alert(
+        '갈피 수정에 실패했어요',
+        err instanceof Error ? err.message : '잠시 후 다시 시도해주세요.',
+      );
+      setBusy(false);
+    }
   }
 
   function handleDelete() {
@@ -47,9 +59,18 @@ export function EditSentenceScreen({
       {
         text: '삭제',
         style: 'destructive',
-        onPress: () => {
-          onDelete();
-          onBack();
+        onPress: async () => {
+          setBusy(true);
+          try {
+            await onDelete();
+            onBack();
+          } catch (err) {
+            Alert.alert(
+              '갈피 삭제에 실패했어요',
+              err instanceof Error ? err.message : '잠시 후 다시 시도해주세요.',
+            );
+            setBusy(false);
+          }
         },
       },
     ]);
@@ -75,8 +96,9 @@ export function EditSentenceScreen({
         </View>
         <Pressable
           onPress={handleDelete}
+          disabled={busy}
           accessibilityLabel="갈피 삭제"
-          className="web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-card"
+          className={`web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-card ${busy ? 'opacity-60' : ''}`}
         >
           <Trash2 size={16} color={colors.destructive} />
         </Pressable>
@@ -149,11 +171,18 @@ export function EditSentenceScreen({
         <View className="border-t border-border bg-card/80 px-5 py-4 web:backdrop-blur">
           <Pressable
             onPress={handleSave}
-            className="web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-2xl bg-galpi-ink py-4"
+            disabled={busy}
+            className={`web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-2xl bg-galpi-ink py-4 ${
+              busy ? 'opacity-60' : ''
+            }`}
             style={({ pressed }) => pressed && { transform: [{ scale: 0.98 }] }}
           >
-            <Check size={16} color={colors.galpiPaper} />
-            <Text className="text-sm font-bold text-galpi-paper">수정 완료</Text>
+            {busy ? (
+              <ActivityIndicator color={colors.galpiPaper} />
+            ) : (
+              <Check size={16} color={colors.galpiPaper} />
+            )}
+            <Text className="text-sm font-bold text-galpi-paper">{busy ? '저장 중...' : '수정 완료'}</Text>
           </Pressable>
         </View>
       </KeyboardAvoidingView>
