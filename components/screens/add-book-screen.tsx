@@ -29,6 +29,7 @@ import {
   type LucideIcon,
 } from 'lucide-react-native';
 import { searchAladinBooks, type AladinBookResult } from '../../lib/aladin-books';
+import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
 import { colors } from '../../lib/theme';
 
 type Status = 'idle' | 'loading' | 'error' | 'success';
@@ -440,10 +441,17 @@ function ResultRow({
   adding: boolean;
   onAdd: () => void;
 }) {
+  const { showCover, onCoverError } = useCoverFallback(result.thumbnail);
+
   return (
     <View className="flex-row items-center gap-3 rounded-2xl border border-border bg-card p-3">
-      {result.thumbnail ? (
-        <Image source={{ uri: result.thumbnail }} className="h-16 w-11 rounded-md bg-secondary" resizeMode="cover" />
+      {showCover ? (
+        <Image
+          source={{ uri: result.thumbnail }}
+          className="h-16 w-11 rounded-md bg-secondary"
+          resizeMode="cover"
+          onError={onCoverError}
+        />
       ) : (
         <View className="h-16 w-11 items-center justify-center rounded-md bg-secondary">
           <BookOpen size={16} color={colors.mutedForeground} />

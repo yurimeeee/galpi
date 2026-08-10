@@ -1,6 +1,7 @@
 import { View, Text, Image } from 'react-native';
 import { Bookmark, Star } from 'lucide-react-native';
 import { type Book, STATUS_LABEL } from '../../lib/data/books';
+import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
 import { ACCENT_BG_CLASS, colors } from '../../lib/theme';
 
 function Rating({ value }: { value: number }) {
@@ -21,22 +22,28 @@ function Rating({ value }: { value: number }) {
 
 export function BookCard({ book }: { book: Book }) {
   const isWish = book.status === 'wish';
+  const { showCover, onCoverError } = useCoverFallback(book.coverUrl);
 
   return (
     <View className="flex-row items-stretch gap-4">
       {/* 표지 이미지 또는 책등(spine) 형태의 색 블록 */}
-      <View className={`relative w-14 shrink-0 overflow-hidden rounded-xl ${book.coverUrl ? 'bg-secondary' : ACCENT_BG_CLASS[book.accent]}`}>
-        {book.coverUrl ? (
-          <Image source={{ uri: book.coverUrl }} className="absolute inset-0 h-full w-full" resizeMode="cover" />
+      <View className={`relative w-14 shrink-0 overflow-hidden rounded-xl ${showCover ? 'bg-secondary' : ACCENT_BG_CLASS[book.accent]}`}>
+        {showCover ? (
+          <Image
+            source={{ uri: book.coverUrl }}
+            className="absolute inset-0 h-full w-full"
+            resizeMode="cover"
+            onError={onCoverError}
+          />
         ) : (
           <View className="absolute left-2 top-0 bottom-0 w-px bg-galpi-ink/10" />
         )}
         <View className="flex-1 items-end justify-end p-2">
-          <View className={book.coverUrl ? 'rounded-full bg-galpi-ink/50 p-1' : undefined}>
+          <View className={showCover ? 'rounded-full bg-galpi-ink/50 p-1' : undefined}>
             <Bookmark
               size={14}
-              color={book.coverUrl || book.accent === 'ink' ? colors.galpiPaper : colors.galpiInk}
-              opacity={book.coverUrl ? 1 : book.accent === 'ink' ? 1 : 0.7}
+              color={showCover || book.accent === 'ink' ? colors.galpiPaper : colors.galpiInk}
+              opacity={showCover ? 1 : book.accent === 'ink' ? 1 : 0.7}
             />
           </View>
         </View>

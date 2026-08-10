@@ -3,6 +3,7 @@ import { FlatList, Image, Pressable, Text, View } from 'react-native';
 import { Bookmark, ChevronLeft, Plus, Timer, X } from 'lucide-react-native';
 import { BottomSheet } from './bottom-sheet';
 import { type Book } from '../../lib/data/books';
+import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
 import { ACCENT_BG_CLASS, colors } from '../../lib/theme';
 
 type Step = 'choice' | 'pick-book';
@@ -119,30 +120,7 @@ export function AddChoiceSheet({
               아직 등록된 책이 없어요.
             </Text>
           }
-          renderItem={({ item }) => (
-            <Pressable
-              onPress={() => onPickBook(item)}
-              className="web:cursor-pointer flex-row items-center gap-3 rounded-2xl border border-border bg-card p-3"
-            >
-              <View
-                className={`h-12 w-9 shrink-0 overflow-hidden rounded-md ${
-                  item.coverUrl ? 'bg-secondary' : ACCENT_BG_CLASS[item.accent]
-                }`}
-              >
-                {item.coverUrl ? (
-                  <Image source={{ uri: item.coverUrl }} className="h-full w-full" resizeMode="cover" />
-                ) : null}
-              </View>
-              <View className="min-w-0 flex-1">
-                <Text numberOfLines={1} className="text-sm font-bold text-foreground">
-                  {item.title}
-                </Text>
-                <Text numberOfLines={1} className="mt-0.5 text-xs text-muted-foreground">
-                  {item.author}
-                </Text>
-              </View>
-            </Pressable>
-          )}
+          renderItem={({ item }) => <BookPickRow book={item} onPress={() => onPickBook(item)} />}
           ListFooterComponent={
             <Pressable
               onPress={onAddNewBook}
@@ -155,5 +133,39 @@ export function AddChoiceSheet({
         />
       )}
     </BottomSheet>
+  );
+}
+
+function BookPickRow({ book, onPress }: { book: Book; onPress: () => void }) {
+  const { showCover, onCoverError } = useCoverFallback(book.coverUrl);
+
+  return (
+    <Pressable
+      onPress={onPress}
+      className="web:cursor-pointer flex-row items-center gap-3 rounded-2xl border border-border bg-card p-3"
+    >
+      <View
+        className={`h-12 w-9 shrink-0 overflow-hidden rounded-md ${
+          showCover ? 'bg-secondary' : ACCENT_BG_CLASS[book.accent]
+        }`}
+      >
+        {showCover ? (
+          <Image
+            source={{ uri: book.coverUrl }}
+            className="h-full w-full"
+            resizeMode="cover"
+            onError={onCoverError}
+          />
+        ) : null}
+      </View>
+      <View className="min-w-0 flex-1">
+        <Text numberOfLines={1} className="text-sm font-bold text-foreground">
+          {book.title}
+        </Text>
+        <Text numberOfLines={1} className="mt-0.5 text-xs text-muted-foreground">
+          {book.author}
+        </Text>
+      </View>
+    </Pressable>
   );
 }

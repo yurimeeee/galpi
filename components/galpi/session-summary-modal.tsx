@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Pressable, Text, TextInput, View } from 'react-native';
+import { Image, Pressable, Text, TextInput, View } from 'react-native';
 import { Clock, Bookmark, BookCheck, Check, X } from 'lucide-react-native';
 import { BottomSheet } from './bottom-sheet';
 import { type Book } from '../../lib/data/books';
+import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
 import { ACCENT_BG_CLASS, colors } from '../../lib/theme';
 
 function formatMinutes(totalSeconds: number) {
@@ -35,6 +36,7 @@ export function SessionSummaryModal({
 }) {
   const [startPage, setStartPage] = useState('');
   const [endPage, setEndPage] = useState('');
+  const { showCover, onCoverError } = useCoverFallback(book.coverUrl);
 
   const pagesRead = Math.max(0, Number(endPage) - Number(startPage) || 0);
 
@@ -71,8 +73,26 @@ export function SessionSummaryModal({
 
       {/* 대상 책 */}
       <View className="mb-5 flex-row items-center gap-3 rounded-2xl border border-border bg-card p-3">
-        <View className={`h-14 w-10 shrink-0 items-end justify-center rounded-lg ${ACCENT_BG_CLASS[book.accent]} p-1.5`}>
-          <Bookmark size={14} color={book.accent === 'ink' ? colors.galpiPaper : colors.galpiInk} />
+        <View
+          className={`relative h-14 w-10 shrink-0 items-end justify-center overflow-hidden rounded-lg ${
+            showCover ? 'bg-secondary' : ACCENT_BG_CLASS[book.accent]
+          } p-1.5`}
+        >
+          {showCover ? (
+            <Image
+              source={{ uri: book.coverUrl }}
+              className="absolute inset-0 h-full w-full"
+              resizeMode="cover"
+              onError={onCoverError}
+            />
+          ) : null}
+          <View className={showCover ? 'rounded-full bg-galpi-ink/50 p-0.5' : undefined}>
+            <Bookmark
+              size={14}
+              color={showCover || book.accent === 'ink' ? colors.galpiPaper : colors.galpiInk}
+              opacity={showCover ? 1 : book.accent === 'ink' ? 1 : 0.7}
+            />
+          </View>
         </View>
         <View className="min-w-0 flex-1">
           <Text numberOfLines={1} className="text-sm font-bold text-foreground">

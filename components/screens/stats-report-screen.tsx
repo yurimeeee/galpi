@@ -21,6 +21,7 @@ import {
 import { Skeleton } from '../galpi/skeleton';
 import { BottomSheet } from '../galpi/bottom-sheet';
 import { GalpiHeaderLogo } from '../galpi/galpi-logo';
+import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
 import { colors, ACCENT_BG_CLASS } from '../../lib/theme';
 import type { Book } from '../../lib/data/books';
 import type { Sentence } from '../../lib/data/sentences';
@@ -345,26 +346,7 @@ function MonthlyView({
             const read = readDays.has(day);
 
             if (view === 'cover') {
-              const accent = book?.accent ?? 'ink';
-              return (
-                <View key={day} className="aspect-square w-[14.28%] p-[3px]">
-                  <View
-                    className={`relative flex-1 items-center justify-center overflow-hidden rounded-lg ${
-                      read ? (book?.coverUrl ? 'bg-secondary' : ACCENT_BG_CLASS[accent]) : ''
-                    }`}
-                  >
-                    {read ? (
-                      book?.coverUrl ? (
-                        <Image source={{ uri: book.coverUrl }} className="absolute inset-0 h-full w-full" resizeMode="cover" />
-                      ) : (
-                        <Bookmark size={14} color={accent === 'ink' ? colors.galpiPaper : colors.galpiInk} />
-                      )
-                    ) : (
-                      <Text className="text-[10px] font-bold text-muted-foreground/40">{day}</Text>
-                    )}
-                  </View>
-                </View>
-              );
+              return <CalendarCoverCell key={day} day={day} book={book} read={read} />;
             }
 
             return (
@@ -395,24 +377,77 @@ function MonthlyView({
         ) : (
           <View className="gap-2.5">
             {booksThisMonth.map(({ book, count }) => (
-              <View key={book.id} className="flex-row items-center gap-3 rounded-2xl bg-card p-3">
-                <View className={`h-12 w-9 shrink-0 items-center justify-center rounded-md ${ACCENT_BG_CLASS[book.accent]}`}>
-                  <Bookmark size={14} color={book.accent === 'ink' ? colors.galpiPaper : colors.galpiInk} />
-                </View>
-                <View className="min-w-0 flex-1">
-                  <Text numberOfLines={1} className="text-sm font-bold text-foreground">{book.title}</Text>
-                  <Text numberOfLines={1} className="text-xs text-muted-foreground">{book.author}</Text>
-                </View>
-                <View className="shrink-0 flex-row items-center gap-1 rounded-full bg-secondary px-2.5 py-1">
-                  <Bookmark size={11} color={colors.mutedForeground} />
-                  <Text className="text-[11px] font-bold text-foreground">{count}개</Text>
-                </View>
-              </View>
+              <BookThisMonthRow key={book.id} book={book} count={count} />
             ))}
           </View>
         )}
       </View>
     </>
+  );
+}
+
+/* ---------- 이달 갈피를 남긴 책 목록의 각 행 ---------- */
+function BookThisMonthRow({ book, count }: { book: Book; count: number }) {
+  const { showCover, onCoverError } = useCoverFallback(book.coverUrl);
+
+  return (
+    <View className="flex-row items-center gap-3 rounded-2xl bg-card p-3">
+      <View
+        className={`relative h-12 w-9 shrink-0 items-center justify-center overflow-hidden rounded-md ${
+          showCover ? 'bg-secondary' : ACCENT_BG_CLASS[book.accent]
+        }`}
+      >
+        {showCover ? (
+          <Image
+            source={{ uri: book.coverUrl }}
+            className="absolute inset-0 h-full w-full"
+            resizeMode="cover"
+            onError={onCoverError}
+          />
+        ) : (
+          <Bookmark size={14} color={book.accent === 'ink' ? colors.galpiPaper : colors.galpiInk} />
+        )}
+      </View>
+      <View className="min-w-0 flex-1">
+        <Text numberOfLines={1} className="text-sm font-bold text-foreground">{book.title}</Text>
+        <Text numberOfLines={1} className="text-xs text-muted-foreground">{book.author}</Text>
+      </View>
+      <View className="shrink-0 flex-row items-center gap-1 rounded-full bg-secondary px-2.5 py-1">
+        <Bookmark size={11} color={colors.mutedForeground} />
+        <Text className="text-[11px] font-bold text-foreground">{count}개</Text>
+      </View>
+    </View>
+  );
+}
+
+/* ---------- 달력 표지 뷰의 각 날짜 셀 ---------- */
+function CalendarCoverCell({ day, book, read }: { day: number; book: Book | undefined; read: boolean }) {
+  const { showCover, onCoverError } = useCoverFallback(book?.coverUrl);
+  const accent = book?.accent ?? 'ink';
+
+  return (
+    <View className="aspect-square w-[14.28%] p-[3px]">
+      <View
+        className={`relative flex-1 items-center justify-center overflow-hidden rounded-lg ${
+          read ? (showCover ? 'bg-secondary' : ACCENT_BG_CLASS[accent]) : ''
+        }`}
+      >
+        {read ? (
+          showCover ? (
+            <Image
+              source={{ uri: book?.coverUrl }}
+              className="absolute inset-0 h-full w-full"
+              resizeMode="cover"
+              onError={onCoverError}
+            />
+          ) : (
+            <Bookmark size={14} color={accent === 'ink' ? colors.galpiPaper : colors.galpiInk} />
+          )
+        ) : (
+          <Text className="text-[10px] font-bold text-muted-foreground/40">{day}</Text>
+        )}
+      </View>
+    </View>
   );
 }
 
@@ -838,23 +873,7 @@ function ReportCardBody({
           {monthData.completedBooks.length > 0 ? (
             <View className="flex-row gap-2">
               {monthData.completedBooks.slice(0, 5).map((book) => (
-                <View
-                  key={book.id}
-                  className={`relative aspect-square flex-1 items-start justify-end overflow-hidden rounded-xl p-2 ${
-                    book.coverUrl ? 'bg-secondary' : ACCENT_BG_CLASS[book.accent]
-                  }`}
-                >
-                  {book.coverUrl ? (
-                    <Image source={{ uri: book.coverUrl }} className="absolute inset-0 h-full w-full" resizeMode="cover" />
-                  ) : null}
-                  <View className={book.coverUrl ? 'rounded-full bg-galpi-ink/50 p-1' : undefined}>
-                    <Bookmark
-                      size={13}
-                      color={book.coverUrl || book.accent === 'ink' ? colors.galpiPaper : colors.galpiInk}
-                      opacity={book.coverUrl ? 1 : book.accent === 'ink' ? 1 : 0.7}
-                    />
-                  </View>
-                </View>
+                <CompletedBookCover key={book.id} book={book} />
               ))}
             </View>
           ) : (
@@ -870,6 +889,34 @@ function ReportCardBody({
         </View>
       )}
     </>
+  );
+}
+
+function CompletedBookCover({ book }: { book: Book }) {
+  const { showCover, onCoverError } = useCoverFallback(book.coverUrl);
+
+  return (
+    <View
+      className={`relative aspect-square flex-1 items-start justify-end overflow-hidden rounded-xl p-2 ${
+        showCover ? 'bg-secondary' : ACCENT_BG_CLASS[book.accent]
+      }`}
+    >
+      {showCover ? (
+        <Image
+          source={{ uri: book.coverUrl }}
+          className="absolute inset-0 h-full w-full"
+          resizeMode="cover"
+          onError={onCoverError}
+        />
+      ) : null}
+      <View className={showCover ? 'rounded-full bg-galpi-ink/50 p-1' : undefined}>
+        <Bookmark
+          size={13}
+          color={showCover || book.accent === 'ink' ? colors.galpiPaper : colors.galpiInk}
+          opacity={showCover ? 1 : book.accent === 'ink' ? 1 : 0.7}
+        />
+      </View>
+    </View>
   );
 }
 
