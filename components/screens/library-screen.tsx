@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { FlatList, Pressable, Text, View } from 'react-native';
+import { FlatList, Pressable, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Bookmark, Search, ChevronRight, Quote } from 'lucide-react-native';
 import { GalpiHeaderLogo } from '../galpi/galpi-logo';
@@ -20,6 +20,21 @@ export function MainLibraryScreen({
   onAddBook: () => void;
 }) {
   const [filter, setFilter] = useState<FilterKey>('all');
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [query, setQuery] = useState('');
+
+  const trimmedQuery = query.trim().toLowerCase();
+  const searchResults = useMemo(() => {
+    if (!trimmedQuery) return [];
+    return books.filter(
+      (b) => b.title.toLowerCase().includes(trimmedQuery) || b.author.toLowerCase().includes(trimmedQuery),
+    );
+  }, [books, trimmedQuery]);
+
+  function closeSearch() {
+    setSearchOpen(false);
+    setQuery('');
+  }
 
   const counts = useMemo(
     () => ({
@@ -39,7 +54,7 @@ export function MainLibraryScreen({
   return (
     <SafeAreaView edges={['top']} className="flex-1 min-h-0 bg-background">
       <FlatList
-        data={visible}
+        data={searchOpen ? searchResults : visible}
         keyExtractor={(b) => b.id}
         contentContainerClassName="px-6 pb-6"
         ItemSeparatorComponent={() => <View className="h-4" />}
@@ -48,13 +63,41 @@ export function MainLibraryScreen({
             <BookCard book={item} />
           </Pressable>
         )}
+        ListEmptyComponent={
+          searchOpen ? (
+            <View className="items-center py-16">
+              <Text className="text-center text-sm text-muted-foreground">
+                {trimmedQuery ? `'${query.trim()}'에 대한 검색 결과가 없어요` : '책 제목이나 작가로 검색해보세요'}
+              </Text>
+            </View>
+          ) : null
+        }
         ListHeaderComponent={
+          searchOpen ? (
+            <View className="flex-row items-center gap-3 pb-4 pt-1">
+              <View className="flex-1 flex-row items-center gap-2 rounded-full bg-card px-4 py-2.5">
+                <Search size={16} color={colors.mutedForeground} />
+                <TextInput
+                  value={query}
+                  onChangeText={setQuery}
+                  placeholder="책 제목이나 작가로 검색"
+                  placeholderTextColor={colors.mutedForeground}
+                  autoFocus
+                  returnKeyType="search"
+                  className="flex-1 text-sm text-foreground"
+                />
+              </View>
+              <Pressable onPress={closeSearch} className="web:cursor-pointer">
+                <Text className="text-sm font-semibold text-muted-foreground">취소</Text>
+              </Pressable>
+            </View>
+          ) : (
           <View>
             {/* 헤더 */}
             <View className="flex-row items-center justify-between pt-1 pb-4">
               <GalpiHeaderLogo markColor={colors.galpiInk} markSize={28} wordClassName="text-xl text-foreground" />
               <Pressable
-                onPress={onAddBook}
+                onPress={() => setSearchOpen(true)}
                 accessibilityLabel="책 검색"
                 className="items-center justify-center rounded-full web:cursor-pointer h-9 w-9 bg-card"
               >
@@ -128,17 +171,20 @@ export function MainLibraryScreen({
               <StatusFilter active={filter} onChange={setFilter} counts={counts} />
             </View>
           </View>
+          )
         }
         ListFooterComponent={
-          <Pressable
-            onPress={onAddBook}
-            className="flex-row items-center justify-center w-full gap-2 py-4 mt-5 border border-dashed web:cursor-pointer rounded-2xl border-border bg-card"
-          >
-            <View className="items-center justify-center w-5 h-5 rounded-full bg-galpi-green">
-              <Text className="text-galpi-ink">+</Text>
-            </View>
-            <Text className="text-sm font-semibold text-muted-foreground">새로운 책 추가하기</Text>
-          </Pressable>
+          searchOpen ? null : (
+            <Pressable
+              onPress={onAddBook}
+              className="flex-row items-center justify-center w-full gap-2 py-4 mt-5 border border-dashed web:cursor-pointer rounded-2xl border-border bg-card"
+            >
+              <View className="items-center justify-center w-5 h-5 rounded-full bg-galpi-green">
+                <Text className="text-galpi-ink">+</Text>
+              </View>
+              <Text className="text-sm font-semibold text-muted-foreground">새로운 책 추가하기</Text>
+            </Pressable>
+          )
         }
       />
     </SafeAreaView>
