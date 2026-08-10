@@ -15,6 +15,8 @@ export type Sentence = {
   photoUrl?: string;
   type: EntryType;
   date: string;
+  /** Starred by the user as a favorite/highlight — surfaced in the yearly report's top quote. */
+  favorite?: boolean;
 };
 
 export function sentencesByBook(

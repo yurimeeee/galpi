@@ -38,6 +38,7 @@ export function BookDetailScreen({
   onStartTimer,
   onEditProgress,
   onDeleteBook,
+  onToggleSentenceFavorite,
 }: {
   book: Book;
   sentences: Sentence[];
@@ -49,6 +50,7 @@ export function BookDetailScreen({
   onStartTimer: () => void;
   onEditProgress: (patch: { totalPages: number; furthestPage: number; progress: number }) => Promise<void>;
   onDeleteBook: () => Promise<void>;
+  onToggleSentenceFavorite: (sentenceId: string, favorite: boolean) => void;
 }) {
   const inkText = book.accent === 'ink' ? colors.galpiPaper : colors.galpiInk;
   const [progressModalOpen, setProgressModalOpen] = useState(false);
@@ -146,11 +148,25 @@ export function BookDetailScreen({
                     P. {item.page}
                   </Text>
                 </View>
-                <View className="flex-row items-center gap-1 rounded-full bg-secondary px-2 py-1">
-                  <Icon size={12} color={colors.mutedForeground} />
-                  <Text className="text-[10px] font-semibold text-muted-foreground">
-                    {ENTRY_LABEL[item.type]}
-                  </Text>
+                <View className="flex-row items-center gap-1.5">
+                  <View className="flex-row items-center gap-1 rounded-full bg-secondary px-2 py-1">
+                    <Icon size={12} color={colors.mutedForeground} />
+                    <Text className="text-[10px] font-semibold text-muted-foreground">
+                      {ENTRY_LABEL[item.type]}
+                    </Text>
+                  </View>
+                  <Pressable
+                    onPress={() => onToggleSentenceFavorite(item.id, !item.favorite)}
+                    accessibilityLabel={item.favorite ? '즐겨찾기 해제' : '즐겨찾기에 담기'}
+                    hitSlop={8}
+                    className="web:cursor-pointer h-6 w-6 items-center justify-center rounded-full bg-secondary"
+                  >
+                    <Star
+                      size={12}
+                      color={item.favorite ? colors.galpiYellow : colors.mutedForeground}
+                      fill={item.favorite ? colors.galpiYellow : 'transparent'}
+                    />
+                  </Pressable>
                 </View>
               </View>
 

@@ -490,9 +490,13 @@ function YearlyView({
       }
     }
     const topQuote = topBook
-      ? inYear
-          .filter((x) => x.s.bookId === topBook!.id)
-          .sort((a, b) => b.d.getTime() - a.d.getTime())[0]?.s
+      ? (() => {
+          const inTopBook = inYear
+            .filter((x) => x.s.bookId === topBook!.id)
+            .sort((a, b) => b.d.getTime() - a.d.getTime());
+          // 직접 즐겨찾기한 갈피가 있으면 그걸 우선 — 없으면 가장 최근 갈피로 대체
+          return (inTopBook.find((x) => x.s.favorite) ?? inTopBook[0])?.s;
+        })()
       : undefined;
 
     return { seasonLabel, topBook, topQuote };

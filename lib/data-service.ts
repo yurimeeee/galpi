@@ -266,6 +266,14 @@ export async function updateSentenceDoc(
   });
 }
 
+export async function setSentenceFavoriteDoc(
+  uid: string,
+  sentenceId: string,
+  favorite: boolean,
+): Promise<void> {
+  await updateDoc(doc(sentencesCol(uid), sentenceId), favorite ? { favorite: true } : { favorite: deleteField() });
+}
+
 /**
  * Deletes a sentence and decrements the parent book's galpiCount to match —
  * the inverse of the increment addSentenceDoc performs on create.

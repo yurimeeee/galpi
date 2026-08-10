@@ -7,6 +7,7 @@ import {
   addSentenceDoc,
   deleteBookDoc,
   deleteSentenceDoc,
+  setSentenceFavoriteDoc,
   updateBookDoc,
   updateSentenceDoc,
   uploadBookCover as uploadBookCoverDoc,
@@ -41,6 +42,7 @@ type AppState = {
   addSentence: (sentence: NewSentence) => Promise<void>;
   updateSentence: (id: string, changes: { page: number; quote: string; memo?: string }) => Promise<void>;
   deleteSentence: (id: string) => Promise<void>;
+  setSentenceFavorite: (id: string, favorite: boolean) => Promise<void>;
   addBook: (book: NewBook) => Promise<void>;
   updateBook: (
     bookId: string,
@@ -91,6 +93,12 @@ export const useAppStore = create<AppState>()(
         const sentence = get().sentences.find((s) => s.id === id);
         if (!uid || !sentence) return;
         await deleteSentenceDoc(uid, sentence);
+      },
+
+      setSentenceFavorite: async (id, favorite) => {
+        const uid = get().user?.uid;
+        if (!uid) return;
+        await setSentenceFavoriteDoc(uid, id, favorite);
       },
 
       addBook: async ({ title, author, coverUrl, totalPages, genre }) => {
