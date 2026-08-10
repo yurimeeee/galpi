@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ActivityIndicator, FlatList, Image, Keyboard, Pressable, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronLeft, Plus, Search, BookOpen } from 'lucide-react-native';
-import { searchKakaoBooks, type KakaoBookResult } from '../../lib/kakao-books';
+import { searchAladinBooks, type AladinBookResult } from '../../lib/aladin-books';
 import { colors } from '../../lib/theme';
 
 type Status = 'idle' | 'loading' | 'error' | 'success';
@@ -12,11 +12,11 @@ export function AddBookScreen({
   onAdd,
 }: {
   onBack: () => void;
-  onAdd: (result: KakaoBookResult) => Promise<void>;
+  onAdd: (result: AladinBookResult) => Promise<void>;
 }) {
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState<Status>('idle');
-  const [results, setResults] = useState<KakaoBookResult[]>([]);
+  const [results, setResults] = useState<AladinBookResult[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [addingIsbn, setAddingIsbn] = useState<string | null>(null);
   const [addError, setAddError] = useState('');
@@ -29,7 +29,7 @@ export function AddBookScreen({
     setErrorMessage('');
     setAddError('');
     try {
-      const books = await searchKakaoBooks(q);
+      const books = await searchAladinBooks(q);
       setResults(books);
       setStatus('success');
     } catch (err) {
@@ -38,7 +38,7 @@ export function AddBookScreen({
     }
   }
 
-  async function handleAdd(result: KakaoBookResult) {
+  async function handleAdd(result: AladinBookResult) {
     if (addingIsbn) return;
     setAddError('');
     setAddingIsbn(result.isbn || result.title);
@@ -133,7 +133,7 @@ function ResultRow({
   adding,
   onAdd,
 }: {
-  result: KakaoBookResult;
+  result: AladinBookResult;
   adding: boolean;
   onAdd: () => void;
 }) {
@@ -152,7 +152,7 @@ function ResultRow({
           {result.title}
         </Text>
         <Text numberOfLines={1} className="mt-0.5 text-xs text-muted-foreground">
-          {result.authors.join(', ') || '저자 미상'}
+          {result.author || '저자 미상'}
         </Text>
         {result.publisher ? (
           <Text numberOfLines={1} className="mt-0.5 text-[11px] text-muted-foreground">

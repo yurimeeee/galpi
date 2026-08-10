@@ -7,13 +7,18 @@ export type Book = {
   rating: number; // 0 ~ 5
   galpiCount: number; // 저장한 문장(갈피) 수
   status: ReadingStatus;
-  progress: number; // 0 ~ 100
+  /** 0 ~ 100. Auto-derived from furthestPage/totalPages by addSentenceDoc/updateSentenceDoc when totalPages is known; stays 0 otherwise. */
+  progress: number;
   accent: 'blue' | 'green' | 'yellow' | 'ink';
   quote?: string;
-  /** Cover thumbnail URL, e.g. from Kakao book search. */
+  /** Cover thumbnail URL, e.g. from Aladin book search. */
   coverUrl?: string;
   /** Date the book was marked "done", as "YYYY.MM.DD". Set/cleared by updateBookDoc when status changes. */
   completedAt?: string;
+  /** Total page count, from Aladin's ItemLookUp when the book was added. */
+  totalPages?: number;
+  /** Furthest page a saved 갈피 references — drives `progress` alongside totalPages. */
+  furthestPage?: number;
 };
 
 export const STATUS_LABEL: Record<ReadingStatus, string> = {

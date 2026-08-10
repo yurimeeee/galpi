@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { FlatList, Image, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
@@ -13,6 +14,7 @@ import {
   type LucideIcon,
 } from 'lucide-react-native';
 import { Skeleton } from '../galpi/skeleton';
+import { EditProgressModal } from '../galpi/edit-progress-modal';
 import { type Book, type ReadingStatus, STATUS_LABEL } from '../../lib/data/books';
 import { ENTRY_LABEL, type EntryType, type Sentence } from '../../lib/data/sentences';
 import { ACCENT_BG_CLASS, colors } from '../../lib/theme';
@@ -32,6 +34,7 @@ export function BookDetailScreen({
   onChangeStatus,
   onChangeRating,
   onStartTimer,
+  onEditProgress,
 }: {
   book: Book;
   sentences: Sentence[];
@@ -41,8 +44,10 @@ export function BookDetailScreen({
   onChangeStatus: (status: ReadingStatus) => void;
   onChangeRating: (rating: number) => void;
   onStartTimer: () => void;
+  onEditProgress: (patch: { totalPages: number; furthestPage: number; progress: number }) => Promise<void>;
 }) {
   const inkText = book.accent === 'ink' ? colors.galpiPaper : colors.galpiInk;
+  const [progressModalOpen, setProgressModalOpen] = useState(false);
 
   return (
     <SafeAreaView edges={['top', 'bottom']} className="flex-1 min-h-0 bg-background">
@@ -230,7 +235,7 @@ export function BookDetailScreen({
 
             {/* 진행률 요약 */}
             <View className="mt-5 flex-row items-center gap-3 rounded-2xl bg-card p-4">
-              <StatBit label="읽은 정도" value={`${book.progress}%`} />
+              <StatBit label="읽은 정도" value={`${book.progress}%`} onPress={() => setProgressModalOpen(true)} />
               <View className="h-8 w-px bg-border" />
               <StatBit label="남긴 갈피" value={`${book.galpiCount}개`} />
               <View className="h-8 w-px bg-border" />
@@ -269,16 +274,35 @@ export function BookDetailScreen({
           <Text className="text-sm font-bold text-galpi-paper">갈피 남기기</Text>
         </Pressable>
       </View>
+
+      {progressModalOpen ? (
+        <EditProgressModal
+          book={book}
+          onClose={() => setProgressModalOpen(false)}
+          onSave={async (patch) => {
+            await onEditProgress(patch);
+            setProgressModalOpen(false);
+          }}
+        />
+      ) : null}
     </SafeAreaView>
   );
 }
 
-function StatBit({ label, value }: { label: string; value: string }) {
-  return (
-    <View className="flex-1 items-center">
+function StatBit({ label, value, onPress }: { label: string; value: string; onPress?: () => void }) {
+  const content = (
+    <>
       <Text className="text-base font-black text-foreground">{value}</Text>
       <Text className="mt-0.5 text-[10px] font-medium text-muted-foreground">{label}</Text>
-    </View>
+    </>
+  );
+  if (!onPress) {
+    return <View className="flex-1 items-center">{content}</View>;
+  }
+  return (
+    <Pressable onPress={onPress} accessibilityLabel={`${label} 수정`} className="web:cursor-pointer flex-1 items-center">
+      {content}
+    </Pressable>
   );
 }
 

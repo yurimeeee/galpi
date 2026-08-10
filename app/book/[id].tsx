@@ -35,6 +35,7 @@ export default function BookDetail() {
         }
       }}
       onChangeRating={(rating) => updateBook(book.id, { rating })}
+      onEditProgress={(patch) => updateBook(book.id, patch)}
     />
   );
 }

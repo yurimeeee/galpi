@@ -7,6 +7,7 @@ import {
   onSnapshot,
   orderBy,
   query,
+  runTransaction,
   setDoc,
   updateDoc,
   writeBatch,
@@ -76,7 +77,7 @@ export async function addBookDoc(uid: string, book: Omit<Book, 'id'>, order: num
 export async function updateBookDoc(
   uid: string,
   bookId: string,
-  patch: Partial<Pick<Book, 'status' | 'rating'>>,
+  patch: Partial<Pick<Book, 'status' | 'rating' | 'totalPages' | 'furthestPage' | 'progress'>>,
 ): Promise<void> {
   const fullPatch: Record<string, unknown> = { ...patch };
   if (patch.status === 'done') {
@@ -147,14 +148,35 @@ export async function uploadSentencePhoto(uid: string, dataUrl: string): Promise
   return getDownloadURL(photoRef);
 }
 
+/**
+ * `progress` only ever tracks forward: the furthest page a saved 갈피 has
+ * referenced, as a % of totalPages. It doesn't recompute from scratch (that
+ * would mean scanning every sentence for the book on each write) and doesn't
+ * regress on edit-down or delete — "how far you've read" shouldn't drop just
+ * because a note was edited or removed.
+ */
+function furthestPagePatch(book: Book | undefined, page: number): Record<string, unknown> {
+  if (!book?.totalPages) return {};
+  const furthestPage = Math.max(book.furthestPage ?? 0, page);
+  return {
+    furthestPage,
+    progress: Math.min(100, Math.round((furthestPage / book.totalPages) * 100)),
+  };
+}
+
 export async function addSentenceDoc(
   uid: string,
   sentence: Omit<Sentence, 'id' | 'date'>,
 ): Promise<void> {
-  const batch = writeBatch(db);
-  batch.set(doc(sentencesCol(uid)), withoutUndefined({ ...sentence, date: todayLabel() }));
-  batch.update(doc(booksCol(uid), sentence.bookId), { galpiCount: increment(1) });
-  await batch.commit();
+  const bookRef = doc(booksCol(uid), sentence.bookId);
+  const sentenceRef = doc(sentencesCol(uid));
+  await runTransaction(db, async (tx) => {
+    const bookSnap = await tx.get(bookRef);
+    const book = bookSnap.exists() ? (bookSnap.data() as Book) : undefined;
+
+    tx.set(sentenceRef, withoutUndefined({ ...sentence, date: todayLabel() }));
+    tx.update(bookRef, { galpiCount: increment(1), ...furthestPagePatch(book, sentence.page) });
+  });
 }
 
 export async function updateSentenceDoc(
@@ -162,10 +184,23 @@ export async function updateSentenceDoc(
   sentenceId: string,
   changes: { page: number; quote: string; memo?: string },
 ): Promise<void> {
-  await updateDoc(doc(sentencesCol(uid), sentenceId), {
-    page: changes.page,
-    quote: changes.quote,
-    memo: changes.memo === undefined ? deleteField() : changes.memo,
+  const sentenceRef = doc(sentencesCol(uid), sentenceId);
+  await runTransaction(db, async (tx) => {
+    const sentenceSnap = await tx.get(sentenceRef);
+    const bookId = sentenceSnap.exists() ? (sentenceSnap.data() as Sentence).bookId : undefined;
+    const bookRef = bookId ? doc(booksCol(uid), bookId) : null;
+    const bookSnap = bookRef ? await tx.get(bookRef) : null;
+    const book = bookSnap?.exists() ? (bookSnap.data() as Book) : undefined;
+
+    tx.update(sentenceRef, {
+      page: changes.page,
+      quote: changes.quote,
+      memo: changes.memo === undefined ? deleteField() : changes.memo,
+    });
+    if (bookRef) {
+      const patch = furthestPagePatch(book, changes.page);
+      if (Object.keys(patch).length > 0) tx.update(bookRef, patch);
+    }
   });
 }
 

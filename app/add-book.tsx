@@ -1,16 +1,18 @@
 import { router } from 'expo-router';
 import { AddBookScreen } from '../components/screens/add-book-screen';
 import { useAppStore } from '../lib/store';
-import type { KakaoBookResult } from '../lib/kakao-books';
+import { lookupAladinTotalPages, type AladinBookResult } from '../lib/aladin-books';
 
 export default function AddBook() {
   const addBook = useAppStore((s) => s.addBook);
 
-  async function handleAdd(result: KakaoBookResult) {
+  async function handleAdd(result: AladinBookResult) {
+    const totalPages = await lookupAladinTotalPages(result.itemId);
     await addBook({
       title: result.title,
-      author: result.authors.join(', ') || '저자 미상',
+      author: result.author || '저자 미상',
       coverUrl: result.thumbnail || undefined,
+      totalPages: totalPages ?? undefined,
     });
   }
 

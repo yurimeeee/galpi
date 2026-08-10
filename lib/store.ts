@@ -17,7 +17,7 @@ import { ACCENT_CYCLE } from './theme';
 export type Gate = 'loading' | 'onboarding' | 'login' | 'signup' | 'app';
 
 type NewSentence = Omit<Sentence, 'id' | 'date'>;
-type NewBook = { title: string; author: string; coverUrl?: string };
+type NewBook = { title: string; author: string; coverUrl?: string; totalPages?: number };
 
 type AppState = {
   gate: Gate;
@@ -40,7 +40,10 @@ type AppState = {
   updateSentence: (id: string, changes: { page: number; quote: string; memo?: string }) => Promise<void>;
   deleteSentence: (id: string) => Promise<void>;
   addBook: (book: NewBook) => Promise<void>;
-  updateBook: (bookId: string, patch: Partial<Pick<Book, 'status' | 'rating'>>) => Promise<void>;
+  updateBook: (
+    bookId: string,
+    patch: Partial<Pick<Book, 'status' | 'rating' | 'totalPages' | 'furthestPage' | 'progress'>>,
+  ) => Promise<void>;
   uploadSentencePhoto: (dataUrl: string) => Promise<string>;
 
   bookById: (id: string) => Book | undefined;
@@ -86,7 +89,7 @@ export const useAppStore = create<AppState>()(
         await deleteSentenceDoc(uid, sentence);
       },
 
-      addBook: async ({ title, author, coverUrl }) => {
+      addBook: async ({ title, author, coverUrl, totalPages }) => {
         const { user, books } = get();
         const uid = user?.uid;
         if (!uid) return;
@@ -100,6 +103,7 @@ export const useAppStore = create<AppState>()(
           progress: 0,
           accent: ACCENT_CYCLE[order % ACCENT_CYCLE.length],
           coverUrl,
+          totalPages,
         };
         await addBookDoc(uid, book, order);
       },
