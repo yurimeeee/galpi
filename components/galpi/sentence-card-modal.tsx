@@ -2,7 +2,6 @@ import { useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Image, Platform, Pressable, Text, View } from 'react-native';
 import { Bookmark, Check, Download, Quote, Share2, X } from 'lucide-react-native';
 import { BottomSheet } from './bottom-sheet';
-import { GalpiHeaderLogo } from './galpi-logo';
 import { captureViewAsImage, MediaPermissionError, saveImageToDevice, shareImage, ShareUnavailableError } from '../../lib/share-image';
 import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
 import { type Book } from '../../lib/data/books';
@@ -175,7 +174,12 @@ export function SentenceCardModal({
 
         <View
           className={`overflow-hidden rounded-3xl p-6 ${ratio === '1:1' ? 'w-full' : 'w-[58%]'}`}
-          style={{ aspectRatio: ratio === '1:1' ? 1 : 9 / 16, backgroundColor: palette.bg }}
+          style={{
+            aspectRatio: ratio === '1:1' ? 1 : 9 / 16,
+            backgroundColor: palette.bg,
+            borderWidth: 1,
+            borderColor: hexToRgba(palette.text, 0.08),
+          }}
         >
           <SentenceCardBody book={book} sentence={sentence} theme={theme} palette={palette} />
         </View>
@@ -187,7 +191,13 @@ export function SentenceCardModal({
               ref={cardRef}
               collapsable={false}
               className="overflow-hidden rounded-3xl p-6"
-              style={{ width: realCardWidth, aspectRatio: ratio === '1:1' ? 1 : 9 / 16, backgroundColor: palette.bg }}
+              style={{
+                width: realCardWidth,
+                aspectRatio: ratio === '1:1' ? 1 : 9 / 16,
+                backgroundColor: palette.bg,
+                borderWidth: 1,
+                borderColor: hexToRgba(palette.text, 0.08),
+              }}
             >
               <SentenceCardBody book={book} sentence={sentence} theme={theme} palette={palette} />
             </View>
@@ -218,6 +228,15 @@ export function SentenceCardModal({
   );
 }
 
+/** Longer quotes need a smaller size to avoid overflowing the fixed-aspect card. */
+function quoteSizeClass(length: number): string {
+  if (length <= 40) return 'text-3xl';
+  if (length <= 80) return 'text-2xl';
+  if (length <= 140) return 'text-xl';
+  if (length <= 220) return 'text-lg';
+  return 'text-base';
+}
+
 /** 카드의 실제 내용. 작은 미리보기와 실제 크기 캡처 대상 양쪽에서 그대로 재사용한다. */
 function SentenceCardBody({
   book,
@@ -233,30 +252,38 @@ function SentenceCardBody({
   const { showCover, onCoverError } = useCoverFallback(book.coverUrl);
   const { text } = palette;
   const MarkIcon = theme === 'accent' ? Bookmark : Quote;
-  const wordClassName = `text-xs ${text === colors.galpiInk ? 'text-galpi-ink' : 'text-galpi-paper'}`;
 
   return (
-    <View className="flex-1 justify-between">
-      <View className="flex-row items-center justify-between">
-        <GalpiHeaderLogo markColor={text} markSize={16} wordClassName={wordClassName} />
-        <View className="flex-row items-center gap-1">
-          <MarkIcon size={12} color={text} opacity={0.6} />
-          <Text style={{ color: text, opacity: 0.6 }} className="text-[11px] font-semibold">
+    <View className="relative flex-1 justify-between overflow-hidden">
+      {/* 배경 장식: 큰 인용부호로 여백을 채워 카드가 비어 보이지 않게 함 */}
+      <Text
+        pointerEvents="none"
+        style={{ position: 'absolute', top: 0, left: -6, color: text, opacity: 0.1 }}
+        className="text-8xl font-black leading-none"
+      >
+        “
+      </Text>
+
+      <View className="flex-row items-center justify-end">
+        <View
+          className="flex-row items-center gap-1 rounded-full px-2 py-1"
+          style={{ backgroundColor: hexToRgba(text, 0.12) }}
+        >
+          <MarkIcon size={11} color={text} opacity={0.8} />
+          <Text style={{ color: text, opacity: 0.8 }} className="text-[10px] font-bold">
             {sentence.date}
           </Text>
         </View>
       </View>
 
-      <View>
-        {theme === 'paper' ? (
-          <Text style={{ color: text, opacity: 0.12, marginBottom: -28 }} className="text-6xl font-black leading-none">
-            “
-          </Text>
-        ) : null}
-        <Text style={{ color: text }} className="text-xl font-bold leading-relaxed">
-          "{sentence.quote}"
-        </Text>
-      </View>
+      <Text
+        numberOfLines={7}
+        ellipsizeMode="tail"
+        style={{ color: text }}
+        className={`${quoteSizeClass(sentence.quote.length)} font-bold leading-relaxed`}
+      >
+        "{sentence.quote}"
+      </Text>
 
       <View
         className="flex-row items-center gap-3 pt-4"
@@ -277,12 +304,12 @@ function SentenceCardBody({
             <Bookmark size={12} color={text} opacity={0.5} />
           )}
         </View>
-        <View className="min-w-0 flex-1">
-          <Text numberOfLines={1} style={{ color: text }} className="text-xs font-bold">
-            {book.title}
-          </Text>
-          <Text numberOfLines={1} style={{ color: text, opacity: 0.5 }} className="mt-0.5 text-[11px]">
-            {book.author} · P.{sentence.page}
+        <Text numberOfLines={1} style={{ color: text }} className="min-w-0 flex-1 text-xs font-bold">
+          {book.title} <Text style={{ color: text, opacity: 0.5 }} className="font-normal">· {book.author}</Text>
+        </Text>
+        <View className="shrink-0 rounded-md px-2 py-0.5" style={{ backgroundColor: hexToRgba(text, 0.14) }}>
+          <Text style={{ color: text }} className="font-mono text-[10px] font-bold">
+            P.{sentence.page}
           </Text>
         </View>
       </View>
