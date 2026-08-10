@@ -21,6 +21,8 @@ export type Book = {
   genre?: string;
   /** Furthest page a saved 갈피 references — drives `progress` alongside totalPages. */
   furthestPage?: number;
+  /** Short overall review, written after finishing the book. */
+  review?: string;
 };
 
 export const STATUS_LABEL: Record<ReadingStatus, string> = {

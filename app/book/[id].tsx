@@ -37,6 +37,7 @@ export default function BookDetail() {
         }
       }}
       onChangeRating={(rating) => updateBook(book.id, { rating })}
+      onChangeReview={(review) => updateBook(book.id, { review })}
       onEditProgress={(patch) => updateBook(book.id, patch)}
       onDeleteBook={() => deleteBook(book.id)}
       onToggleSentenceFavorite={(sentenceId, favorite) => setSentenceFavorite(sentenceId, favorite)}

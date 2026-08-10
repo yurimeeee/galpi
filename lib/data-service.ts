@@ -72,7 +72,7 @@ export async function addBookDoc(uid: string, book: Omit<Book, 'id'>, order: num
 export async function updateBookDoc(
   uid: string,
   bookId: string,
-  patch: Partial<Pick<Book, 'status' | 'rating' | 'totalPages' | 'furthestPage' | 'progress'>>,
+  patch: Partial<Pick<Book, 'status' | 'rating' | 'totalPages' | 'furthestPage' | 'progress' | 'review'>>,
 ): Promise<void> {
   const fullPatch: Record<string, unknown> = { ...patch };
   if (patch.status === 'done') {

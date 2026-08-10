@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, Image, Pressable, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, Alert, FlatList, Image, Pressable, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   ChevronLeft,
@@ -35,6 +35,7 @@ export function BookDetailScreen({
   onEditSentence,
   onChangeStatus,
   onChangeRating,
+  onChangeReview,
   onStartTimer,
   onEditProgress,
   onDeleteBook,
@@ -47,6 +48,7 @@ export function BookDetailScreen({
   onEditSentence: (sentenceId: string) => void;
   onChangeStatus: (status: ReadingStatus) => void;
   onChangeRating: (rating: number) => void;
+  onChangeReview: (review: string) => void;
   onStartTimer: () => void;
   onEditProgress: (patch: { totalPages: number; furthestPage: number; progress: number }) => Promise<void>;
   onDeleteBook: () => Promise<void>;
@@ -55,7 +57,12 @@ export function BookDetailScreen({
   const inkText = book.accent === 'ink' ? colors.galpiPaper : colors.galpiInk;
   const [progressModalOpen, setProgressModalOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [reviewDraft, setReviewDraft] = useState(book.review ?? '');
   const { showCover, onCoverError } = useCoverFallback(book.coverUrl);
+
+  useEffect(() => {
+    setReviewDraft(book.review ?? '');
+  }, [book.id, book.review]);
 
   function handleDelete() {
     Alert.alert(
@@ -305,6 +312,27 @@ export function BookDetailScreen({
                 );
               })}
             </View>
+
+            {/* 총평 */}
+            {book.status === 'done' ? (
+              <View className="mt-4">
+                <Text className="mb-1.5 text-[13px] font-semibold text-foreground">총평</Text>
+                <TextInput
+                  value={reviewDraft}
+                  onChangeText={setReviewDraft}
+                  onBlur={() => {
+                    if (reviewDraft !== (book.review ?? '')) onChangeReview(reviewDraft);
+                  }}
+                  multiline
+                  numberOfLines={3}
+                  placeholder="이 책은 어땠나요? 짧게 남겨보세요."
+                  placeholderTextColor={colors.mutedForeground}
+                  textAlignVertical="top"
+                  className="w-full rounded-2xl border border-border bg-card p-4 text-sm leading-relaxed text-foreground focus:border-galpi-ink"
+                  style={{ minHeight: 80 }}
+                />
+              </View>
+            ) : null}
 
             {/* 진행률 요약 */}
             <View className="mt-5 flex-row items-center gap-3 rounded-2xl bg-card p-4">

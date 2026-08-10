@@ -46,7 +46,7 @@ type AppState = {
   addBook: (book: NewBook) => Promise<void>;
   updateBook: (
     bookId: string,
-    patch: Partial<Pick<Book, 'status' | 'rating' | 'totalPages' | 'furthestPage' | 'progress'>>,
+    patch: Partial<Pick<Book, 'status' | 'rating' | 'totalPages' | 'furthestPage' | 'progress' | 'review'>>,
   ) => Promise<void>;
   deleteBook: (bookId: string) => Promise<void>;
   uploadSentencePhoto: (dataUrl: string) => Promise<string>;
