@@ -8,15 +8,25 @@ import { ColorChips } from '../galpi/color-chips';
 import { Skeleton } from '../galpi/skeleton';
 import { StatusFilter, type FilterKey } from '../galpi/status-filter';
 import { type Book } from '../../lib/data/books';
+import { type Sentence } from '../../lib/data/sentences';
 import { ACCENT_BG_CLASS, colors } from '../../lib/theme';
+
+type SearchRow =
+  | { kind: 'header'; key: string; label: string }
+  | { kind: 'book'; book: Book }
+  | { kind: 'sentence'; sentence: Sentence; book: Book };
 
 export function MainLibraryScreen({
   books,
+  sentences,
   onOpenBook,
+  onOpenSentence,
   onAddBook,
 }: {
   books: Book[];
+  sentences: Sentence[];
   onOpenBook: (book: Book) => void;
+  onOpenSentence: (sentence: Sentence) => void;
   onAddBook: () => void;
 }) {
   const [filter, setFilter] = useState<FilterKey>('all');
@@ -24,12 +34,37 @@ export function MainLibraryScreen({
   const [query, setQuery] = useState('');
 
   const trimmedQuery = query.trim().toLowerCase();
-  const searchResults = useMemo(() => {
+  const booksById = useMemo(() => new Map(books.map((b) => [b.id, b])), [books]);
+
+  const bookResults = useMemo(() => {
     if (!trimmedQuery) return [];
     return books.filter(
       (b) => b.title.toLowerCase().includes(trimmedQuery) || b.author.toLowerCase().includes(trimmedQuery),
     );
   }, [books, trimmedQuery]);
+
+  const sentenceResults = useMemo(() => {
+    if (!trimmedQuery) return [];
+    return sentences.filter(
+      (s) => s.quote.toLowerCase().includes(trimmedQuery) || (s.memo?.toLowerCase().includes(trimmedQuery) ?? false),
+    );
+  }, [sentences, trimmedQuery]);
+
+  const searchRows = useMemo<SearchRow[]>(() => {
+    const rows: SearchRow[] = [];
+    if (bookResults.length > 0) {
+      rows.push({ kind: 'header', key: 'header-book', label: `책 ${bookResults.length}` });
+      bookResults.forEach((book) => rows.push({ kind: 'book', book }));
+    }
+    if (sentenceResults.length > 0) {
+      rows.push({ kind: 'header', key: 'header-sentence', label: `갈피 ${sentenceResults.length}` });
+      sentenceResults.forEach((sentence) => {
+        const book = booksById.get(sentence.bookId);
+        if (book) rows.push({ kind: 'sentence', sentence, book });
+      });
+    }
+    return rows;
+  }, [bookResults, sentenceResults, booksById]);
 
   function closeSearch() {
     setSearchOpen(false);
@@ -54,20 +89,40 @@ export function MainLibraryScreen({
   return (
     <SafeAreaView edges={['top']} className="flex-1 min-h-0 bg-background">
       <FlatList
-        data={searchOpen ? searchResults : visible}
-        keyExtractor={(b) => b.id}
+        data={searchOpen ? searchRows : visible.map((book): SearchRow => ({ kind: 'book', book }))}
+        keyExtractor={(row) =>
+          row.kind === 'header' ? row.key : row.kind === 'book' ? `book-${row.book.id}` : `sentence-${row.sentence.id}`
+        }
         contentContainerClassName="px-6 pb-6"
         ItemSeparatorComponent={() => <View className="h-4" />}
-        renderItem={({ item }) => (
-          <Pressable onPress={() => onOpenBook(item)} className="web:cursor-pointer" style={({ pressed }) => pressed && { transform: [{ scale: 0.99 }] }}>
-            <BookCard book={item} />
-          </Pressable>
-        )}
+        renderItem={({ item: row }) => {
+          if (row.kind === 'header') {
+            return (
+              <Text className="pt-1 text-xs font-bold text-muted-foreground">{row.label}</Text>
+            );
+          }
+          if (row.kind === 'book') {
+            return (
+              <Pressable onPress={() => onOpenBook(row.book)} className="web:cursor-pointer" style={({ pressed }) => pressed && { transform: [{ scale: 0.99 }] }}>
+                <BookCard book={row.book} />
+              </Pressable>
+            );
+          }
+          return (
+            <Pressable
+              onPress={() => onOpenSentence(row.sentence)}
+              className="web:cursor-pointer"
+              style={({ pressed }) => pressed && { transform: [{ scale: 0.99 }] }}
+            >
+              <SentenceResultCard sentence={row.sentence} book={row.book} query={trimmedQuery} />
+            </Pressable>
+          );
+        }}
         ListEmptyComponent={
           searchOpen ? (
             <View className="items-center py-16">
               <Text className="text-center text-sm text-muted-foreground">
-                {trimmedQuery ? `'${query.trim()}'에 대한 검색 결과가 없어요` : '책 제목이나 작가로 검색해보세요'}
+                {trimmedQuery ? `'${query.trim()}'에 대한 검색 결과가 없어요` : '책 제목, 작가, 또는 문장으로 검색해보세요'}
               </Text>
             </View>
           ) : null
@@ -80,7 +135,7 @@ export function MainLibraryScreen({
                 <TextInput
                   value={query}
                   onChangeText={setQuery}
-                  placeholder="책 제목이나 작가로 검색"
+                  placeholder="책 제목, 작가, 또는 갈피 문장 검색"
                   placeholderTextColor={colors.mutedForeground}
                   autoFocus
                   returnKeyType="search"
@@ -98,7 +153,7 @@ export function MainLibraryScreen({
               <GalpiHeaderLogo markColor={colors.galpiInk} markSize={28} wordClassName="text-xl text-foreground" />
               <Pressable
                 onPress={() => setSearchOpen(true)}
-                accessibilityLabel="책 검색"
+                accessibilityLabel="책·갈피 검색"
                 className="items-center justify-center rounded-full web:cursor-pointer h-9 w-9 bg-card"
               >
                 <Search size={16} color={colors.foreground} />
@@ -188,6 +243,77 @@ export function MainLibraryScreen({
         }
       />
     </SafeAreaView>
+  );
+}
+
+/** Splits `text` on the (case-insensitive) `query` and highlights each match. */
+function HighlightText({ text, query, className }: { text: string; query: string; className: string }) {
+  if (!query) return <Text className={className}>{text}</Text>;
+
+  const lower = text.toLowerCase();
+  const parts: { chunk: string; match: boolean }[] = [];
+  let cursor = 0;
+  while (cursor < text.length) {
+    const idx = lower.indexOf(query, cursor);
+    if (idx === -1) {
+      parts.push({ chunk: text.slice(cursor), match: false });
+      break;
+    }
+    if (idx > cursor) parts.push({ chunk: text.slice(cursor, idx), match: false });
+    parts.push({ chunk: text.slice(idx, idx + query.length), match: true });
+    cursor = idx + query.length;
+  }
+
+  return (
+    <Text className={className}>
+      {parts.map((part, i) =>
+        part.match ? (
+          <Text key={i} className="bg-galpi-yellow">
+            {part.chunk}
+          </Text>
+        ) : (
+          part.chunk
+        ),
+      )}
+    </Text>
+  );
+}
+
+/** A single 갈피 search hit — the quote (and matching memo, if that's what matched) with its source book. */
+function SentenceResultCard({ sentence, book, query }: { sentence: Sentence; book: Book; query: string }) {
+  const quoteMatches = sentence.quote.toLowerCase().includes(query);
+  const memoMatches = !quoteMatches && !!sentence.memo?.toLowerCase().includes(query);
+
+  return (
+    <View className="rounded-2xl bg-card p-4">
+      <View className="flex-row items-center justify-between">
+        <View className="min-w-0 flex-1 flex-row items-center gap-1.5">
+          <Bookmark size={11} color={colors.mutedForeground} />
+          <Text numberOfLines={1} className="flex-1 text-xs font-semibold text-muted-foreground">
+            {book.title} · {book.author}
+          </Text>
+        </View>
+        <View className="ml-2 rounded-md bg-galpi-ink px-2 py-0.5">
+          <Text className="font-mono text-[10px] font-bold text-galpi-paper">P. {sentence.page}</Text>
+        </View>
+      </View>
+
+      <HighlightText
+        text={sentence.quote}
+        query={quoteMatches ? query : ''}
+        className="mt-2.5 text-sm font-semibold leading-relaxed text-foreground"
+      />
+
+      {sentence.memo ? (
+        <HighlightText
+          text={sentence.memo}
+          query={memoMatches ? query : ''}
+          className="mt-2 border-t border-dashed border-border pt-2 text-xs leading-relaxed text-muted-foreground"
+        />
+      ) : null}
+
+      <Text className="mt-2 text-[10px] font-medium text-muted-foreground/70">{sentence.date}</Text>
+    </View>
   );
 }
 
