@@ -100,6 +100,18 @@ export async function uploadProfilePhoto(uid: string, dataUrl: string): Promise<
   return getDownloadURL(photoRef);
 }
 
+/**
+ * Uploads a manually-entered book's cover (as a `data:image/jpeg;base64,...`
+ * URI) to Firebase Storage and returns its public download URL — mirrors
+ * `uploadSentencePhoto`'s fetch()-through-blob approach.
+ */
+export async function uploadBookCover(uid: string, dataUrl: string): Promise<string> {
+  const coverRef = ref(storage, `users/${uid}/book-covers/${Date.now()}.jpg`);
+  const blob = await (await fetch(dataUrl)).blob();
+  await uploadBytes(coverRef, blob);
+  return getDownloadURL(coverRef);
+}
+
 /** Upserts fields on the top-level `users/{uid}` profile document. */
 export async function updateUserDoc(
   uid: string,

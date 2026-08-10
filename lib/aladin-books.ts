@@ -6,6 +6,7 @@ export type AladinBookResult = {
   thumbnail: string;
   isbn: string;
   contents: string;
+  genre: string;
 };
 
 const API_BASE = process.env.EXPO_PUBLIC_ALADIN_API_BASE ?? '';

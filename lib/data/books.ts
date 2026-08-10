@@ -17,6 +17,8 @@ export type Book = {
   completedAt?: string;
   /** Total page count, from Aladin's ItemLookUp when the book was added. */
   totalPages?: number;
+  /** Category path from Aladin, e.g. "국내도서>소설/시/희곡>한국소설". */
+  genre?: string;
   /** Furthest page a saved 갈피 references — drives `progress` alongside totalPages. */
   furthestPage?: number;
 };

@@ -184,6 +184,11 @@ export function BookDetailScreen({
                   {book.title}
                 </Text>
                 <Text className="mt-1 text-sm text-muted-foreground">{book.author}</Text>
+                {book.genre ? (
+                  <Text numberOfLines={1} className="mt-0.5 text-xs text-muted-foreground">
+                    {book.genre.split('>').pop()}
+                  </Text>
+                ) : null}
 
                 <View className="mt-3 flex-row items-center gap-0.5">
                   {Array.from({ length: 5 }).map((_, i) => {

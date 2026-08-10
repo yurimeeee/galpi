@@ -8,6 +8,7 @@ import {
   deleteSentenceDoc,
   updateBookDoc,
   updateSentenceDoc,
+  uploadBookCover as uploadBookCoverDoc,
   uploadSentencePhoto as uploadSentencePhotoDoc,
 } from './data-service';
 import { type Book } from './data/books';
@@ -17,7 +18,7 @@ import { ACCENT_CYCLE } from './theme';
 export type Gate = 'loading' | 'onboarding' | 'login' | 'signup' | 'app';
 
 type NewSentence = Omit<Sentence, 'id' | 'date'>;
-type NewBook = { title: string; author: string; coverUrl?: string; totalPages?: number };
+type NewBook = { title: string; author: string; coverUrl?: string; totalPages?: number; genre?: string };
 
 type AppState = {
   gate: Gate;
@@ -45,6 +46,7 @@ type AppState = {
     patch: Partial<Pick<Book, 'status' | 'rating' | 'totalPages' | 'furthestPage' | 'progress'>>,
   ) => Promise<void>;
   uploadSentencePhoto: (dataUrl: string) => Promise<string>;
+  uploadBookCover: (dataUrl: string) => Promise<string>;
 
   bookById: (id: string) => Book | undefined;
   sentenceById: (id: string) => Sentence | undefined;
@@ -89,7 +91,7 @@ export const useAppStore = create<AppState>()(
         await deleteSentenceDoc(uid, sentence);
       },
 
-      addBook: async ({ title, author, coverUrl, totalPages }) => {
+      addBook: async ({ title, author, coverUrl, totalPages, genre }) => {
         const { user, books } = get();
         const uid = user?.uid;
         if (!uid) return;
@@ -104,6 +106,7 @@ export const useAppStore = create<AppState>()(
           accent: ACCENT_CYCLE[order % ACCENT_CYCLE.length],
           coverUrl,
           totalPages,
+          genre,
         };
         await addBookDoc(uid, book, order);
       },
@@ -118,6 +121,12 @@ export const useAppStore = create<AppState>()(
         const uid = get().user?.uid;
         if (!uid) throw new Error('로그인이 필요해요.');
         return uploadSentencePhotoDoc(uid, dataUrl);
+      },
+
+      uploadBookCover: async (dataUrl) => {
+        const uid = get().user?.uid;
+        if (!uid) throw new Error('로그인이 필요해요.');
+        return uploadBookCoverDoc(uid, dataUrl);
       },
 
       bookById: (id) => get().books.find((b) => b.id === id),

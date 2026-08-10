@@ -16,6 +16,7 @@ export type AladinBookResult = {
   thumbnail: string;
   isbn: string;
   contents: string;
+  genre: string;
 };
 
 type AladinItem = {
@@ -27,6 +28,7 @@ type AladinItem = {
   isbn13?: string;
   isbn?: string;
   description?: string;
+  categoryName?: string;
 };
 
 type AladinResponse = {
@@ -113,6 +115,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     thumbnail: item.cover ?? '',
     isbn: item.isbn13 || item.isbn || '',
     contents: item.description ?? '',
+    genre: item.categoryName ?? '',
   }));
 
   res.status(200).json({ books });
