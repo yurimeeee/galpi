@@ -17,6 +17,8 @@ import { BottomSheet } from '../galpi/bottom-sheet';
 import { SessionSummaryModal } from '../galpi/session-summary-modal';
 import { type Book } from '../../lib/data/books';
 import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
+import { logReadingMinutes } from '../../lib/data-service';
+import { auth } from '../../lib/firebase';
 import { ACCENT_BG_CLASS, colors } from '../../lib/theme';
 
 type Phase = 'focus' | 'rest';
@@ -293,6 +295,8 @@ export function ReadingTimerScreen({
           sentencesCaptured={0}
           onClose={() => setShowSummary(false)}
           onSave={() => {
+            const uid = auth.currentUser?.uid;
+            if (uid) logReadingMinutes(uid, Math.round(focusSeconds / 60)).catch(() => {});
             setShowSummary(false);
             onBack();
           }}

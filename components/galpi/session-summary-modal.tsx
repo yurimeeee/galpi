@@ -16,8 +16,9 @@ function formatMinutes(totalSeconds: number) {
 
 /**
  * Session-end summary. Page range is captured for the user's own reference
- * only — there's no `totalPages`/session log on Book yet, so nothing here
- * is persisted; "저장" just closes the sheet (see reading-timer-screen.tsx).
+ * only and isn't persisted — there's no per-session page log on Book.
+ * Focus minutes *are* persisted, via onSave in reading-timer-screen.tsx
+ * (logReadingMinutes), to power the reading-goal screen's daily progress.
  */
 export function SessionSummaryModal({
   book,

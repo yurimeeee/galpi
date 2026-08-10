@@ -2,6 +2,7 @@ import { router } from 'expo-router';
 import { MyPageScreen } from '../../components/screens/mypage-screen';
 import { signOutUser } from '../../lib/auth';
 import { useAppStore } from '../../lib/store';
+import { useReadingGoals } from '../../lib/use-reading-goals';
 
 export default function MyPage() {
   // Selected as individual primitives, not the whole `user` object — Firebase
@@ -13,6 +14,7 @@ export default function MyPage() {
   const photoURL = useAppStore((s) => s.user?.photoURL);
   const books = useAppStore((s) => s.books);
   const booksLoaded = useAppStore((s) => s.booksLoaded);
+  const { currentStreak } = useReadingGoals();
 
   const galpiCount = books.reduce((sum, b) => sum + b.galpiCount, 0);
 
@@ -23,11 +25,13 @@ export default function MyPage() {
       photoURL={photoURL ?? null}
       bookCount={books.length}
       galpiCount={galpiCount}
+      currentStreak={currentStreak}
       loaded={books.length > 0 || booksLoaded}
       onLogout={async () => {
         await signOutUser();
         router.replace('/login');
       }}
+      onOpenGoals={() => router.push('/reading-goal')}
       onOpenNotificationSettings={() => router.push('/notification-settings')}
       onOpenTerms={() => router.push('/terms')}
       onOpenPrivacy={() => router.push('/privacy')}

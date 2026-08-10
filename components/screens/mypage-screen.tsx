@@ -12,6 +12,7 @@ import {
   FileText,
   Info,
   ChevronRight,
+  Flame,
   type LucideIcon,
 } from 'lucide-react-native';
 import { Skeleton } from '../galpi/skeleton';
@@ -35,8 +36,10 @@ export function MyPageScreen({
   photoURL,
   bookCount,
   galpiCount,
+  currentStreak,
   loaded = true,
   onLogout,
+  onOpenGoals,
   onOpenNotificationSettings,
   onOpenTerms,
   onOpenPrivacy,
@@ -46,9 +49,12 @@ export function MyPageScreen({
   photoURL: string | null;
   bookCount: number;
   galpiCount: number;
+  /** Consecutive days with reading activity, for the goals/streak entry chip. */
+  currentStreak: number;
   /** Whether the book/galpi counts below have arrived from Firestore yet. */
   loaded?: boolean;
   onLogout: () => void;
+  onOpenGoals: () => void;
   onOpenNotificationSettings: () => void;
   onOpenTerms: () => void;
   onOpenPrivacy: () => void;
@@ -105,6 +111,23 @@ export function MyPageScreen({
               )}
             </View>
           </View>
+
+          {/* 독서 목표 & 스트릭 진입 */}
+          <Pressable
+            onPress={onOpenGoals}
+            className="web:cursor-pointer mt-3 flex-row items-center gap-3 rounded-3xl bg-galpi-yellow px-5 py-4"
+          >
+            <View className="h-11 w-11 items-center justify-center rounded-full bg-galpi-ink/10">
+              <Flame size={24} color={colors.galpiInk} strokeWidth={1.9} />
+            </View>
+            <View className="min-w-0 flex-1">
+              <Text className="text-[15px] font-black text-galpi-ink">
+                {currentStreak > 0 ? `${currentStreak}일 연속 독서 중` : '독서 목표를 세워보세요'}
+              </Text>
+              <Text className="text-[12px] text-galpi-ink/60">목표와 스트릭을 확인해 보세요</Text>
+            </View>
+            <ChevronRight size={20} color={colors.galpiInk} opacity={0.5} />
+          </Pressable>
         </View>
 
         {/* 설정 그룹 */}

@@ -17,6 +17,7 @@ import {
 } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { db, storage } from './firebase';
+import { todayLabel } from './date-utils';
 import { type Book } from './data/books';
 import { type Sentence } from './data/sentences';
 
@@ -37,14 +38,6 @@ function withoutUndefined<T extends object>(obj: T): Partial<T> {
   return Object.fromEntries(
     Object.entries(obj).filter(([, value]) => value !== undefined),
   ) as Partial<T>;
-}
-
-function todayLabel(): string {
-  const d = new Date();
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}.${m}.${day}`;
 }
 
 export function subscribeBooks(uid: string, onChange: (books: Book[]) => void): Unsubscribe {
@@ -157,6 +150,48 @@ export async function saveNotificationPreferences(
   patch: NotificationPreferences,
 ): Promise<void> {
   await setDoc(notificationPreferencesDoc(uid), withoutUndefined(patch), { merge: true });
+}
+
+export type ReadingGoals = {
+  dailyMinutes: number;
+  monthlyBooks: number;
+  yearlyBooks: number;
+};
+
+export const DEFAULT_READING_GOALS: ReadingGoals = {
+  dailyMinutes: 30,
+  monthlyBooks: 3,
+  yearlyBooks: 36,
+};
+
+function readingGoalsDoc(uid: string) {
+  return doc(db, 'users', uid, 'userSettings', 'readingGoals');
+}
+
+export async function getReadingGoals(uid: string): Promise<ReadingGoals> {
+  const snap = await getDoc(readingGoalsDoc(uid));
+  return snap.exists()
+    ? { ...DEFAULT_READING_GOALS, ...(snap.data() as Partial<ReadingGoals>) }
+    : DEFAULT_READING_GOALS;
+}
+
+export async function saveReadingGoals(uid: string, goals: ReadingGoals): Promise<void> {
+  await setDoc(readingGoalsDoc(uid), goals, { merge: true });
+}
+
+/** Daily reading-session minutes, keyed by "YYYY.MM.DD" (see todayLabel). Powers the "오늘의 독서" goal on the reading-goal screen. */
+function readingLogDoc(uid: string) {
+  return doc(db, 'users', uid, 'userSettings', 'readingLog');
+}
+
+export async function getReadingLog(uid: string): Promise<Record<string, number>> {
+  const snap = await getDoc(readingLogDoc(uid));
+  return snap.exists() ? (snap.data() as Record<string, number>) : {};
+}
+
+export async function logReadingMinutes(uid: string, minutes: number): Promise<void> {
+  if (minutes <= 0) return;
+  await setDoc(readingLogDoc(uid), { [todayLabel()]: increment(minutes) }, { merge: true });
 }
 
 /**

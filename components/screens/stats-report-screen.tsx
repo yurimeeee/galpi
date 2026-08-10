@@ -23,6 +23,7 @@ import { BottomSheet } from '../galpi/bottom-sheet';
 import { GalpiHeaderLogo } from '../galpi/galpi-logo';
 import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
 import { colors, ACCENT_BG_CLASS } from '../../lib/theme';
+import { parseDotDate, dateKey, pad2 } from '../../lib/date-utils';
 import type { Book } from '../../lib/data/books';
 import type { Sentence } from '../../lib/data/sentences';
 
@@ -32,21 +33,6 @@ type Ratio = '1:1' | '9:16';
 
 const WEEKDAY_LABELS = ['일', '월', '화', '수', '목', '금', '토'];
 const INTENSITY_CLASS = ['bg-secondary', 'bg-galpi-green/50', 'bg-galpi-green', 'bg-galpi-blue', 'bg-galpi-ink'];
-
-/** "YYYY.MM.DD" → Date, used for both Sentence.date and Book.completedAt. Returns null if unparsable. */
-function parseDotDate(dateStr: string): Date | null {
-  const [y, m, d] = dateStr.split('.').map(Number);
-  if (!y || !m || !d) return null;
-  return new Date(y, m - 1, d);
-}
-
-function dateKey(d: Date): string {
-  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
-}
-
-function pad2(n: number): string {
-  return String(n).padStart(2, '0');
-}
 
 function seasonOf(month0: number): '봄' | '여름' | '가을' | '겨울' {
   if (month0 === 11 || month0 <= 1) return '겨울';
