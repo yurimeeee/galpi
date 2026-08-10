@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FlatList, Image, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, FlatList, Image, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   ChevronLeft,
@@ -8,6 +8,7 @@ import {
   Star,
   Plus,
   Timer,
+  Trash2,
   Type,
   Camera,
   Image as ImageIcon,
@@ -17,6 +18,7 @@ import { Skeleton } from '../galpi/skeleton';
 import { EditProgressModal } from '../galpi/edit-progress-modal';
 import { type Book, type ReadingStatus, STATUS_LABEL } from '../../lib/data/books';
 import { ENTRY_LABEL, type EntryType, type Sentence } from '../../lib/data/sentences';
+import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
 import { ACCENT_BG_CLASS, colors } from '../../lib/theme';
 
 const ENTRY_ICON: Record<EntryType, LucideIcon> = {
@@ -35,6 +37,7 @@ export function BookDetailScreen({
   onChangeRating,
   onStartTimer,
   onEditProgress,
+  onDeleteBook,
 }: {
   book: Book;
   sentences: Sentence[];
@@ -45,9 +48,39 @@ export function BookDetailScreen({
   onChangeRating: (rating: number) => void;
   onStartTimer: () => void;
   onEditProgress: (patch: { totalPages: number; furthestPage: number; progress: number }) => Promise<void>;
+  onDeleteBook: () => Promise<void>;
 }) {
   const inkText = book.accent === 'ink' ? colors.galpiPaper : colors.galpiInk;
   const [progressModalOpen, setProgressModalOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const { showCover, onCoverError } = useCoverFallback(book.coverUrl);
+
+  function handleDelete() {
+    Alert.alert(
+      '책을 삭제할까요?',
+      `"${book.title}"과 여기에 남긴 모든 갈피가 함께 삭제돼요. 되돌릴 수 없어요.`,
+      [
+        { text: '취소', style: 'cancel' },
+        {
+          text: '삭제',
+          style: 'destructive',
+          onPress: async () => {
+            setDeleting(true);
+            try {
+              await onDeleteBook();
+              onBack();
+            } catch (err) {
+              Alert.alert(
+                '책 삭제에 실패했어요',
+                err instanceof Error ? err.message : '잠시 후 다시 시도해주세요.',
+              );
+              setDeleting(false);
+            }
+          },
+        },
+      ],
+    );
+  }
 
   return (
     <SafeAreaView edges={['top', 'bottom']} className="flex-1 min-h-0 bg-background">
@@ -73,6 +106,20 @@ export function BookDetailScreen({
             className="web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-card"
           >
             <Share2 size={16} color={colors.foreground} />
+          </Pressable>
+          <Pressable
+            onPress={handleDelete}
+            disabled={deleting}
+            accessibilityLabel="책 삭제"
+            className={`web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-card ${
+              deleting ? 'opacity-60' : ''
+            }`}
+          >
+            {deleting ? (
+              <ActivityIndicator size="small" color={colors.destructive} />
+            ) : (
+              <Trash2 size={16} color={colors.destructive} />
+            )}
           </Pressable>
         </View>
       </View>
@@ -158,7 +205,7 @@ export function BookDetailScreen({
             <View className="flex-row gap-5">
               {/* 표지 */}
               <View
-                className={`h-40 w-28 shrink-0 overflow-hidden rounded-2xl ${book.coverUrl ? 'bg-secondary' : `justify-between ${ACCENT_BG_CLASS[book.accent]} p-3`}`}
+                className={`h-40 w-28 shrink-0 overflow-hidden rounded-2xl ${showCover ? 'bg-secondary' : `justify-between ${ACCENT_BG_CLASS[book.accent]} p-3`}`}
                 style={{
                   shadowColor: colors.galpiInk,
                   shadowOpacity: 0.1,
@@ -166,8 +213,13 @@ export function BookDetailScreen({
                   shadowOffset: { width: 0, height: 8 },
                 }}
               >
-                {book.coverUrl ? (
-                  <Image source={{ uri: book.coverUrl }} className="h-full w-full" resizeMode="cover" />
+                {showCover ? (
+                  <Image
+                    source={{ uri: book.coverUrl }}
+                    className="h-full w-full"
+                    resizeMode="cover"
+                    onError={onCoverError}
+                  />
                 ) : (
                   <>
                     <Bookmark size={16} color={inkText} opacity={0.7} />

@@ -3,6 +3,7 @@ import {
   deleteField,
   doc,
   getDoc,
+  getDocs,
   increment,
   onSnapshot,
   orderBy,
@@ -10,6 +11,7 @@ import {
   runTransaction,
   setDoc,
   updateDoc,
+  where,
   writeBatch,
   type Unsubscribe,
 } from 'firebase/firestore';
@@ -86,6 +88,19 @@ export async function updateBookDoc(
     fullPatch.completedAt = deleteField();
   }
   await updateDoc(doc(booksCol(uid), bookId), fullPatch);
+}
+
+/**
+ * Deletes a book along with every 갈피 (sentence) written against it —
+ * otherwise those sentences would be left dangling, pointing at a bookId
+ * that no longer resolves to anything in the library.
+ */
+export async function deleteBookDoc(uid: string, bookId: string): Promise<void> {
+  const orphanedSentences = await getDocs(query(sentencesCol(uid), where('bookId', '==', bookId)));
+  const batch = writeBatch(db);
+  orphanedSentences.docs.forEach((d) => batch.delete(d.ref));
+  batch.delete(doc(booksCol(uid), bookId));
+  await batch.commit();
 }
 
 /**

@@ -5,6 +5,7 @@ import type { User } from 'firebase/auth';
 import {
   addBookDoc,
   addSentenceDoc,
+  deleteBookDoc,
   deleteSentenceDoc,
   updateBookDoc,
   updateSentenceDoc,
@@ -45,6 +46,7 @@ type AppState = {
     bookId: string,
     patch: Partial<Pick<Book, 'status' | 'rating' | 'totalPages' | 'furthestPage' | 'progress'>>,
   ) => Promise<void>;
+  deleteBook: (bookId: string) => Promise<void>;
   uploadSentencePhoto: (dataUrl: string) => Promise<string>;
   uploadBookCover: (dataUrl: string) => Promise<string>;
 
@@ -115,6 +117,12 @@ export const useAppStore = create<AppState>()(
         const uid = get().user?.uid;
         if (!uid) return;
         await updateBookDoc(uid, bookId, patch);
+      },
+
+      deleteBook: async (bookId) => {
+        const uid = get().user?.uid;
+        if (!uid) return;
+        await deleteBookDoc(uid, bookId);
       },
 
       uploadSentencePhoto: async (dataUrl) => {
