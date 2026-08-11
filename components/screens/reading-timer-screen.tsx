@@ -59,6 +59,23 @@ export function ReadingTimerScreen({
   const [presetKey, setPresetKey] = useState('25/5');
   const [customFocus, setCustomFocus] = useState(15);
 
+  /**
+   * `book` is local state, frozen at whatever `initialBook`/picker selection
+   * set it to — it doesn't track live Firestore updates. `books` (the prop)
+   * does, so the number of 갈피 captured this session is the live book's
+   * current galpiCount minus its count when the session (or book switch)
+   * started.
+   */
+  const initialGalpiCountRef = useRef(initialBook.galpiCount ?? 0);
+  const liveGalpiCount = books.find((b) => b.id === book.id)?.galpiCount ?? book.galpiCount ?? 0;
+  const sentencesCaptured = Math.max(0, liveGalpiCount - initialGalpiCountRef.current);
+
+  function selectBook(b: Book) {
+    setBook(b);
+    initialGalpiCountRef.current = b.galpiCount ?? 0;
+    setShowBookPicker(false);
+  }
+
   const preset = useMemo(() => {
     const p = PRESETS.find((x) => x.key === presetKey) ?? PRESETS[0];
     return p.key === 'custom' ? { ...p, focus: customFocus, rest: 3 } : p;
@@ -274,14 +291,7 @@ export function ReadingTimerScreen({
         >
           <View className="gap-2">
             {readingBooks.map((b) => (
-              <BookPickerRow
-                key={b.id}
-                book={b}
-                onPress={() => {
-                  setBook(b);
-                  setShowBookPicker(false);
-                }}
-              />
+              <BookPickerRow key={b.id} book={b} onPress={() => selectBook(b)} />
             ))}
           </View>
         </BottomSheet>
@@ -292,7 +302,7 @@ export function ReadingTimerScreen({
           book={book}
           totalSeconds={focusSeconds}
           sessionsDone={sessionsDone}
-          sentencesCaptured={0}
+          sentencesCaptured={sentencesCaptured}
           onClose={() => setShowSummary(false)}
           onSave={() => {
             const uid = auth.currentUser?.uid;
