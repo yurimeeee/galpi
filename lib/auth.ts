@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
@@ -6,11 +6,15 @@ import {
   EmailAuthProvider,
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
+  deleteUser,
+  linkWithCredential,
+  linkWithPopup,
   reauthenticateWithCredential,
   signInWithCredential,
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
+  unlink,
   updatePassword,
   updateProfile,
   type User,
@@ -57,6 +61,71 @@ export function useGoogleAuth() {
   return { signInWithGoogle, ready: Platform.OS === 'web' || !!request };
 }
 
+/**
+ * Links a Google credential to the *currently signed-in* user instead of
+ * signing in as a (possibly different) Google account — the linking
+ * counterpart to `useGoogleAuth`'s sign-in flow, reusing the same
+ * `useIdTokenAuthRequest` machinery.
+ */
+export function useGoogleAccountLink() {
+  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
+    clientId: GOOGLE_WEB_CLIENT_ID,
+    webClientId: GOOGLE_WEB_CLIENT_ID,
+    iosClientId: GOOGLE_IOS_CLIENT_ID,
+    androidClientId: GOOGLE_ANDROID_CLIENT_ID,
+  });
+  const [linking, setLinking] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (Platform.OS === 'web' || response?.type !== 'success') return;
+    const idToken = response.params.id_token;
+    const user = auth.currentUser;
+    if (!idToken || !user) return;
+    setLinking(true);
+    setError('');
+    linkWithCredential(user, GoogleAuthProvider.credential(idToken))
+      .catch((err) => setError(getAuthErrorMessage(err)))
+      .finally(() => setLinking(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [response]);
+
+  async function linkGoogleAccount() {
+    setError('');
+    const user = auth.currentUser;
+    if (!user) {
+      setError('로그인이 필요해요.');
+      return;
+    }
+    if (Platform.OS === 'web') {
+      setLinking(true);
+      try {
+        await linkWithPopup(user, googleProvider);
+      } catch (err) {
+        setError(getAuthErrorMessage(err));
+      } finally {
+        setLinking(false);
+      }
+      return;
+    }
+    await promptAsync();
+  }
+
+  return { linkGoogleAccount, linking, error, ready: Platform.OS === 'web' || !!request };
+}
+
+/** Provider ids currently attached to the account, e.g. `['password', 'google.com']`. */
+export function linkedProviderIds(user: User | null): string[] {
+  return user?.providerData.map((p) => p.providerId) ?? [];
+}
+
+/** Detaches a provider (e.g. `'google.com'`) from the signed-in account. */
+export async function unlinkProvider(providerId: string): Promise<void> {
+  const user = auth.currentUser;
+  if (!user) throw new Error('로그인이 필요해요.');
+  await unlink(user, providerId);
+}
+
 export async function signInWithEmail(email: string, password: string) {
   await signInWithEmailAndPassword(auth, email, password);
 }
@@ -91,16 +160,37 @@ export async function updateUserProfile(changes: {
   await user.reload();
 }
 
+/**
+ * Re-authenticates the signed-in user with their current password — Firebase
+ * requires a "recent" login before it allows a sensitive op (password
+ * change, account deletion) and otherwise throws `auth/requires-recent-login`.
+ */
+export async function reauthenticateWithPassword(currentPassword: string): Promise<void> {
+  const user = auth.currentUser;
+  if (!user || !user.email) throw new Error('로그인이 필요해요.');
+  const credential = EmailAuthProvider.credential(user.email, currentPassword);
+  await reauthenticateWithCredential(user, credential);
+}
+
 /** Re-authenticates with the current password, then sets the new one. */
 export async function changeUserPassword(
   currentPassword: string,
   newPassword: string,
 ): Promise<void> {
+  await reauthenticateWithPassword(currentPassword);
+  await updatePassword(auth.currentUser!, newPassword);
+}
+
+/**
+ * Permanently deletes the signed-in user's Firebase Auth account. Callers
+ * must delete the user's Firestore data and Storage files first — this
+ * repo's security rules key access off request.auth.uid, which stops
+ * matching the instant this resolves.
+ */
+export async function deleteCurrentUser(): Promise<void> {
   const user = auth.currentUser;
-  if (!user || !user.email) throw new Error('로그인이 필요해요.');
-  const credential = EmailAuthProvider.credential(user.email, currentPassword);
-  await reauthenticateWithCredential(user, credential);
-  await updatePassword(user, newPassword);
+  if (!user) throw new Error('로그인이 필요해요.');
+  await deleteUser(user);
 }
 
 export function getAuthErrorMessage(error: unknown): string {
@@ -125,6 +215,10 @@ export function getAuthErrorMessage(error: unknown): string {
       return '보안을 위해 다시 로그인한 뒤 시도해 주세요.';
     case 'auth/too-many-requests':
       return '시도 횟수가 많아요. 잠시 후 다시 시도해 주세요.';
+    case 'auth/credential-already-in-use':
+      return '이미 다른 계정에 연동된 구글 계정이에요.';
+    case 'auth/provider-already-linked':
+      return '이미 연동된 계정이에요.';
     default:
       return '문제가 발생했어요. 잠시 후 다시 시도해 주세요.';
   }

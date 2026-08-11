@@ -31,10 +31,14 @@ export default function MyPage() {
         await signOutUser();
         router.replace('/login');
       }}
+      onAccountDeleted={() => router.replace('/login')}
       onOpenGoals={() => router.push('/reading-goal')}
       onOpenNotificationSettings={() => router.push('/notification-settings')}
       onOpenTerms={() => router.push('/terms')}
       onOpenPrivacy={() => router.push('/privacy')}
+      onOpenLinkedAccounts={() => router.push('/linked-accounts')}
+      onOpenDataBackup={() => router.push('/data-backup')}
+      onOpenNotices={() => router.push('/notices')}
     />
   );
 }

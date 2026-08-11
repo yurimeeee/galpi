@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Constants from 'expo-constants';
 import {
   UserRound,
   Pencil,
@@ -18,6 +19,7 @@ import {
 import { Skeleton } from '../galpi/skeleton';
 import { EditProfileModal } from '../galpi/edit-profile-modal';
 import { ChangePasswordModal } from '../galpi/change-password-modal';
+import { DeleteAccountModal } from '../galpi/delete-account-modal';
 import { colors } from '../../lib/theme';
 
 type Row = {
@@ -28,7 +30,7 @@ type Row = {
   onPress?: () => void;
 };
 
-type ActiveModal = 'none' | 'profile' | 'password';
+type ActiveModal = 'none' | 'profile' | 'password' | 'delete';
 
 export function MyPageScreen({
   displayName,
@@ -43,6 +45,10 @@ export function MyPageScreen({
   onOpenNotificationSettings,
   onOpenTerms,
   onOpenPrivacy,
+  onOpenLinkedAccounts,
+  onOpenDataBackup,
+  onOpenNotices,
+  onAccountDeleted,
 }: {
   displayName: string;
   email: string;
@@ -58,6 +64,11 @@ export function MyPageScreen({
   onOpenNotificationSettings: () => void;
   onOpenTerms: () => void;
   onOpenPrivacy: () => void;
+  onOpenLinkedAccounts: () => void;
+  onOpenDataBackup: () => void;
+  onOpenNotices: () => void;
+  /** Called once the account and all of its data have been permanently deleted. */
+  onAccountDeleted: () => void;
 }) {
   const [activeModal, setActiveModal] = useState<ActiveModal>('none');
 
@@ -137,7 +148,7 @@ export function MyPageScreen({
             rows={[
               { key: 'edit', label: '프로필 수정', Icon: UserRound, onPress: () => setActiveModal('profile') },
               { key: 'pw', label: '비밀번호 변경', Icon: Lock, onPress: () => setActiveModal('password') },
-              { key: 'social', label: '소셜 계정 연동', Icon: Link2 },
+              { key: 'social', label: '소셜 계정 연동', Icon: Link2, onPress: onOpenLinkedAccounts },
             ]}
           />
 
@@ -145,17 +156,17 @@ export function MyPageScreen({
             title="앱 설정"
             rows={[
               { key: 'noti', label: '알림 설정', Icon: Bell, onPress: onOpenNotificationSettings },
-              { key: 'backup', label: '데이터 백업 및 복구', Icon: CloudDownload },
+              { key: 'backup', label: '데이터 백업 및 복구', Icon: CloudDownload, onPress: onOpenDataBackup },
             ]}
           />
 
           <SettingsGroup
             title="서비스 정보"
             rows={[
-              { key: 'notice', label: '공지사항', Icon: Megaphone },
+              { key: 'notice', label: '공지사항', Icon: Megaphone, onPress: onOpenNotices },
               { key: 'terms', label: '이용약관', Icon: FileText, onPress: onOpenTerms },
               { key: 'privacy', label: '개인정보 처리방침', Icon: FileText, onPress: onOpenPrivacy },
-              { key: 'ver', label: '현재 버전', Icon: Info, value: 'v1.0.0' },
+              { key: 'ver', label: '현재 버전', Icon: Info, value: `v${Constants.expoConfig?.version ?? '1.0.0'}` },
             ]}
           />
         </View>
@@ -166,7 +177,7 @@ export function MyPageScreen({
             <Text className="text-[13px] font-medium text-muted-foreground">로그아웃</Text>
           </Pressable>
           <View className="h-3 w-px bg-border" />
-          <Pressable className="web:cursor-pointer">
+          <Pressable onPress={() => setActiveModal('delete')} className="web:cursor-pointer">
             <Text className="text-[13px] font-medium text-muted-foreground">회원탈퇴</Text>
           </Pressable>
         </View>
@@ -181,6 +192,9 @@ export function MyPageScreen({
       ) : null}
       {activeModal === 'password' ? (
         <ChangePasswordModal onClose={() => setActiveModal('none')} />
+      ) : null}
+      {activeModal === 'delete' ? (
+        <DeleteAccountModal onClose={() => setActiveModal('none')} onDeleted={onAccountDeleted} />
       ) : null}
     </SafeAreaView>
   );

@@ -13,9 +13,10 @@ import {
   updateDoc,
   where,
   writeBatch,
+  type CollectionReference,
   type Unsubscribe,
 } from 'firebase/firestore';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { deleteObject, getDownloadURL, listAll, ref, uploadBytes, type StorageReference } from 'firebase/storage';
 import { db, storage } from './firebase';
 import { todayLabel } from './date-utils';
 import { type Book } from './data/books';
@@ -283,4 +284,118 @@ export async function deleteSentenceDoc(uid: string, sentence: Sentence): Promis
   batch.delete(doc(sentencesCol(uid), sentence.id));
   batch.update(doc(booksCol(uid), sentence.bookId), { galpiCount: increment(-1) });
   await batch.commit();
+}
+
+/**
+ * Firestore's client SDK has no recursive/subtree delete, so account
+ * deletion enumerates every doc in a collection and removes it in batches
+ * (chunked under the 500-op batch limit).
+ */
+async function deleteAllDocs(col: CollectionReference): Promise<void> {
+  const snap = await getDocs(col);
+  for (let i = 0; i < snap.docs.length; i += 450) {
+    const batch = writeBatch(db);
+    snap.docs.slice(i, i + 450).forEach((d) => batch.delete(d.ref));
+    await batch.commit();
+  }
+}
+
+/**
+ * Deletes every Firestore doc under users/{uid} — books, sentences, the
+ * userSettings docs (preferences/readingGoals/readingLog), and the profile
+ * doc itself. Must run (along with deleteAllUserFiles) before the Firebase
+ * Auth account is deleted, since the security rules that allow this access
+ * key off request.auth.uid matching the (soon to be gone) account.
+ */
+export async function deleteAllUserData(uid: string): Promise<void> {
+  await deleteAllDocs(booksCol(uid));
+  await deleteAllDocs(sentencesCol(uid));
+  const batch = writeBatch(db);
+  batch.delete(doc(db, 'users', uid, 'userSettings', 'preferences'));
+  batch.delete(doc(db, 'users', uid, 'userSettings', 'readingGoals'));
+  batch.delete(doc(db, 'users', uid, 'userSettings', 'readingLog'));
+  batch.delete(doc(db, 'users', uid));
+  await batch.commit();
+}
+
+/** Storage has no recursive delete either — walk a folder and remove every object under it, including nested ones. */
+async function deleteStorageFolder(folderRef: StorageReference): Promise<void> {
+  const { items, prefixes } = await listAll(folderRef);
+  await Promise.all([...items.map((item) => deleteObject(item)), ...prefixes.map(deleteStorageFolder)]);
+}
+
+/** Deletes every file under users/{uid} in Storage — profile photo, book covers, sentence/page photos. */
+export async function deleteAllUserFiles(uid: string): Promise<void> {
+  await deleteStorageFolder(ref(storage, `users/${uid}`));
+}
+
+export type BackupPayload = {
+  version: 1;
+  exportedAt: string;
+  books: Book[];
+  sentences: Sentence[];
+};
+
+/** Bundles the caller's already-loaded books/sentences (from the store) into a portable snapshot — no extra Firestore reads needed. */
+export function buildBackupPayload(books: Book[], sentences: Sentence[]): BackupPayload {
+  return { version: 1, exportedAt: new Date().toISOString(), books, sentences };
+}
+
+/** Throws with a user-facing message if `text` isn't a 갈피 backup this app produced. */
+export function parseBackupPayload(text: string): BackupPayload {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(text);
+  } catch {
+    throw new Error('올바른 백업 데이터가 아니에요. 전체 내용을 정확히 붙여넣었는지 확인해주세요.');
+  }
+  const payload = parsed as Partial<BackupPayload> | null;
+  if (!payload || payload.version !== 1 || !Array.isArray(payload.books) || !Array.isArray(payload.sentences)) {
+    throw new Error('올바른 갈피 백업 데이터가 아니에요.');
+  }
+  return payload as BackupPayload;
+}
+
+/**
+ * Re-creates every book/sentence in `payload` as brand-new docs under
+ * users/{uid} — always additive. Old ids in the payload only exist to remap
+ * a sentence to its book; they're discarded in favor of freshly generated
+ * Firestore ids, so importing the same backup twice (or into a different
+ * account) duplicates rather than colliding with or overwriting anything.
+ * Batched in chunks of 450 to stay under Firestore's 500-op batch limit, and
+ * books are committed before sentences since the sentence batch needs the
+ * real (post-commit) book ids to reference.
+ */
+export async function importBackupData(
+  uid: string,
+  payload: BackupPayload,
+): Promise<{ books: number; sentences: number }> {
+  const existingBookCount = (await getDocs(booksCol(uid))).size;
+  const idMap = new Map<string, string>();
+  const bookRefs = payload.books.map((book) => {
+    const ref = doc(booksCol(uid));
+    idMap.set(book.id, ref.id);
+    return { ref, book };
+  });
+
+  for (let i = 0; i < bookRefs.length; i += 450) {
+    const batch = writeBatch(db);
+    bookRefs.slice(i, i + 450).forEach(({ ref, book }, offset) => {
+      const { id: _id, ...rest } = book;
+      batch.set(ref, withoutUndefined({ ...rest, order: existingBookCount + i + offset }));
+    });
+    await batch.commit();
+  }
+
+  const importableSentences = payload.sentences.filter((s) => idMap.has(s.bookId));
+  for (let i = 0; i < importableSentences.length; i += 450) {
+    const batch = writeBatch(db);
+    importableSentences.slice(i, i + 450).forEach((sentence) => {
+      const { id: _id, bookId, ...rest } = sentence;
+      batch.set(doc(sentencesCol(uid)), withoutUndefined({ ...rest, bookId: idMap.get(bookId)! }));
+    });
+    await batch.commit();
+  }
+
+  return { books: bookRefs.length, sentences: importableSentences.length };
 }
