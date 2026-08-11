@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { FlatList, Pressable, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Bookmark, Search, ChevronRight, Quote } from 'lucide-react-native';
@@ -32,6 +32,13 @@ export function MainLibraryScreen({
   const [filter, setFilter] = useState<FilterKey>('all');
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState('');
+  const listRef = useRef<FlatList<SearchRow>>(null);
+
+  /** "전체보기": drop any status filter and jump back to the top of the (now unfiltered) shelf below. */
+  function showAll() {
+    setFilter('all');
+    listRef.current?.scrollToOffset({ offset: 0, animated: true });
+  }
 
   const trimmedQuery = query.trim().toLowerCase();
   const booksById = useMemo(() => new Map(books.map((b) => [b.id, b])), [books]);
@@ -89,6 +96,7 @@ export function MainLibraryScreen({
   return (
     <SafeAreaView edges={['top']} className="flex-1 min-h-0 bg-background">
       <FlatList
+        ref={listRef}
         data={searchOpen ? searchRows : visible.map((book): SearchRow => ({ kind: 'book', book }))}
         keyExtractor={(row) =>
           row.kind === 'header' ? row.key : row.kind === 'book' ? `book-${row.book.id}` : `sentence-${row.sentence.id}`
@@ -216,7 +224,7 @@ export function MainLibraryScreen({
             {/* 내 서재 */}
             <View className="flex-row items-center justify-between mb-3">
               <Text className="text-lg font-black tracking-tight text-foreground">내 서재</Text>
-              <Pressable className="web:cursor-pointer flex-row items-center gap-0.5">
+              <Pressable onPress={showAll} className="web:cursor-pointer flex-row items-center gap-0.5">
                 <Text className="text-xs font-medium text-muted-foreground">전체보기</Text>
                 <ChevronRight size={14} color={colors.mutedForeground} />
               </Pressable>
