@@ -48,7 +48,7 @@ export function BookDetailScreen({
   onEditSentence: (sentenceId: string) => void;
   onChangeStatus: (status: ReadingStatus) => void;
   onChangeRating: (rating: number) => void;
-  onChangeReview: (review: string) => void;
+  onChangeReview: (review: string) => Promise<void>;
   onStartTimer: () => void;
   onEditProgress: (patch: { totalPages: number; furthestPage: number; progress: number }) => Promise<void>;
   onDeleteBook: () => Promise<void>;
@@ -58,11 +58,25 @@ export function BookDetailScreen({
   const [progressModalOpen, setProgressModalOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [reviewDraft, setReviewDraft] = useState(book.review ?? '');
+  const [savingReview, setSavingReview] = useState(false);
   const { showCover, onCoverError } = useCoverFallback(book.coverUrl);
 
   useEffect(() => {
     setReviewDraft(book.review ?? '');
   }, [book.id, book.review]);
+
+  const reviewDirty = reviewDraft !== (book.review ?? '');
+
+  async function handleSaveReview() {
+    setSavingReview(true);
+    try {
+      await onChangeReview(reviewDraft);
+    } catch (err) {
+      Alert.alert('총평 저장에 실패했어요', err instanceof Error ? err.message : '잠시 후 다시 시도해주세요.');
+    } finally {
+      setSavingReview(false);
+    }
+  }
 
   function handleDelete() {
     Alert.alert(
@@ -296,7 +310,10 @@ export function BookDetailScreen({
                 return (
                   <Pressable
                     key={status}
-                    onPress={() => onChangeStatus(status)}
+                    onPress={() => {
+                      setReviewDraft(book.review ?? '');
+                      onChangeStatus(status);
+                    }}
                     accessibilityRole="button"
                     accessibilityState={{ selected: active }}
                     className={`web:cursor-pointer flex-1 items-center rounded-full px-3 py-2 ${
@@ -320,9 +337,6 @@ export function BookDetailScreen({
                 <TextInput
                   value={reviewDraft}
                   onChangeText={setReviewDraft}
-                  onBlur={() => {
-                    if (reviewDraft !== (book.review ?? '')) onChangeReview(reviewDraft);
-                  }}
                   multiline
                   numberOfLines={3}
                   placeholder="이 책은 어땠나요? 짧게 남겨보세요."
@@ -331,6 +345,25 @@ export function BookDetailScreen({
                   className="w-full rounded-2xl border border-border bg-card p-4 text-sm leading-relaxed text-foreground focus:border-galpi-ink"
                   style={{ minHeight: 80 }}
                 />
+                <Pressable
+                  onPress={handleSaveReview}
+                  disabled={!reviewDirty || savingReview}
+                  accessibilityRole="button"
+                  accessibilityLabel="총평 저장"
+                  className={`web:cursor-pointer mt-2 self-end rounded-full px-4 py-2 ${
+                    reviewDirty ? 'bg-galpi-ink' : 'bg-card'
+                  } ${savingReview ? 'opacity-60' : ''}`}
+                >
+                  {savingReview ? (
+                    <ActivityIndicator size="small" color={colors.galpiPaper} />
+                  ) : (
+                    <Text
+                      className={`text-xs font-bold ${reviewDirty ? 'text-galpi-paper' : 'text-muted-foreground'}`}
+                    >
+                      {reviewDirty ? '저장' : '저장됨'}
+                    </Text>
+                  )}
+                </Pressable>
               </View>
             ) : null}
 
