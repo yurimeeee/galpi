@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, Image, Pressable, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
@@ -12,10 +12,13 @@ import {
   Type,
   Camera,
   Image as ImageIcon,
+  X,
   type LucideIcon,
 } from 'lucide-react-native';
 import { Skeleton } from '../galpi/skeleton';
+import { BottomSheet } from '../galpi/bottom-sheet';
 import { EditProgressModal } from '../galpi/edit-progress-modal';
+import { SentenceCardModal } from '../galpi/sentence-card-modal';
 import { type Book, type ReadingStatus, STATUS_LABEL } from '../../lib/data/books';
 import { ENTRY_LABEL, type EntryType, type Sentence } from '../../lib/data/sentences';
 import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
@@ -59,7 +62,27 @@ export function BookDetailScreen({
   const [deleting, setDeleting] = useState(false);
   const [reviewDraft, setReviewDraft] = useState(book.review ?? '');
   const [savingReview, setSavingReview] = useState(false);
+  const [sharePickerOpen, setSharePickerOpen] = useState(false);
+  const [shareSentence, setShareSentence] = useState<Sentence | null>(null);
   const { showCover, onCoverError } = useCoverFallback(book.coverUrl);
+
+  /** Favorites first so the picker surfaces the book's best lines up top, stable order otherwise (sentences arrive newest-first). */
+  const shareCandidates = useMemo(
+    () => [...sentences].sort((a, b) => Number(!!b.favorite) - Number(!!a.favorite)),
+    [sentences],
+  );
+
+  function handleSharePress() {
+    if (sentences.length === 0) {
+      Alert.alert('공유할 갈피가 없어요', '먼저 이 책에 갈피를 남겨보세요.');
+      return;
+    }
+    if (sentences.length === 1) {
+      setShareSentence(sentences[0]);
+      return;
+    }
+    setSharePickerOpen(true);
+  }
 
   useEffect(() => {
     setReviewDraft(book.review ?? '');
@@ -125,7 +148,8 @@ export function BookDetailScreen({
             <Timer size={16} color={colors.foreground} />
           </Pressable>
           <Pressable
-            accessibilityLabel="공유하기"
+            onPress={handleSharePress}
+            accessibilityLabel="갈피 카드로 공유"
             className="web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-card"
           >
             <Share2 size={16} color={colors.foreground} />
@@ -419,7 +443,66 @@ export function BookDetailScreen({
           }}
         />
       ) : null}
+
+      {sharePickerOpen ? (
+        <BottomSheet
+          onClose={() => setSharePickerOpen(false)}
+          maxHeight="75%"
+          header={
+            <View className="mb-2 flex-row items-center justify-between">
+              <Text className="text-base font-black text-foreground">공유할 갈피 선택</Text>
+              <Pressable
+                onPress={() => setSharePickerOpen(false)}
+                accessibilityLabel="닫기"
+                className="web:cursor-pointer h-8 w-8 items-center justify-center rounded-full bg-secondary"
+              >
+                <X size={16} color={colors.foreground} />
+              </Pressable>
+            </View>
+          }
+        >
+          <FlatList
+            data={shareCandidates}
+            keyExtractor={(s) => s.id}
+            style={{ maxHeight: 420 }}
+            ItemSeparatorComponent={() => <View className="h-2" />}
+            renderItem={({ item }) => (
+              <SharePickerRow
+                sentence={item}
+                onPress={() => {
+                  setSharePickerOpen(false);
+                  setShareSentence(item);
+                }}
+              />
+            )}
+          />
+        </BottomSheet>
+      ) : null}
+
+      {shareSentence ? (
+        <SentenceCardModal book={book} sentence={shareSentence} onClose={() => setShareSentence(null)} />
+      ) : null}
     </SafeAreaView>
+  );
+}
+
+/** A single row in the "공유할 갈피 선택" picker — favorites are surfaced first (see shareCandidates). */
+function SharePickerRow({ sentence, onPress }: { sentence: Sentence; onPress: () => void }) {
+  return (
+    <Pressable
+      onPress={onPress}
+      className="web:cursor-pointer flex-row items-center gap-3 rounded-2xl border border-border bg-card p-3"
+    >
+      <View className="shrink-0 rounded-md bg-galpi-ink px-2 py-1">
+        <Text className="font-mono text-[10px] font-bold text-galpi-paper">P.{sentence.page}</Text>
+      </View>
+      <Text numberOfLines={2} className="min-w-0 flex-1 text-sm font-semibold leading-relaxed text-foreground">
+        {sentence.quote}
+      </Text>
+      {sentence.favorite ? (
+        <Star size={14} color={colors.galpiYellow} fill={colors.galpiYellow} />
+      ) : null}
+    </Pressable>
   );
 }
 
