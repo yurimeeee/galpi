@@ -7,6 +7,7 @@ import {
   addSentenceDoc,
   deleteBookDoc,
   deleteSentenceDoc,
+  reorderBooksDoc,
   setSentenceFavoriteDoc,
   updateBookDoc,
   updateSentenceDoc,
@@ -49,6 +50,8 @@ type AppState = {
     patch: Partial<Pick<Book, 'status' | 'rating' | 'totalPages' | 'furthestPage' | 'progress' | 'review'>>,
   ) => Promise<void>;
   deleteBook: (bookId: string) => Promise<void>;
+  /** Applies a full manual reorder of the library: `orderedBookIds` is the new front-to-back id order. */
+  reorderBooks: (orderedBookIds: string[]) => Promise<void>;
   uploadSentencePhoto: (dataUrl: string) => Promise<string>;
   uploadBookCover: (dataUrl: string) => Promise<string>;
 
@@ -131,6 +134,20 @@ export const useAppStore = create<AppState>()(
         const uid = get().user?.uid;
         if (!uid) return;
         await deleteBookDoc(uid, bookId);
+      },
+
+      /**
+       * Applies optimistically so the drag UI doesn't snap back while the
+       * batch write is in flight, then persists — the live subscription
+       * (use-auth-sync.ts) will reconcile `books` once Firestore confirms.
+       */
+      reorderBooks: async (orderedBookIds) => {
+        const uid = get().user?.uid;
+        if (!uid) return;
+        const byId = new Map(get().books.map((b) => [b.id, b]));
+        const reordered = orderedBookIds.map((id) => byId.get(id)).filter((b): b is Book => !!b);
+        set({ books: reordered });
+        await reorderBooksDoc(uid, orderedBookIds);
       },
 
       uploadSentencePhoto: async (dataUrl) => {

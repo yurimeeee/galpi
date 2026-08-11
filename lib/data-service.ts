@@ -85,6 +85,18 @@ export async function updateBookDoc(
 }
 
 /**
+ * Persists a full manual reordering of the library: writes fresh sequential
+ * `order` values (0..n-1) for every id in `orderedBookIds`, in list order.
+ */
+export async function reorderBooksDoc(uid: string, orderedBookIds: string[]): Promise<void> {
+  const batch = writeBatch(db);
+  orderedBookIds.forEach((bookId, index) => {
+    batch.update(doc(booksCol(uid), bookId), { order: index });
+  });
+  await batch.commit();
+}
+
+/**
  * Deletes a book along with every 갈피 (sentence) written against it —
  * otherwise those sentences would be left dangling, pointing at a bookId
  * that no longer resolves to anything in the library.

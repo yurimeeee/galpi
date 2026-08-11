@@ -21,6 +21,14 @@ export default function Library() {
     router.push('/add-book');
   }
 
+  function openFavorites() {
+    router.push('/favorites');
+  }
+
+  function reorderBooks(orderedBookIds: string[]) {
+    useAppStore.getState().reorderBooks(orderedBookIds);
+  }
+
   if (books.length === 0 && !booksLoaded) {
     return <LibrarySkeleton />;
   }
@@ -32,6 +40,8 @@ export default function Library() {
       onOpenBook={openBook}
       onOpenSentence={openSentence}
       onAddBook={addBook}
+      onReorderBooks={reorderBooks}
+      onOpenFavorites={openFavorites}
     />
   );
 }

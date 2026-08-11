@@ -1,15 +1,27 @@
 import { useMemo, useRef, useState } from 'react';
-import { FlatList, Pressable, Text, TextInput, View } from 'react-native';
+import { FlatList, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Bookmark, Search, ChevronRight, Quote } from 'lucide-react-native';
+import { ArrowUpDown, Bookmark, Check, Search, ChevronRight, Quote, Star } from 'lucide-react-native';
 import { GalpiHeaderLogo } from '../galpi/galpi-logo';
 import { BookCard } from '../galpi/book-card';
 import { ColorChips } from '../galpi/color-chips';
+import { ReorderBookList } from '../galpi/reorder-book-list';
 import { Skeleton } from '../galpi/skeleton';
 import { StatusFilter, type FilterKey } from '../galpi/status-filter';
 import { type Book } from '../../lib/data/books';
 import { type Sentence } from '../../lib/data/sentences';
+import { parseDotDate } from '../../lib/date-utils';
 import { ACCENT_BG_CLASS, colors } from '../../lib/theme';
+
+/** Aladin genres arrive as a full category path ("국내도서>소설/시/희곡>한국소설"); manually-entered ones are already just the leaf label — both cases collapse to the same last-segment value. */
+function bookGenreLabel(book: Book): string | undefined {
+  return book.genre?.split('>').pop()?.trim();
+}
+
+function completedYear(book: Book): number | undefined {
+  if (book.status !== 'done' || !book.completedAt) return undefined;
+  return parseDotDate(book.completedAt)?.getFullYear() ?? undefined;
+}
 
 type SearchRow =
   | { kind: 'header'; key: string; label: string }
@@ -22,17 +34,42 @@ export function MainLibraryScreen({
   onOpenBook,
   onOpenSentence,
   onAddBook,
+  onReorderBooks,
+  onOpenFavorites,
 }: {
   books: Book[];
   sentences: Sentence[];
   onOpenBook: (book: Book) => void;
   onOpenSentence: (sentence: Sentence) => void;
   onAddBook: () => void;
+  onReorderBooks: (orderedBookIds: string[]) => void;
+  onOpenFavorites: () => void;
 }) {
   const [filter, setFilter] = useState<FilterKey>('all');
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState('');
+  const [genreFilter, setGenreFilter] = useState<string | null>(null);
+  const [yearFilter, setYearFilter] = useState<number | null>(null);
+  const [reorderMode, setReorderMode] = useState(false);
   const listRef = useRef<FlatList<SearchRow>>(null);
+
+  const genreOptions = useMemo(() => {
+    const set = new Set<string>();
+    books.forEach((b) => {
+      const genre = bookGenreLabel(b);
+      if (genre) set.add(genre);
+    });
+    return Array.from(set).sort();
+  }, [books]);
+
+  const yearOptions = useMemo(() => {
+    const set = new Set<number>();
+    books.forEach((b) => {
+      const year = completedYear(b);
+      if (year) set.add(year);
+    });
+    return Array.from(set).sort((a, b) => b - a);
+  }, [books]);
 
   /** "전체보기": drop any status filter and jump back to the top of the (now unfiltered) shelf below. */
   function showAll() {
@@ -42,20 +79,31 @@ export function MainLibraryScreen({
 
   const trimmedQuery = query.trim().toLowerCase();
   const booksById = useMemo(() => new Map(books.map((b) => [b.id, b])), [books]);
+  const hasActiveFilter = !!genreFilter || yearFilter !== null;
+
+  function matchesFilters(book: Book): boolean {
+    if (genreFilter && bookGenreLabel(book) !== genreFilter) return false;
+    if (yearFilter !== null && completedYear(book) !== yearFilter) return false;
+    return true;
+  }
 
   const bookResults = useMemo(() => {
-    if (!trimmedQuery) return [];
+    if (!trimmedQuery && !hasActiveFilter) return [];
     return books.filter(
-      (b) => b.title.toLowerCase().includes(trimmedQuery) || b.author.toLowerCase().includes(trimmedQuery),
+      (b) =>
+        (!trimmedQuery || b.title.toLowerCase().includes(trimmedQuery) || b.author.toLowerCase().includes(trimmedQuery)) &&
+        matchesFilters(b),
     );
-  }, [books, trimmedQuery]);
+  }, [books, trimmedQuery, genreFilter, yearFilter]);
 
   const sentenceResults = useMemo(() => {
-    if (!trimmedQuery) return [];
-    return sentences.filter(
-      (s) => s.quote.toLowerCase().includes(trimmedQuery) || (s.memo?.toLowerCase().includes(trimmedQuery) ?? false),
-    );
-  }, [sentences, trimmedQuery]);
+    if (!trimmedQuery && !hasActiveFilter) return [];
+    return sentences.filter((s) => {
+      const book = booksById.get(s.bookId);
+      if (!book || !matchesFilters(book)) return false;
+      return !trimmedQuery || s.quote.toLowerCase().includes(trimmedQuery) || (s.memo?.toLowerCase().includes(trimmedQuery) ?? false);
+    });
+  }, [sentences, trimmedQuery, booksById, genreFilter, yearFilter]);
 
   const searchRows = useMemo<SearchRow[]>(() => {
     const rows: SearchRow[] = [];
@@ -76,6 +124,8 @@ export function MainLibraryScreen({
   function closeSearch() {
     setSearchOpen(false);
     setQuery('');
+    setGenreFilter(null);
+    setYearFilter(null);
   }
 
   const counts = useMemo(
@@ -92,6 +142,30 @@ export function MainLibraryScreen({
   const totalGalpi = books.reduce((sum, b) => sum + b.galpiCount, 0);
 
   const visible = useMemo(() => (filter === 'all' ? books : books.filter((b) => b.status === filter)), [books, filter]);
+
+  if (reorderMode) {
+    return (
+      <SafeAreaView edges={['top']} className="flex-1 min-h-0 bg-background">
+        <View className="flex-1 px-6 pb-6">
+          <View className="flex-row items-center justify-between pt-1 pb-4">
+            <Text className="text-lg font-black tracking-tight text-foreground">서재 순서 편집</Text>
+            <Pressable
+              onPress={() => setReorderMode(false)}
+              accessibilityLabel="순서 편집 완료"
+              className="web:cursor-pointer flex-row items-center gap-1 rounded-full bg-galpi-ink px-3.5 py-2"
+            >
+              <Check size={14} color={colors.galpiPaper} />
+              <Text className="text-xs font-semibold text-galpi-paper">완료</Text>
+            </Pressable>
+          </View>
+          <Text className="mb-4 text-xs text-muted-foreground">오른쪽 손잡이를 눌러 드래그하면 순서를 바꿀 수 있어요</Text>
+          <ScrollView contentContainerClassName="pb-6">
+            <ReorderBookList books={books} onReorder={onReorderBooks} />
+          </ScrollView>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 min-h-0 bg-background">
@@ -130,42 +204,76 @@ export function MainLibraryScreen({
           searchOpen ? (
             <View className="items-center py-16">
               <Text className="text-center text-sm text-muted-foreground">
-                {trimmedQuery ? `'${query.trim()}'에 대한 검색 결과가 없어요` : '책 제목, 작가, 또는 문장으로 검색해보세요'}
+                {trimmedQuery
+                  ? `'${query.trim()}'에 대한 검색 결과가 없어요`
+                  : hasActiveFilter
+                    ? '조건에 맞는 책이나 갈피가 없어요'
+                    : '책 제목, 작가, 또는 문장으로 검색해보세요'}
               </Text>
             </View>
           ) : null
         }
         ListHeaderComponent={
           searchOpen ? (
-            <View className="flex-row items-center gap-3 pb-4 pt-1">
-              <View className="flex-1 flex-row items-center gap-2 rounded-full bg-card px-4 py-2.5">
-                <Search size={16} color={colors.mutedForeground} />
-                <TextInput
-                  value={query}
-                  onChangeText={setQuery}
-                  placeholder="책 제목, 작가, 또는 갈피 문장 검색"
-                  placeholderTextColor={colors.mutedForeground}
-                  autoFocus
-                  returnKeyType="search"
-                  className="flex-1 text-sm text-foreground"
-                />
+            <View className="pb-4 pt-1">
+              <View className="flex-row items-center gap-3">
+                <View className="flex-1 flex-row items-center gap-2 rounded-full bg-card px-4 py-2.5">
+                  <Search size={16} color={colors.mutedForeground} />
+                  <TextInput
+                    value={query}
+                    onChangeText={setQuery}
+                    placeholder="책 제목, 작가, 또는 갈피 문장 검색"
+                    placeholderTextColor={colors.mutedForeground}
+                    autoFocus
+                    returnKeyType="search"
+                    className="flex-1 text-sm text-foreground"
+                  />
+                </View>
+                <Pressable onPress={closeSearch} className="web:cursor-pointer">
+                  <Text className="text-sm font-semibold text-muted-foreground">취소</Text>
+                </Pressable>
               </View>
-              <Pressable onPress={closeSearch} className="web:cursor-pointer">
-                <Text className="text-sm font-semibold text-muted-foreground">취소</Text>
-              </Pressable>
+
+              {genreOptions.length > 0 || yearOptions.length > 0 ? (
+                <View className="mt-3 gap-2">
+                  {genreOptions.length > 0 ? (
+                    <FilterChipRow
+                      options={genreOptions.map((g) => ({ key: g, label: g }))}
+                      active={genreFilter}
+                      onChange={setGenreFilter}
+                    />
+                  ) : null}
+                  {yearOptions.length > 0 ? (
+                    <FilterChipRow
+                      options={yearOptions.map((y) => ({ key: y, label: `${y}년 완독` }))}
+                      active={yearFilter}
+                      onChange={setYearFilter}
+                    />
+                  ) : null}
+                </View>
+              ) : null}
             </View>
           ) : (
           <View>
             {/* 헤더 */}
             <View className="flex-row items-center justify-between pt-1 pb-4">
               <GalpiHeaderLogo markColor={colors.galpiInk} markSize={28} wordClassName="text-xl text-foreground" />
-              <Pressable
-                onPress={() => setSearchOpen(true)}
-                accessibilityLabel="책·갈피 검색"
-                className="items-center justify-center rounded-full web:cursor-pointer h-9 w-9 bg-card"
-              >
-                <Search size={16} color={colors.foreground} />
-              </Pressable>
+              <View className="flex-row items-center gap-2">
+                <Pressable
+                  onPress={onOpenFavorites}
+                  accessibilityLabel="즐겨찾는 갈피 모아보기"
+                  className="items-center justify-center rounded-full web:cursor-pointer h-9 w-9 bg-card"
+                >
+                  <Star size={16} color={colors.foreground} />
+                </Pressable>
+                <Pressable
+                  onPress={() => setSearchOpen(true)}
+                  accessibilityLabel="책·갈피 검색"
+                  className="items-center justify-center rounded-full web:cursor-pointer h-9 w-9 bg-card"
+                >
+                  <Search size={16} color={colors.foreground} />
+                </Pressable>
+              </View>
             </View>
 
             {/* 에디토리얼 인사말 */}
@@ -224,10 +332,22 @@ export function MainLibraryScreen({
             {/* 내 서재 */}
             <View className="flex-row items-center justify-between mb-3">
               <Text className="text-lg font-black tracking-tight text-foreground">내 서재</Text>
-              <Pressable onPress={showAll} className="web:cursor-pointer flex-row items-center gap-0.5">
-                <Text className="text-xs font-medium text-muted-foreground">전체보기</Text>
-                <ChevronRight size={14} color={colors.mutedForeground} />
-              </Pressable>
+              <View className="flex-row items-center gap-3">
+                {books.length > 1 ? (
+                  <Pressable
+                    onPress={() => setReorderMode(true)}
+                    accessibilityLabel="서재 순서 편집"
+                    className="web:cursor-pointer flex-row items-center gap-0.5"
+                  >
+                    <ArrowUpDown size={12} color={colors.mutedForeground} />
+                    <Text className="text-xs font-medium text-muted-foreground">순서 편집</Text>
+                  </Pressable>
+                ) : null}
+                <Pressable onPress={showAll} className="web:cursor-pointer flex-row items-center gap-0.5">
+                  <Text className="text-xs font-medium text-muted-foreground">전체보기</Text>
+                  <ChevronRight size={14} color={colors.mutedForeground} />
+                </Pressable>
+              </View>
             </View>
 
             <View className="mb-5">
@@ -251,6 +371,36 @@ export function MainLibraryScreen({
         }
       />
     </SafeAreaView>
+  );
+}
+
+/** A horizontal row of toggleable filter chips — tapping the active chip again clears the filter. */
+function FilterChipRow<T extends string | number>({
+  options,
+  active,
+  onChange,
+}: {
+  options: { key: T; label: string }[];
+  active: T | null;
+  onChange: (key: T | null) => void;
+}) {
+  return (
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerClassName="gap-2">
+      {options.map((opt) => {
+        const isActive = active === opt.key;
+        return (
+          <Pressable
+            key={opt.key}
+            accessibilityRole="button"
+            accessibilityState={{ selected: isActive }}
+            onPress={() => onChange(isActive ? null : opt.key)}
+            className={`web:cursor-pointer shrink-0 rounded-full px-3 py-1.5 ${isActive ? 'bg-galpi-ink' : 'bg-card'}`}
+          >
+            <Text className={`text-xs font-medium ${isActive ? 'text-galpi-paper' : 'text-muted-foreground'}`}>{opt.label}</Text>
+          </Pressable>
+        );
+      })}
+    </ScrollView>
   );
 }
 
