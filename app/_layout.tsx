@@ -25,6 +25,7 @@ import {
 import { WebFrame } from '../components/layout/web-frame';
 import { getAnalyticsIfSupported } from '../lib/firebase';
 import { useAuthSync } from '../lib/use-auth-sync';
+import { useOnThisDayReminder } from '../lib/use-on-this-day-reminder';
 import '../global.css';
 
 SplashScreen.preventAutoHideAsync();
@@ -35,6 +36,10 @@ export default function RootLayout() {
   }, []);
 
   const { authResolved } = useAuthSync();
+  // Recomputes/reschedules today's "1년 전 오늘" notification on every launch —
+  // mounted here (not just the settings screen) so it runs regardless of
+  // which screen the user opens the app to.
+  useOnThisDayReminder();
 
   const [fontsLoaded] = useFonts({
     NotoSansKR_100Thin,

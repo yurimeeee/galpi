@@ -3,6 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronLeft, Info } from 'lucide-react-native';
 import { TimePickerField } from '../galpi/time-picker-field';
 import { useReadingReminder } from '../../lib/use-reading-reminder';
+import { useOnThisDayReminder } from '../../lib/use-on-this-day-reminder';
 import { colors } from '../../lib/theme';
 
 export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
@@ -15,6 +16,15 @@ export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
     setDailyReminderEnabled,
     setDailyReminderTime,
   } = useReadingReminder();
+
+  const {
+    loading: onThisDayLoading,
+    enabled: onThisDayEnabled,
+    error: onThisDayError,
+    match: onThisDayMatch,
+    matchBook: onThisDayBook,
+    setOnThisDayEnabled,
+  } = useOnThisDayReminder();
 
   return (
     <SafeAreaView edges={['top', 'bottom']} className="flex-1 min-h-0 bg-background">
@@ -96,6 +106,64 @@ export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
             잠시 책장을 넘기며 나만의 갈피를 남겨볼까요?
           </Text>
         </View>
+
+        {onThisDayLoading ? (
+          <View className="mt-6 items-center pt-4">
+            <ActivityIndicator color={colors.foreground} />
+          </View>
+        ) : (
+          <View className="mt-6 overflow-hidden rounded-2xl border border-border bg-card">
+            <View className="flex-row items-center gap-3 px-4 py-4">
+              <View className="min-w-0 flex-1">
+                <Text className="text-[14px] font-bold text-foreground">1년 전 오늘의 갈피</Text>
+                <Text className="mt-0.5 text-[12px] leading-relaxed text-muted-foreground">
+                  1년 전 오늘 남긴 갈피를 저녁 8시에 다시 보여드려요.
+                </Text>
+              </View>
+              <Pressable
+                onPress={() => setOnThisDayEnabled(!onThisDayEnabled)}
+                disabled={!supported}
+                accessibilityRole="switch"
+                accessibilityState={{ checked: onThisDayEnabled }}
+                accessibilityLabel="1년 전 오늘의 갈피"
+                className={`web:cursor-pointer relative h-6 w-11 justify-center rounded-full ${
+                  onThisDayEnabled ? 'bg-galpi-ink' : 'bg-border'
+                } ${!supported ? 'opacity-50' : ''}`}
+              >
+                <View
+                  className="absolute h-5 w-5 rounded-full bg-galpi-paper"
+                  style={{ left: onThisDayEnabled ? 22 : 2 }}
+                />
+              </Pressable>
+            </View>
+          </View>
+        )}
+
+        {onThisDayError ? (
+          <Text className="mt-3 text-[12px] text-destructive">{onThisDayError}</Text>
+        ) : null}
+
+        {onThisDayEnabled ? (
+          <View className="mt-4 gap-2 rounded-2xl bg-secondary p-4">
+            <Text className="text-[12px] font-bold text-muted-foreground">오늘의 미리보기</Text>
+            {onThisDayMatch ? (
+              <>
+                <Text className="text-[15px] font-bold leading-relaxed text-foreground">
+                  "{onThisDayMatch.quote}"
+                </Text>
+                {onThisDayBook ? (
+                  <Text className="text-[12px] text-muted-foreground">
+                    『{onThisDayBook.title}』 · P.{onThisDayMatch.page}
+                  </Text>
+                ) : null}
+              </>
+            ) : (
+              <Text className="text-[13px] leading-relaxed text-muted-foreground">
+                1년 전 오늘 남긴 갈피가 아직 없어요.
+              </Text>
+            )}
+          </View>
+        ) : null}
       </ScrollView>
     </SafeAreaView>
   );
