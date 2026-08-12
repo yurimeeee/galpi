@@ -145,6 +145,8 @@ export type NotificationPreferences = {
   dailyReminderEnabled?: boolean;
   dailyReminderTime?: string;
   expoPushToken?: string | null;
+  /** "1년 전 오늘의 갈피" reminder — resurfaces a 갈피 saved on this day in a past year. */
+  onThisDayEnabled?: boolean;
 };
 
 function notificationPreferencesDoc(uid: string) {
@@ -257,7 +259,7 @@ export async function addSentenceDoc(
 export async function updateSentenceDoc(
   uid: string,
   sentenceId: string,
-  changes: { page: number; quote: string; memo?: string },
+  changes: { page: number; quote: string; memo?: string; tags?: string[] },
 ): Promise<void> {
   const sentenceRef = doc(sentencesCol(uid), sentenceId);
   await runTransaction(db, async (tx) => {
@@ -271,6 +273,7 @@ export async function updateSentenceDoc(
       page: changes.page,
       quote: changes.quote,
       memo: changes.memo === undefined ? deleteField() : changes.memo,
+      tags: !changes.tags || changes.tags.length === 0 ? deleteField() : changes.tags,
     });
     if (bookRef) {
       const patch = furthestPagePatch(book, changes.page);

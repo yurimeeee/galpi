@@ -25,6 +25,10 @@ export default function Library() {
     router.push('/favorites');
   }
 
+  function openCollections() {
+    router.push('/collections');
+  }
+
   function reorderBooks(orderedBookIds: string[]) {
     useAppStore.getState().reorderBooks(orderedBookIds);
   }
@@ -42,6 +46,7 @@ export default function Library() {
       onAddBook={addBook}
       onReorderBooks={reorderBooks}
       onOpenFavorites={openFavorites}
+      onOpenCollections={openCollections}
     />
   );
 }

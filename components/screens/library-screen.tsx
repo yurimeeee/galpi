@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from 'react';
 import { FlatList, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ArrowUpDown, Bookmark, Check, Search, ChevronRight, Quote, Star } from 'lucide-react-native';
+import { ArrowUpDown, Bookmark, Check, Search, ChevronRight, Quote, Star, Tags } from 'lucide-react-native';
 import { GalpiHeaderLogo } from '../galpi/galpi-logo';
 import { BookCard } from '../galpi/book-card';
 import { ColorChips } from '../galpi/color-chips';
@@ -36,6 +36,7 @@ export function MainLibraryScreen({
   onAddBook,
   onReorderBooks,
   onOpenFavorites,
+  onOpenCollections,
 }: {
   books: Book[];
   sentences: Sentence[];
@@ -44,6 +45,7 @@ export function MainLibraryScreen({
   onAddBook: () => void;
   onReorderBooks: (orderedBookIds: string[]) => void;
   onOpenFavorites: () => void;
+  onOpenCollections: () => void;
 }) {
   const [filter, setFilter] = useState<FilterKey>('all');
   const [searchOpen, setSearchOpen] = useState(false);
@@ -259,6 +261,13 @@ export function MainLibraryScreen({
             <View className="flex-row items-center justify-between pt-1 pb-4">
               <GalpiHeaderLogo markColor={colors.galpiInk} markSize={28} wordClassName="text-xl text-foreground" />
               <View className="flex-row items-center gap-2">
+                <Pressable
+                  onPress={onOpenCollections}
+                  accessibilityLabel="태그 모음집 보기"
+                  className="items-center justify-center rounded-full web:cursor-pointer h-9 w-9 bg-card"
+                >
+                  <Tags size={16} color={colors.foreground} />
+                </Pressable>
                 <Pressable
                   onPress={onOpenFavorites}
                   accessibilityLabel="즐겨찾는 갈피 모아보기"

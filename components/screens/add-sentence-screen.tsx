@@ -29,6 +29,7 @@ import {
 import type { EntryType, Sentence } from '../../lib/data/sentences';
 import { colors } from '../../lib/theme';
 import { scanBookText } from '../../lib/ocr';
+import { TagInput } from '../galpi/tag-input';
 
 const MODES: { key: EntryType; label: string; Icon: LucideIcon }[] = [
   { key: 'text', label: '직접 입력', Icon: Type },
@@ -39,12 +40,14 @@ const MODES: { key: EntryType; label: string; Icon: LucideIcon }[] = [
 export function AddSentenceScreen({
   bookId,
   bookTitle,
+  tagSuggestions,
   onBack,
   onSave,
   onUploadPhoto,
 }: {
   bookId: string;
   bookTitle: string;
+  tagSuggestions?: string[];
   onBack: () => void;
   onSave: (sentence: Omit<Sentence, 'id' | 'date'>) => Promise<void>;
   onUploadPhoto: (dataUrl: string) => Promise<string>;
@@ -57,6 +60,7 @@ export function AddSentenceScreen({
   const [text, setText] = useState('');
   const [page, setPage] = useState('');
   const [memo, setMemo] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
 
   async function handleSave() {
     if (saving) return;
@@ -73,6 +77,7 @@ export function AddSentenceScreen({
           page: Number(page) || 0,
           quote: text.trim() || '마음에 담고 싶은 문장',
           memo: memo.trim() || undefined,
+          tags: tags.length ? tags : undefined,
           type: 'text',
         });
       } else if (mode === 'scan') {
@@ -96,6 +101,7 @@ export function AddSentenceScreen({
           page: Number(page) || 0,
           quote: memo.trim() || '페이지 사진으로 남긴 갈피',
           photoUrl,
+          tags: tags.length ? tags : undefined,
           type: 'photo',
         });
       }
@@ -160,7 +166,17 @@ export function AddSentenceScreen({
           keyboardDismissMode="on-drag"
         >
           {mode === 'text' ? (
-            <TextMode text={text} setText={setText} page={page} setPage={setPage} memo={memo} setMemo={setMemo} />
+            <TextMode
+              text={text}
+              setText={setText}
+              page={page}
+              setPage={setPage}
+              memo={memo}
+              setMemo={setMemo}
+              tags={tags}
+              setTags={setTags}
+              tagSuggestions={tagSuggestions}
+            />
           ) : null}
           {mode === 'scan' ? (
             <ScanMode quote={scanQuote} onQuoteChange={setScanQuote} page={page} setPage={setPage} />
@@ -173,6 +189,9 @@ export function AddSentenceScreen({
               setMemo={setMemo}
               page={page}
               setPage={setPage}
+              tags={tags}
+              setTags={setTags}
+              tagSuggestions={tagSuggestions}
             />
           ) : null}
         </ScrollView>
@@ -210,6 +229,9 @@ function TextMode({
   setPage,
   memo,
   setMemo,
+  tags,
+  setTags,
+  tagSuggestions,
 }: {
   text: string;
   setText: (v: string) => void;
@@ -217,6 +239,9 @@ function TextMode({
   setPage: (v: string) => void;
   memo: string;
   setMemo: (v: string) => void;
+  tags: string[];
+  setTags: (v: string[]) => void;
+  tagSuggestions?: string[];
 }) {
   return (
     <View className="gap-4">
@@ -260,6 +285,10 @@ function TextMode({
           className="w-full rounded-2xl border border-border bg-card p-4 text-sm leading-relaxed text-foreground focus:border-galpi-ink"
           style={{ minHeight: 80 }}
         />
+      </Field>
+
+      <Field label="태그">
+        <TagInput tags={tags} onChange={setTags} suggestions={tagSuggestions} />
       </Field>
     </View>
   );
@@ -492,6 +521,9 @@ function PhotoMode({
   setMemo,
   page,
   setPage,
+  tags,
+  setTags,
+  tagSuggestions,
 }: {
   photoUri: string | null;
   setPhotoUri: (v: string | null) => void;
@@ -499,6 +531,9 @@ function PhotoMode({
   setMemo: (v: string) => void;
   page: string;
   setPage: (v: string) => void;
+  tags: string[];
+  setTags: (v: string[]) => void;
+  tagSuggestions?: string[];
 }) {
   async function takePhoto() {
     const permission = await ImagePicker.requestCameraPermissionsAsync();
@@ -593,6 +628,10 @@ function PhotoMode({
           className="w-full rounded-2xl border border-border bg-card p-4 text-sm leading-relaxed text-foreground focus:border-galpi-ink"
           style={{ minHeight: 80 }}
         />
+      </Field>
+
+      <Field label="태그">
+        <TagInput tags={tags} onChange={setTags} suggestions={tagSuggestions} />
       </Field>
     </View>
   );

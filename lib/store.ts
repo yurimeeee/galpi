@@ -41,7 +41,10 @@ type AppState = {
   goToLogin: () => void;
 
   addSentence: (sentence: NewSentence) => Promise<void>;
-  updateSentence: (id: string, changes: { page: number; quote: string; memo?: string }) => Promise<void>;
+  updateSentence: (
+    id: string,
+    changes: { page: number; quote: string; memo?: string; tags?: string[] },
+  ) => Promise<void>;
   deleteSentence: (id: string) => Promise<void>;
   setSentenceFavorite: (id: string, favorite: boolean) => Promise<void>;
   addBook: (book: NewBook) => Promise<void>;

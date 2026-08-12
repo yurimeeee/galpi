@@ -14,6 +14,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronLeft, Share2, Trash2, Check } from 'lucide-react-native';
 import { SentenceCardModal } from '../galpi/sentence-card-modal';
+import { TagInput } from '../galpi/tag-input';
 import type { Book } from '../../lib/data/books';
 import type { Sentence } from '../../lib/data/sentences';
 import { colors } from '../../lib/theme';
@@ -21,19 +22,22 @@ import { colors } from '../../lib/theme';
 export function EditSentenceScreen({
   sentence,
   book,
+  tagSuggestions,
   onBack,
   onSave,
   onDelete,
 }: {
   sentence: Sentence;
   book: Book;
+  tagSuggestions?: string[];
   onBack: () => void;
-  onSave: (changes: { page: number; quote: string; memo?: string }) => Promise<void>;
+  onSave: (changes: { page: number; quote: string; memo?: string; tags?: string[] }) => Promise<void>;
   onDelete: () => Promise<void>;
 }) {
   const [quote, setQuote] = useState(sentence.quote);
   const [page, setPage] = useState(String(sentence.page || ''));
   const [memo, setMemo] = useState(sentence.memo ?? '');
+  const [tags, setTags] = useState<string[]>(sentence.tags ?? []);
   const [busy, setBusy] = useState(false);
   const [cardOpen, setCardOpen] = useState(false);
 
@@ -45,6 +49,7 @@ export function EditSentenceScreen({
         page: Number(page) || 0,
         quote: quote.trim() || sentence.quote,
         memo: memo.trim() || undefined,
+        tags,
       });
       onBack();
     } catch (err) {
@@ -177,6 +182,10 @@ export function EditSentenceScreen({
                 className="w-full rounded-2xl border border-border bg-card p-4 text-sm leading-relaxed text-foreground focus:border-galpi-ink"
                 style={{ minHeight: 80 }}
               />
+            </Field>
+
+            <Field label="태그">
+              <TagInput tags={tags} onChange={setTags} suggestions={tagSuggestions} />
             </Field>
           </View>
         </ScrollView>
