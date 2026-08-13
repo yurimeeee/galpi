@@ -23,9 +23,11 @@ import {
   NotoSansKR_900Black,
 } from '@expo-google-fonts/noto-sans-kr';
 import { WebFrame } from '../components/layout/web-frame';
+import { ReadingTimerWidget } from '../components/galpi/reading-timer-widget';
 import { getAnalyticsIfSupported } from '../lib/firebase';
 import { useAuthSync } from '../lib/use-auth-sync';
 import { useOnThisDayReminder } from '../lib/use-on-this-day-reminder';
+import { useReadingTimerAutoAdvance } from '../lib/use-reading-timer-auto-advance';
 import '../global.css';
 
 SplashScreen.preventAutoHideAsync();
@@ -40,6 +42,9 @@ export default function RootLayout() {
   // mounted here (not just the settings screen) so it runs regardless of
   // which screen the user opens the app to.
   useOnThisDayReminder();
+  // Drives the reading timer's phase transitions independent of whichever
+  // screen is mounted — see lib/use-reading-timer-auto-advance.ts.
+  useReadingTimerAutoAdvance();
 
   const [fontsLoaded] = useFonts({
     NotoSansKR_100Thin,
@@ -84,6 +89,7 @@ export default function RootLayout() {
             <Stack.Screen name="terms" />
             <Stack.Screen name="privacy" />
           </Stack>
+          <ReadingTimerWidget />
         </WebFrame>
       </SafeAreaProvider>
     </GestureHandlerRootView>

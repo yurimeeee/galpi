@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Circle } from 'react-native-svg';
@@ -17,26 +17,18 @@ import { BottomSheet } from '../galpi/bottom-sheet';
 import { SessionSummaryModal } from '../galpi/session-summary-modal';
 import { type Book } from '../../lib/data/books';
 import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
+import { useNow } from '../../lib/hooks/use-now';
 import { logReadingMinutes } from '../../lib/data-service';
 import { auth } from '../../lib/firebase';
+import {
+  TIMER_PRESETS,
+  TIMER_TOTAL_SESSIONS,
+  presetFor,
+  timerSecondsLeft,
+  timerFocusSecondsTotal,
+  useReadingTimerStore,
+} from '../../lib/reading-timer-store';
 import { ACCENT_BG_CLASS, colors } from '../../lib/theme';
-
-type Phase = 'focus' | 'rest';
-
-type Preset = {
-  key: string;
-  label: string;
-  focus: number; // 분
-  rest: number; // 분
-};
-
-const PRESETS: Preset[] = [
-  { key: '25/5', label: '25분 독서 / 5분 휴식', focus: 25, rest: 5 },
-  { key: '50/10', label: '50분 독서 / 10분 휴식', focus: 50, rest: 10 },
-  { key: 'custom', label: '자율 설정', focus: 15, rest: 3 },
-];
-
-const TOTAL_SESSIONS = 4;
 
 function fmt(seconds: number) {
   const m = Math.floor(seconds / 60);
@@ -53,98 +45,77 @@ export function ReadingTimerScreen({
   books: Book[];
   onBack: () => void;
 }) {
-  const [book, setBook] = useState<Book>(initialBook);
+  const active = useReadingTimerStore((s) => s.active);
+  const running = useReadingTimerStore((s) => s.running);
+  const completed = useReadingTimerStore((s) => s.completed);
+  const phase = useReadingTimerStore((s) => s.phase);
+  const sessionsDone = useReadingTimerStore((s) => s.sessionsDone);
+  const presetKey = useReadingTimerStore((s) => s.presetKey);
+  const customFocus = useReadingTimerStore((s) => s.customFocus);
+  const storeBook = useReadingTimerStore((s) => s.book);
+  const storeInitialGalpiCount = useReadingTimerStore((s) => s.initialGalpiCount);
+  const startTimer = useReadingTimerStore((s) => s.start);
+  const toggleRunning = useReadingTimerStore((s) => s.toggleRunning);
+  const pauseTimer = useReadingTimerStore((s) => s.pause);
+  const resetTimer = useReadingTimerStore((s) => s.reset);
+  const setBookOnStore = useReadingTimerStore((s) => s.setBook);
+  const setPresetKeyOnStore = useReadingTimerStore((s) => s.setPresetKey);
+  const setCustomFocusOnStore = useReadingTimerStore((s) => s.setCustomFocus);
+  const endTimer = useReadingTimerStore((s) => s.end);
+
+  // Repaints every second while running so the store-derived selectors below
+  // (computed from Date.now()) stay live — see lib/hooks/use-now.ts.
+  useNow(active && running);
+  const secondsLeft = useReadingTimerStore(timerSecondsLeft);
+  const focusSeconds = useReadingTimerStore(timerFocusSecondsTotal);
+
+  // Before a session starts, book selection is just local UI state — nothing
+  // to persist globally yet. Once `active`, the store's book is the source
+  // of truth (it survives navigating away and back).
+  const [localBook, setLocalBook] = useState<Book>(initialBook);
+  const book = active && storeBook ? storeBook : localBook;
+
   const [showBookPicker, setShowBookPicker] = useState(false);
   const readingBooks = books.filter((b) => b.status !== 'wish');
-  const [presetKey, setPresetKey] = useState('25/5');
-  const [customFocus, setCustomFocus] = useState(15);
+  const [showSummary, setShowSummary] = useState(false);
 
-  /**
-   * `book` is local state, frozen at whatever `initialBook`/picker selection
-   * set it to — it doesn't track live Firestore updates. `books` (the prop)
-   * does, so the number of 갈피 captured this session is the live book's
-   * current galpiCount minus its count when the session (or book switch)
-   * started.
-   */
-  const initialGalpiCountRef = useRef(initialBook.galpiCount ?? 0);
   const liveGalpiCount = books.find((b) => b.id === book.id)?.galpiCount ?? book.galpiCount ?? 0;
-  const sentencesCaptured = Math.max(0, liveGalpiCount - initialGalpiCountRef.current);
+  const sentencesCaptured = active ? Math.max(0, liveGalpiCount - storeInitialGalpiCount) : 0;
 
   function selectBook(b: Book) {
-    setBook(b);
-    initialGalpiCountRef.current = b.galpiCount ?? 0;
+    if (active) {
+      setBookOnStore(b, b.galpiCount ?? 0);
+    } else {
+      setLocalBook(b);
+    }
     setShowBookPicker(false);
   }
 
-  const preset = useMemo(() => {
-    const p = PRESETS.find((x) => x.key === presetKey) ?? PRESETS[0];
-    return p.key === 'custom' ? { ...p, focus: customFocus, rest: 3 } : p;
-  }, [presetKey, customFocus]);
-
-  const [phase, setPhase] = useState<Phase>('focus');
-  const [secondsLeft, setSecondsLeft] = useState(preset.focus * 60);
-  const [running, setRunning] = useState(false);
-  const [sessionsDone, setSessionsDone] = useState(0);
-  const [focusSeconds, setFocusSeconds] = useState(0);
-  const [showSummary, setShowSummary] = useState(false);
+  const preset = presetFor(presetKey, customFocus);
 
   const phaseTotal = (phase === 'focus' ? preset.focus : preset.rest) * 60;
   const progress = phaseTotal > 0 ? 1 - secondsLeft / phaseTotal : 0;
 
-  // 프리셋 변경 시 정지 상태에서 시간 초기화
+  // 모든 세션이 (다른 화면에 있는 동안이라도) 완료되면 요약을 띄움
   useEffect(() => {
-    if (!running) {
-      setPhase('focus');
-      setSecondsLeft(preset.focus * 60);
+    if (completed) setShowSummary(true);
+  }, [completed]);
+
+  function handlePlayPause() {
+    if (!active) {
+      startTimer(book, presetKey, customFocus, liveGalpiCount);
+      return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [presetKey, customFocus]);
+    toggleRunning();
+  }
 
-  const advancePhase = useCallback(() => {
-    setPhase((prev) => {
-      if (prev === 'focus') {
-        setSessionsDone((n) => n + 1);
-        setSecondsLeft(preset.rest * 60);
-        return 'rest';
-      }
-      setSecondsLeft(preset.focus * 60);
-      return 'focus';
-    });
-  }, [preset.focus, preset.rest]);
-
-  // 타이머 인터벌
-  const advanceRef = useRef(advancePhase);
-  advanceRef.current = advancePhase;
-  const phaseRef = useRef(phase);
-  phaseRef.current = phase;
-
-  useEffect(() => {
-    if (!running) return;
-    const id = setInterval(() => {
-      setSecondsLeft((s) => {
-        if (phaseRef.current === 'focus') setFocusSeconds((f) => f + 1);
-        if (s <= 1) {
-          advanceRef.current();
-          return 0;
-        }
-        return s - 1;
-      });
-    }, 1000);
-    return () => clearInterval(id);
-  }, [running]);
-
-  // 모든 세션 완료 시 자동 종료
-  useEffect(() => {
-    if (sessionsDone >= TOTAL_SESSIONS) {
-      setRunning(false);
-      setShowSummary(true);
+  function handleEndSession() {
+    if (!active) {
+      onBack();
+      return;
     }
-  }, [sessionsDone]);
-
-  function handleReset() {
-    setRunning(false);
-    setPhase('focus');
-    setSecondsLeft(preset.focus * 60);
+    if (running) pauseTimer();
+    setShowSummary(true);
   }
 
   // 원형 진행 링
@@ -168,7 +139,7 @@ export function ReadingTimerScreen({
         </Pressable>
         <Text className="text-sm font-bold text-foreground">독서 타이머</Text>
         <Pressable
-          onPress={() => setShowSummary(true)}
+          onPress={handleEndSession}
           className="web:cursor-pointer rounded-full px-3 py-1.5"
         >
           <Text className="text-xs font-bold text-muted-foreground">독서 종료</Text>
@@ -187,7 +158,7 @@ export function ReadingTimerScreen({
           </View>
           <View className="rounded-full bg-secondary px-3 py-1.5">
             <Text className="font-mono text-xs font-bold tabular-nums text-foreground">
-              {Math.min(sessionsDone + (isRest ? 0 : 1), TOTAL_SESSIONS)} / {TOTAL_SESSIONS} 세션
+              {Math.min(sessionsDone + (isRest ? 0 : 1), TIMER_TOTAL_SESSIONS)} / {TIMER_TOTAL_SESSIONS} 세션
             </Text>
           </View>
         </View>
@@ -224,22 +195,22 @@ export function ReadingTimerScreen({
 
         {/* 프리셋 칩 */}
         <View className="mb-2 mt-4 gap-2">
-          {PRESETS.map((p) => {
-            const active = presetKey === p.key;
+          {TIMER_PRESETS.map((p) => {
+            const selected = presetKey === p.key;
             return (
               <Pressable
                 key={p.key}
-                onPress={() => setPresetKey(p.key)}
+                onPress={() => setPresetKeyOnStore(p.key)}
                 disabled={running}
                 className={`web:cursor-pointer flex-row items-center justify-between rounded-2xl border px-4 py-3 ${
                   running ? 'opacity-40' : ''
-                } ${active ? 'border-galpi-ink bg-galpi-ink' : 'border-border bg-card'}`}
+                } ${selected ? 'border-galpi-ink bg-galpi-ink' : 'border-border bg-card'}`}
               >
-                <Text className={`text-sm font-bold ${active ? 'text-galpi-paper' : 'text-foreground'}`}>{p.label}</Text>
-                {p.key === 'custom' && active ? (
-                  <CustomStepper value={customFocus} onChange={setCustomFocus} />
+                <Text className={`text-sm font-bold ${selected ? 'text-galpi-paper' : 'text-foreground'}`}>{p.label}</Text>
+                {p.key === 'custom' && selected ? (
+                  <CustomStepper value={customFocus} onChange={setCustomFocusOnStore} />
                 ) : (
-                  <ChevronRight size={16} color={active ? colors.galpiPaper : colors.mutedForeground} opacity={active ? 0.7 : 1} />
+                  <ChevronRight size={16} color={selected ? colors.galpiPaper : colors.mutedForeground} opacity={selected ? 0.7 : 1} />
                 )}
               </Pressable>
             );
@@ -254,7 +225,7 @@ export function ReadingTimerScreen({
       >
         <View className="mb-3 flex-row items-center gap-3">
           <Pressable
-            onPress={handleReset}
+            onPress={resetTimer}
             accessibilityLabel="처음부터"
             className="web:cursor-pointer h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-secondary"
             style={({ pressed }) => pressed && { transform: [{ scale: 0.95 }] }}
@@ -262,7 +233,7 @@ export function ReadingTimerScreen({
             <RotateCcw size={20} color={colors.foreground} />
           </Pressable>
           <Pressable
-            onPress={() => setRunning((r) => !r)}
+            onPress={handlePlayPause}
             className="web:cursor-pointer h-14 flex-1 flex-row items-center justify-center gap-2 rounded-2xl bg-galpi-ink"
             style={({ pressed }) => pressed && { transform: [{ scale: 0.98 }] }}
           >
@@ -308,6 +279,7 @@ export function ReadingTimerScreen({
             const uid = auth.currentUser?.uid;
             if (uid) logReadingMinutes(uid, Math.round(focusSeconds / 60)).catch(() => {});
             setShowSummary(false);
+            endTimer();
             onBack();
           }}
         />
