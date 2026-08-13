@@ -14,6 +14,7 @@ import {
   Info,
   ChevronRight,
   Flame,
+  Award,
   type LucideIcon,
 } from 'lucide-react-native';
 import { Skeleton } from '../galpi/skeleton';
@@ -39,9 +40,11 @@ export function MyPageScreen({
   bookCount,
   galpiCount,
   currentStreak,
+  badgeSummary,
   loaded = true,
   onLogout,
   onOpenGoals,
+  onOpenBadges,
   onOpenNotificationSettings,
   onOpenTerms,
   onOpenPrivacy,
@@ -57,10 +60,13 @@ export function MyPageScreen({
   galpiCount: number;
   /** Consecutive days with reading activity, for the goals/streak entry chip. */
   currentStreak: number;
+  /** "8/12개 달성" — precomputed so this screen doesn't need the badge data itself. */
+  badgeSummary: string;
   /** Whether the book/galpi counts below have arrived from Firestore yet. */
   loaded?: boolean;
   onLogout: () => void;
   onOpenGoals: () => void;
+  onOpenBadges: () => void;
   onOpenNotificationSettings: () => void;
   onOpenTerms: () => void;
   onOpenPrivacy: () => void;
@@ -153,6 +159,13 @@ export function MyPageScreen({
           />
 
           <SettingsGroup
+            title="독서 기록"
+            rows={[
+              { key: 'badges', label: '독서 업적', Icon: Award, value: badgeSummary, onPress: onOpenBadges },
+            ]}
+          />
+
+          <SettingsGroup
             title="앱 설정"
             rows={[
               { key: 'noti', label: '알림 설정', Icon: Bell, onPress: onOpenNotificationSettings },
@@ -222,11 +235,8 @@ function SettingsGroup({ title, rows }: { title: string; rows: Row[] }) {
               </View>
               <Text className="flex-1 text-[14px] font-medium text-foreground">{row.label}</Text>
 
-              {row.value ? (
-                <Text className="text-[13px] text-muted-foreground">{row.value}</Text>
-              ) : row.onPress ? (
-                <ChevronRight size={16} color={colors.mutedForeground} />
-              ) : null}
+              {row.value ? <Text className="text-[13px] text-muted-foreground">{row.value}</Text> : null}
+              {row.onPress ? <ChevronRight size={16} color={colors.mutedForeground} /> : null}
             </>
           );
 

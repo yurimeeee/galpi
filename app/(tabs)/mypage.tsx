@@ -3,6 +3,7 @@ import { MyPageScreen } from '../../components/screens/mypage-screen';
 import { signOutUser } from '../../lib/auth';
 import { useAppStore } from '../../lib/store';
 import { useReadingGoals } from '../../lib/use-reading-goals';
+import { computeBadgeProgress } from '../../lib/badges';
 
 export default function MyPage() {
   // Selected as individual primitives, not the whole `user` object — Firebase
@@ -14,9 +15,12 @@ export default function MyPage() {
   const photoURL = useAppStore((s) => s.user?.photoURL);
   const books = useAppStore((s) => s.books);
   const booksLoaded = useAppStore((s) => s.booksLoaded);
-  const { currentStreak } = useReadingGoals();
+  const { currentStreak, bestStreak } = useReadingGoals();
 
   const galpiCount = books.reduce((sum, b) => sum + b.galpiCount, 0);
+  const doneCount = books.filter((b) => b.status === 'done').length;
+  const badges = computeBadgeProgress({ books: doneCount, galpi: galpiCount, bestStreak });
+  const badgeSummary = `${badges.filter((b) => b.achieved).length}/${badges.length}개 달성`;
 
   return (
     <MyPageScreen
@@ -26,6 +30,7 @@ export default function MyPage() {
       bookCount={books.length}
       galpiCount={galpiCount}
       currentStreak={currentStreak}
+      badgeSummary={badgeSummary}
       loaded={books.length > 0 || booksLoaded}
       onLogout={async () => {
         await signOutUser();
@@ -33,6 +38,7 @@ export default function MyPage() {
       }}
       onAccountDeleted={() => router.replace('/login')}
       onOpenGoals={() => router.push('/reading-goal')}
+      onOpenBadges={() => router.push('/badges')}
       onOpenNotificationSettings={() => router.push('/notification-settings')}
       onOpenTerms={() => router.push('/terms')}
       onOpenPrivacy={() => router.push('/privacy')}
