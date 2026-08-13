@@ -105,6 +105,13 @@ export function ReadingTimerWidget() {
   const isRest = phase === 'rest';
   const PhaseIcon = isRest ? Coffee : BookOpen;
 
+  // No reading session, no widget: skip mounting the full-screen box-none
+  // overlay entirely instead of leaving an always-on pass-through view sitting
+  // on top of every screen for the app's whole lifetime.
+  if (!active || !book) {
+    return null;
+  }
+
   return (
     <View pointerEvents="box-none" className="absolute inset-0" onLayout={(e) => setBounds(e.nativeEvent.layout)}>
       {visible ? (
