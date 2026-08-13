@@ -178,7 +178,6 @@ export function MainLibraryScreen({
         data={searchOpen ? searchRows : visible.map((book): SearchRow => ({ kind: 'book', book }))}
         keyExtractor={(row) => (row.kind === 'header' ? row.key : row.kind === 'book' ? `book-${row.book.id}` : `sentence-${row.sentence.id}`)}
         numColumns={!searchOpen && viewMode === 'card' ? 4 : 1}
-        columnWrapperStyle={!searchOpen && viewMode === 'card' ? { gap: 10 } : undefined}
         contentContainerClassName="px-6 pb-6"
         ItemSeparatorComponent={!searchOpen && viewMode === 'card' ? undefined : () => <View className="h-4" />}
         renderItem={({ item: row }) => {
@@ -187,10 +186,12 @@ export function MainLibraryScreen({
           }
           if (row.kind === 'book') {
             if (!searchOpen && viewMode === 'card') {
+              // Fixed 25% width (not flex-1) so a partial last row keeps the
+              // same card size as full rows instead of stretching to fill.
               return (
                 <Pressable
                   onPress={() => onOpenBook(row.book)}
-                  className="web:cursor-pointer mb-4 flex-1"
+                  className="web:cursor-pointer w-1/4 px-1.5 pb-4"
                   style={({ pressed }) => pressed && { transform: [{ scale: 0.97 }] }}
                 >
                   <BookCoverTile book={row.book} />
