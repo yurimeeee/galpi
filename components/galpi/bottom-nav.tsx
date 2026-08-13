@@ -1,4 +1,6 @@
+import { useEffect } from 'react';
 import { Pressable, Text, View } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { Library, Plus, BarChart3, UserRound, type LucideIcon } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../../lib/theme';
@@ -72,23 +74,38 @@ function NavButton({
   active: boolean;
   onPress: () => void;
 }) {
+  // Nudges the icon+label up a couple px when this tab becomes the active
+  // one, so switching tabs reads as a small deliberate motion instead of an
+  // instant color swap.
+  const lift = useSharedValue(0);
+
+  useEffect(() => {
+    lift.value = withSpring(active ? -3 : 0, { damping: 14, stiffness: 260 });
+  }, [active, lift]);
+
+  const liftStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: lift.value }],
+  }));
+
   return (
     <Pressable
       onPress={onPress}
       accessibilityRole="tab"
       accessibilityState={{ selected: active }}
-      className="web:cursor-pointer w-16 items-center gap-1"
+      className="web:cursor-pointer w-16 items-center"
     >
-      <Icon
-        size={20}
-        color={active ? colors.foreground : colors.mutedForeground}
-        strokeWidth={active ? 2.4 : 1.8}
-      />
-      <Text
-        className={`text-[11px] font-medium ${active ? 'text-foreground' : 'text-muted-foreground'}`}
-      >
-        {label}
-      </Text>
+      <Animated.View style={liftStyle} className="items-center gap-1">
+        <Icon
+          size={20}
+          color={active ? colors.foreground : colors.mutedForeground}
+          strokeWidth={active ? 2.4 : 1.8}
+        />
+        <Text
+          className={`text-[11px] font-medium ${active ? 'text-foreground' : 'text-muted-foreground'}`}
+        >
+          {label}
+        </Text>
+      </Animated.View>
     </Pressable>
   );
 }
