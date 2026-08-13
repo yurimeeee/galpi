@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Slot, usePathname, useRouter } from 'expo-router';
+import { Tabs, router } from 'expo-router';
+import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { View } from 'react-native';
 import { BottomNav, type NavKey } from '../../components/galpi/bottom-nav';
 import { AddChoiceSheet } from '../../components/galpi/add-choice-sheet';
@@ -7,25 +8,8 @@ import { useAppStore } from '../../lib/store';
 import type { Book } from '../../lib/data/books';
 
 export default function TabsLayout() {
-  const pathname = usePathname();
-  const router = useRouter();
   const books = useAppStore((s) => s.books);
   const [addSheetOpen, setAddSheetOpen] = useState(false);
-
-  const active: NavKey = pathname.endsWith('/stats')
-    ? 'stats'
-    : pathname.endsWith('/mypage')
-      ? 'mypage'
-      : 'library';
-
-  function handleChange(key: NavKey) {
-    if (key === 'add') {
-      setAddSheetOpen(true);
-      return;
-    }
-    if (key === 'library') router.push('/library');
-    else router.push(`/${key}`);
-  }
 
   function handleAddNewBook() {
     setAddSheetOpen(false);
@@ -44,10 +28,20 @@ export default function TabsLayout() {
 
   return (
     <View className="flex-1 bg-background">
-      <View className="min-h-0 flex-1">
-        <Slot />
-      </View>
-      <BottomNav active={active} onChange={handleChange} />
+      {/*
+        Tabs (not Slot + router.push) so 내 서재/독서 통계/마이페이지 stay
+        mounted after their first visit instead of fully unmounting on every
+        switch — that unmount/remount was the source of the flicker on nav
+        (scroll position reset, images re-decoding, skeletons flashing).
+      */}
+      <Tabs
+        screenOptions={{ headerShown: false }}
+        tabBar={(props) => <CustomTabBar {...props} onAddPress={() => setAddSheetOpen(true)} />}
+      >
+        <Tabs.Screen name="library" />
+        <Tabs.Screen name="stats" />
+        <Tabs.Screen name="mypage" />
+      </Tabs>
 
       {addSheetOpen ? (
         <AddChoiceSheet
@@ -60,4 +54,22 @@ export default function TabsLayout() {
       ) : null}
     </View>
   );
+}
+
+function CustomTabBar({
+  state,
+  navigation,
+  onAddPress,
+}: BottomTabBarProps & { onAddPress: () => void }) {
+  const active = state.routes[state.index].name as NavKey;
+
+  function handleChange(key: NavKey) {
+    if (key === 'add') {
+      onAddPress();
+      return;
+    }
+    navigation.navigate(key);
+  }
+
+  return <BottomNav active={active} onChange={handleChange} />;
 }

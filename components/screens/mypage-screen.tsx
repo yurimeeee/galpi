@@ -106,10 +106,10 @@ export function MyPageScreen({
               </View>
               <Pressable
                 onPress={() => setActiveModal('profile')}
-                className="web:cursor-pointer flex-row items-center gap-1 rounded-full bg-galpi-ink px-3.5 py-2"
+                accessibilityLabel="프로필 수정"
+                className="web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-galpi-ink"
               >
                 <Pencil size={14} color={colors.galpiPaper} />
-                <Text className="text-[12px] font-semibold text-galpi-paper">프로필 수정</Text>
               </Pressable>
             </View>
 
@@ -152,7 +152,6 @@ export function MyPageScreen({
           <SettingsGroup
             title="계정 및 보안"
             rows={[
-              { key: 'edit', label: '프로필 수정', Icon: UserRound, onPress: () => setActiveModal('profile') },
               { key: 'pw', label: '비밀번호 변경', Icon: Lock, onPress: () => setActiveModal('password') },
               { key: 'social', label: '소셜 계정 연동', Icon: Link2, onPress: onOpenLinkedAccounts },
             ]}
