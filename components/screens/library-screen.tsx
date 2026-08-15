@@ -12,7 +12,7 @@ import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
 import { type Book } from '../../lib/data/books';
 import { type Sentence } from '../../lib/data/sentences';
 import { parseDotDate } from '../../lib/date-utils';
-import { ACCENT_BG_CLASS, colors } from '../../lib/theme';
+import { ACCENT_BG_CLASS, useThemeColors } from '../../lib/theme';
 
 type ViewMode = 'list' | 'card';
 
@@ -55,6 +55,7 @@ export function MainLibraryScreen({
   const [yearFilter, setYearFilter] = useState<number | null>(null);
   const [reorderMode, setReorderMode] = useState(false);
   const listRef = useRef<FlatList<SearchRow>>(null);
+  const colors = useThemeColors();
 
   const genreOptions = useMemo(() => {
     const set = new Set<string>();
@@ -253,7 +254,7 @@ export function MainLibraryScreen({
             <View>
               {/* 헤더 */}
               <View className="flex-row items-center justify-between pt-1 pb-4">
-                <GalpiHeaderLogo markColor={colors.galpiInk} markSize={28} wordClassName="text-xl text-foreground" />
+                <GalpiHeaderLogo markSize={28} wordClassName="text-xl text-foreground" />
                 <View className="flex-row items-center gap-2">
                   <Pressable
                     onPress={onOpenCollections}
@@ -285,7 +286,7 @@ export function MainLibraryScreen({
                 <Text className="mt-1 text-[26px] font-black leading-[1.25] tracking-tight text-foreground">지금까지 모은 문장</Text>
                 <View className="mt-1.5 flex-row">
                   <View className="rounded-lg bg-galpi-yellow px-2 py-0.5">
-                    <Text className="text-[26px] font-black leading-[1.25] tracking-tight text-foreground">{totalGalpi}개의 갈피</Text>
+                    <Text className="text-[26px] font-black leading-[1.25] tracking-tight text-galpi-ink">{totalGalpi}개의 갈피</Text>
                   </View>
                 </View>
               </View>
@@ -414,6 +415,7 @@ function FilterChipRow<T extends string | number>({ options, active, onChange }:
 /** Cover-only grid tile for the 카드 view — same book, denser layout than BookCard's list row. */
 function BookCoverTile({ book }: { book: Book }) {
   const { showCover, onCoverError } = useCoverFallback(book.coverUrl);
+  const colors = useThemeColors();
 
   return (
     <View>
@@ -479,6 +481,7 @@ function HighlightText({ text, query, className }: { text: string; query: string
 function SentenceResultCard({ sentence, book, query }: { sentence: Sentence; book: Book; query: string }) {
   const quoteMatches = sentence.quote.toLowerCase().includes(query);
   const memoMatches = !quoteMatches && !!sentence.memo?.toLowerCase().includes(query);
+  const colors = useThemeColors();
 
   return (
     <View className="p-4 rounded-2xl bg-card">
@@ -510,11 +513,12 @@ function SentenceResultCard({ sentence, book, query }: { sentence: Sentence; boo
 }
 
 export function LibrarySkeleton() {
+  const colors = useThemeColors();
   return (
     <SafeAreaView edges={['top']} className="flex-1 min-h-0 bg-background">
       <View className="px-6 pb-6">
         <View className="flex-row items-center justify-between pt-1 pb-4">
-          <GalpiHeaderLogo markColor={colors.galpiInk} markSize={28} wordClassName="text-xl text-foreground" />
+          <GalpiHeaderLogo markSize={28} wordClassName="text-xl text-foreground" />
           <View className="items-center justify-center rounded-full h-9 w-9 bg-card">
             <Search size={16} color={colors.foreground} />
           </View>

@@ -12,7 +12,7 @@ import { BookOpen, Coffee } from 'lucide-react-native';
 import { useReadingTimerStore, timerSecondsLeft } from '../../lib/reading-timer-store';
 import { useNow } from '../../lib/hooks/use-now';
 import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
-import { ACCENT_BG_CLASS, colors } from '../../lib/theme';
+import { ACCENT_BG_CLASS, useThemeColors } from '../../lib/theme';
 
 const SIZE = 64;
 const MARGIN = 14;
@@ -41,6 +41,7 @@ function fmt(seconds: number) {
 export function ReadingTimerWidget() {
   const pathname = usePathname();
   const router = useRouter();
+  const colors = useThemeColors();
 
   const active = useReadingTimerStore((s) => s.active);
   const running = useReadingTimerStore((s) => s.running);

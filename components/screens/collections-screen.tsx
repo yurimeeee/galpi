@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Bookmark, ChevronLeft, Tags } from 'lucide-react-native';
 import { type Book } from '../../lib/data/books';
 import { allTags, sentencesByTag, type Sentence, type TagCount } from '../../lib/data/sentences';
-import { colors } from '../../lib/theme';
+import { useThemeColors } from '../../lib/theme';
 
 /**
  * Cross-book quote collections: browse every tag in use, then drill into the
@@ -26,6 +26,7 @@ export function CollectionsScreen({
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const booksById = useMemo(() => new Map(books.map((b) => [b.id, b])), [books]);
   const tags = useMemo(() => allTags(sentences), [sentences]);
+  const colors = useThemeColors();
 
   if (selectedTag) {
     const tagged = sentencesByTag(sentences, selectedTag).filter((s) => booksById.has(s.bookId));
@@ -98,6 +99,7 @@ export function CollectionsScreen({
 }
 
 function TagRow({ tag, onOpen }: { tag: TagCount; onOpen: () => void }) {
+  const colors = useThemeColors();
   return (
     <Pressable
       onPress={onOpen}
@@ -124,6 +126,7 @@ function TaggedSentenceCard({
   book: Book;
   onOpen: () => void;
 }) {
+  const colors = useThemeColors();
   return (
     <Pressable
       onPress={onOpen}

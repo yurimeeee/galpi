@@ -4,7 +4,7 @@ import { ChevronLeft, Info } from 'lucide-react-native';
 import { TimePickerField } from '../galpi/time-picker-field';
 import { useReadingReminder } from '../../lib/use-reading-reminder';
 import { useOnThisDayReminder } from '../../lib/use-on-this-day-reminder';
-import { colors } from '../../lib/theme';
+import { useThemeColors } from '../../lib/theme';
 
 export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
   const {
@@ -25,6 +25,7 @@ export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
     matchBook: onThisDayBook,
     setOnThisDayEnabled,
   } = useOnThisDayReminder();
+  const colors = useThemeColors();
 
   return (
     <SafeAreaView edges={['top', 'bottom']} className="flex-1 min-h-0 bg-background">

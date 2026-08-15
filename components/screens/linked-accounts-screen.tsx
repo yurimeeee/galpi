@@ -9,7 +9,7 @@ import {
   useGoogleAccountLink,
 } from '../../lib/auth';
 import { auth } from '../../lib/firebase';
-import { colors } from '../../lib/theme';
+import { useThemeColors } from '../../lib/theme';
 
 const GOOGLE_PROVIDER_ID = 'google.com';
 const PASSWORD_PROVIDER_ID = 'password';
@@ -18,6 +18,7 @@ export function LinkedAccountsScreen({ onBack }: { onBack: () => void }) {
   const [providerIds, setProviderIds] = useState(() => linkedProviderIds(auth.currentUser));
   const [unlinking, setUnlinking] = useState(false);
   const { linkGoogleAccount, linking, error: linkError, ready } = useGoogleAccountLink();
+  const colors = useThemeColors();
 
   const isGoogleLinked = providerIds.includes(GOOGLE_PROVIDER_ID);
   const isPasswordLinked = providerIds.includes(PASSWORD_PROVIDER_ID);

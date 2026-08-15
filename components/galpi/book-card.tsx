@@ -2,9 +2,10 @@ import { View, Text, Image } from 'react-native';
 import { Bookmark, Star } from 'lucide-react-native';
 import { type Book, STATUS_LABEL } from '../../lib/data/books';
 import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
-import { ACCENT_BG_CLASS, colors } from '../../lib/theme';
+import { ACCENT_BG_CLASS, useThemeColors } from '../../lib/theme';
 
 function Rating({ value }: { value: number }) {
+  const colors = useThemeColors();
   return (
     <View className="flex-row items-center gap-0.5" accessibilityLabel={`별점 ${value}점`}>
       {Array.from({ length: 5 }).map((_, i) => (
@@ -23,6 +24,7 @@ function Rating({ value }: { value: number }) {
 export function BookCard({ book }: { book: Book }) {
   const isWish = book.status === 'wish';
   const { showCover, onCoverError } = useCoverFallback(book.coverUrl);
+  const colors = useThemeColors();
 
   return (
     <View className="flex-row items-stretch gap-4">

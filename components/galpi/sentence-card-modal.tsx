@@ -6,7 +6,7 @@ import { captureViewAsImage, MediaPermissionError, saveImageToDevice, shareImage
 import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
 import { type Book } from '../../lib/data/books';
 import { type Sentence } from '../../lib/data/sentences';
-import { ACCENT_HEX, colors } from '../../lib/theme';
+import { ACCENT_HEX, colors, useThemeColors } from '../../lib/theme';
 
 type Ratio = '1:1' | '9:16';
 type CardTheme = 'ink' | 'paper' | 'accent';
@@ -25,7 +25,13 @@ function hexToRgba(hex: string, alpha: number): string {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
-/** Background + text color for a given theme, with `accent` following the book's own spine color. */
+/**
+ * Background + text color for a given theme, with `accent` following the
+ * book's own spine color. Intentionally uses the fixed light-mode brand
+ * colors (not `useThemeColors()`) — the exported card is a shareable image,
+ * so its "ink"/"paper" look must stay the same regardless of the viewer's
+ * app theme.
+ */
 function cardPalette(theme: CardTheme, book: Book): { bg: string; text: string } {
   if (theme === 'paper') return { bg: colors.card, text: colors.galpiInk };
   if (theme === 'accent') {
@@ -56,6 +62,7 @@ export function SentenceCardModal({
   const [busy, setBusy] = useState<'save' | 'share' | null>(null);
   const [realCardWidth, setRealCardWidth] = useState(0);
   const cardRef = useRef<View>(null);
+  const themeColors = useThemeColors();
 
   const palette = cardPalette(theme, book);
 
@@ -118,7 +125,7 @@ export function SentenceCardModal({
             accessibilityLabel="닫기"
             className="web:cursor-pointer h-8 w-8 items-center justify-center rounded-full bg-secondary"
           >
-            <X size={16} color={colors.foreground} />
+            <X size={16} color={themeColors.foreground} />
           </Pressable>
         </View>
       }
@@ -212,7 +219,7 @@ export function SentenceCardModal({
           disabled={busy !== null}
           className={`web:cursor-pointer flex-1 flex-row items-center justify-center gap-2 rounded-2xl bg-galpi-ink py-3.5 ${busy ? 'opacity-60' : ''}`}
         >
-          {busy === 'save' ? <ActivityIndicator color={colors.galpiPaper} /> : <Download size={16} color={colors.galpiPaper} />}
+          {busy === 'save' ? <ActivityIndicator color={themeColors.galpiPaper} /> : <Download size={16} color={themeColors.galpiPaper} />}
           <Text className="text-sm font-bold text-galpi-paper">이미지 저장하기</Text>
         </Pressable>
         <Pressable
@@ -220,7 +227,7 @@ export function SentenceCardModal({
           disabled={busy !== null}
           className={`web:cursor-pointer flex-1 flex-row items-center justify-center gap-2 rounded-2xl border border-border bg-card py-3.5 ${busy ? 'opacity-60' : ''}`}
         >
-          {busy === 'share' ? <ActivityIndicator color={colors.foreground} /> : <Share2 size={16} color={colors.foreground} />}
+          {busy === 'share' ? <ActivityIndicator color={themeColors.foreground} /> : <Share2 size={16} color={themeColors.foreground} />}
           <Text className="text-sm font-bold text-foreground">SNS 공유하기</Text>
         </Pressable>
       </View>

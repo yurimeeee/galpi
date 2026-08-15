@@ -6,7 +6,7 @@ import { buildBackupPayload, importBackupData, parseBackupPayload } from '../../
 import { auth } from '../../lib/firebase';
 import { type Book } from '../../lib/data/books';
 import { type Sentence } from '../../lib/data/sentences';
-import { colors } from '../../lib/theme';
+import { useThemeColors } from '../../lib/theme';
 
 export function DataBackupScreen({
   books,
@@ -20,6 +20,7 @@ export function DataBackupScreen({
   const [exporting, setExporting] = useState(false);
   const [importText, setImportText] = useState('');
   const [importing, setImporting] = useState(false);
+  const colors = useThemeColors();
 
   async function handleExport() {
     if (exporting) return;
@@ -137,7 +138,7 @@ export function DataBackupScreen({
             textAlignVertical="top"
             autoCapitalize="none"
             autoCorrect={false}
-            className="w-full rounded-2xl border border-border bg-background p-4 font-mono text-xs leading-relaxed text-foreground focus:border-galpi-ink"
+            className="w-full rounded-2xl border border-border bg-background p-4 font-mono text-xs leading-relaxed text-foreground focus:border-ring"
             style={{ minHeight: 120 }}
           />
 

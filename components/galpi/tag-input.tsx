@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { Plus, Tag as TagIcon, X } from 'lucide-react-native';
-import { colors } from '../../lib/theme';
+import { useThemeColors } from '../../lib/theme';
 
 const MAX_TAGS = 5;
 const MAX_TAG_LENGTH = 12;
@@ -25,6 +25,7 @@ export function TagInput({
   suggestions?: string[];
 }) {
   const [draft, setDraft] = useState('');
+  const colors = useThemeColors();
 
   const availableSuggestions = useMemo(() => {
     const query = draft.trim().toLowerCase();

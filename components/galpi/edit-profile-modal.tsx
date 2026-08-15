@@ -8,7 +8,7 @@ import { updateUserProfile } from '../../lib/auth';
 import { updateUserDoc, uploadProfilePhoto } from '../../lib/data-service';
 import { auth } from '../../lib/firebase';
 import { useAppStore } from '../../lib/store';
-import { colors } from '../../lib/theme';
+import { useThemeColors } from '../../lib/theme';
 
 const NICKNAME_RE = /^[a-zA-Z0-9가-힣]{2,12}$/;
 
@@ -21,6 +21,7 @@ export function EditProfileModal({
   photoURL: string | null;
   onClose: () => void;
 }) {
+  const colors = useThemeColors();
   const [name, setName] = useState(displayName);
   const [avatarUri, setAvatarUri] = useState<string | null>(photoURL);
   const [newAvatarBase64, setNewAvatarBase64] = useState<string | null>(null);
@@ -152,7 +153,7 @@ export function EditProfileModal({
           placeholder="2~12자, 특수문자 제외"
           placeholderTextColor={colors.mutedForeground}
           maxLength={12}
-          className="w-full rounded-2xl border border-input bg-card px-4 py-3.5 text-[14px] text-foreground focus:border-galpi-ink"
+          className="w-full rounded-2xl border border-input bg-card px-4 py-3.5 text-[14px] text-foreground focus:border-ring"
         />
         {!nameValid && trimmedName.length > 0 ? (
           <Text className="mt-1.5 text-[12px] text-destructive">

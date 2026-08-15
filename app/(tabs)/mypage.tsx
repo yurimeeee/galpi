@@ -40,6 +40,7 @@ export default function MyPage() {
       onOpenGoals={() => router.push('/reading-goal')}
       onOpenBadges={() => router.push('/badges')}
       onOpenNotificationSettings={() => router.push('/notification-settings')}
+      onOpenThemeSettings={() => router.push('/theme-settings')}
       onOpenTerms={() => router.push('/terms')}
       onOpenPrivacy={() => router.push('/privacy')}
       onOpenLinkedAccounts={() => router.push('/linked-accounts')}

@@ -27,7 +27,7 @@ import {
   type LucideIcon,
 } from 'lucide-react-native';
 import type { EntryType, Sentence } from '../../lib/data/sentences';
-import { colors } from '../../lib/theme';
+import { useThemeColors } from '../../lib/theme';
 import { scanBookText } from '../../lib/ocr';
 import { TagInput } from '../galpi/tag-input';
 
@@ -61,6 +61,7 @@ export function AddSentenceScreen({
   const [page, setPage] = useState('');
   const [memo, setMemo] = useState('');
   const [tags, setTags] = useState<string[]>([]);
+  const colors = useThemeColors();
 
   async function handleSave() {
     if (saving) return;
@@ -251,6 +252,7 @@ function TextMode({
   setTags: (v: string[]) => void;
   tagSuggestions?: string[];
 }) {
+  const colors = useThemeColors();
   return (
     <View className="gap-4">
       <Field label="문장">
@@ -262,7 +264,7 @@ function TextMode({
           placeholder="마음에 담고 싶은 문장을 적어주세요."
           placeholderTextColor={colors.mutedForeground}
           textAlignVertical="top"
-          className="w-full rounded-2xl border border-border bg-card p-4 text-[15px] leading-relaxed text-foreground focus:border-galpi-ink"
+          className="w-full rounded-2xl border border-border bg-card p-4 text-[15px] leading-relaxed text-foreground focus:border-ring"
           style={{ minHeight: 120 }}
         />
       </Field>
@@ -290,7 +292,7 @@ function TextMode({
           placeholder="이 문장에 대한 생각을 남겨보세요. (선택)"
           placeholderTextColor={colors.mutedForeground}
           textAlignVertical="top"
-          className="w-full rounded-2xl border border-border bg-card p-4 text-sm leading-relaxed text-foreground focus:border-galpi-ink"
+          className="w-full rounded-2xl border border-border bg-card p-4 text-sm leading-relaxed text-foreground focus:border-ring"
           style={{ minHeight: 80 }}
         />
       </Field>
@@ -324,6 +326,7 @@ function ScanMode({
   const [tokens, setTokens] = useState<string[]>([]);
   const [selected, setSelected] = useState<number[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
+  const colors = useThemeColors();
 
   function toggleToken(i: number) {
     setSelected((prev) => {
@@ -543,6 +546,8 @@ function PhotoMode({
   setTags: (v: string[]) => void;
   tagSuggestions?: string[];
 }) {
+  const colors = useThemeColors();
+
   async function takePhoto() {
     const permission = await ImagePicker.requestCameraPermissionsAsync();
     if (!permission.granted) {
@@ -633,7 +638,7 @@ function PhotoMode({
           placeholder="이 페이지를 기억하고 싶은 이유를 적어보세요. (선택)"
           placeholderTextColor={colors.mutedForeground}
           textAlignVertical="top"
-          className="w-full rounded-2xl border border-border bg-card p-4 text-sm leading-relaxed text-foreground focus:border-galpi-ink"
+          className="w-full rounded-2xl border border-border bg-card p-4 text-sm leading-relaxed text-foreground focus:border-ring"
           style={{ minHeight: 80 }}
         />
       </Field>

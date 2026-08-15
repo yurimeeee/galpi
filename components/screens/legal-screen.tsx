@@ -1,7 +1,7 @@
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronLeft } from 'lucide-react-native';
-import { colors } from '../../lib/theme';
+import { useThemeColors } from '../../lib/theme';
 import { LEGAL_EFFECTIVE_DATE, type LegalSection } from '../../lib/legal-content';
 
 export function LegalScreen({
@@ -13,6 +13,7 @@ export function LegalScreen({
   sections: LegalSection[];
   onBack: () => void;
 }) {
+  const colors = useThemeColors();
   return (
     <SafeAreaView edges={['top', 'bottom']} className="flex-1 min-h-0 bg-background">
       <View className="flex-row items-center gap-3 px-5 pb-3 pt-2">

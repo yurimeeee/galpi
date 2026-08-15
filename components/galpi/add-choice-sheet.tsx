@@ -4,7 +4,7 @@ import { Bookmark, ChevronLeft, Plus, Timer, X } from 'lucide-react-native';
 import { BottomSheet } from './bottom-sheet';
 import { type Book } from '../../lib/data/books';
 import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
-import { ACCENT_BG_CLASS, colors } from '../../lib/theme';
+import { ACCENT_BG_CLASS, useThemeColors } from '../../lib/theme';
 
 type Step = 'choice' | 'pick-book';
 
@@ -30,6 +30,7 @@ export function AddChoiceSheet({
   onStartTimer: () => void;
 }) {
   const [step, setStep] = useState<Step>('choice');
+  const colors = useThemeColors();
 
   return (
     <BottomSheet

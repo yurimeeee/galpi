@@ -3,9 +3,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronLeft } from 'lucide-react-native';
 import { BadgeGrid } from '../galpi/badge-grid';
 import { type BadgeProgress } from '../../lib/badges';
-import { colors } from '../../lib/theme';
+import { useThemeColors } from '../../lib/theme';
 
 export function BadgesScreen({ badges, onBack }: { badges: BadgeProgress[]; onBack: () => void }) {
+  const colors = useThemeColors();
   return (
     <SafeAreaView edges={['top', 'bottom']} className="flex-1 min-h-0 bg-background">
       <View className="flex-row items-center gap-3 px-5 pb-3 pt-2">

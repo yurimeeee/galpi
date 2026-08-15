@@ -10,7 +10,7 @@ import Animated, {
 import { GripVertical } from 'lucide-react-native';
 import { type Book } from '../../lib/data/books';
 import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
-import { ACCENT_BG_CLASS, colors } from '../../lib/theme';
+import { ACCENT_BG_CLASS, useThemeColors } from '../../lib/theme';
 
 const ROW_HEIGHT = 76;
 
@@ -84,6 +84,7 @@ function DraggableRow({
   const translateY = useSharedValue(0);
   const isActive = useSharedValue(false);
   const startIndex = useSharedValue(0);
+  const colors = useThemeColors();
 
   const pan = Gesture.Pan()
     .onStart(() => {

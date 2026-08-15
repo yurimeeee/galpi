@@ -30,7 +30,7 @@ import {
 } from 'lucide-react-native';
 import { searchAladinBooks, type AladinBookResult } from '../../lib/aladin-books';
 import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
-import { colors } from '../../lib/theme';
+import { useThemeColors } from '../../lib/theme';
 
 type Status = 'idle' | 'loading' | 'error' | 'success';
 type Mode = 'search' | 'manual';
@@ -88,6 +88,7 @@ export function AddBookScreen({
   const [coverUri, setCoverUri] = useState<string | null>(null);
   const [manualSaving, setManualSaving] = useState(false);
   const [manualError, setManualError] = useState('');
+  const colors = useThemeColors();
 
   async function handleSearch() {
     const q = query.trim();
@@ -332,7 +333,7 @@ export function AddBookScreen({
                   onChangeText={setManualTitle}
                   placeholder="책 제목을 입력해주세요"
                   placeholderTextColor={colors.mutedForeground}
-                  className="w-full rounded-2xl border border-border bg-card px-4 py-3.5 text-sm text-foreground focus:border-galpi-ink"
+                  className="w-full rounded-2xl border border-border bg-card px-4 py-3.5 text-sm text-foreground focus:border-ring"
                 />
               </Field>
 
@@ -342,7 +343,7 @@ export function AddBookScreen({
                   onChangeText={setManualAuthor}
                   placeholder="저자 이름 (선택)"
                   placeholderTextColor={colors.mutedForeground}
-                  className="w-full rounded-2xl border border-border bg-card px-4 py-3.5 text-sm text-foreground focus:border-galpi-ink"
+                  className="w-full rounded-2xl border border-border bg-card px-4 py-3.5 text-sm text-foreground focus:border-ring"
                 />
               </Field>
 
@@ -373,7 +374,7 @@ export function AddBookScreen({
                     onChangeText={setManualGenre}
                     placeholder="직접 입력하기 (선택)"
                     placeholderTextColor={colors.mutedForeground}
-                    className="w-full rounded-2xl border border-border bg-card px-4 py-3.5 text-sm text-foreground focus:border-galpi-ink"
+                    className="w-full rounded-2xl border border-border bg-card px-4 py-3.5 text-sm text-foreground focus:border-ring"
                   />
                 </View>
               </Field>
@@ -442,6 +443,7 @@ function ResultRow({
   onAdd: () => void;
 }) {
   const { showCover, onCoverError } = useCoverFallback(result.thumbnail);
+  const colors = useThemeColors();
 
   return (
     <View className="flex-row items-center gap-3 rounded-2xl border border-border bg-card p-3">

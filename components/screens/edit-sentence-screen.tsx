@@ -17,7 +17,7 @@ import { SentenceCardModal } from '../galpi/sentence-card-modal';
 import { TagInput } from '../galpi/tag-input';
 import type { Book } from '../../lib/data/books';
 import type { Sentence } from '../../lib/data/sentences';
-import { colors } from '../../lib/theme';
+import { useThemeColors } from '../../lib/theme';
 
 export function EditSentenceScreen({
   sentence,
@@ -40,6 +40,7 @@ export function EditSentenceScreen({
   const [tags, setTags] = useState<string[]>(sentence.tags ?? []);
   const [busy, setBusy] = useState(false);
   const [cardOpen, setCardOpen] = useState(false);
+  const colors = useThemeColors();
 
   async function handleSave() {
     if (busy) return;
@@ -151,7 +152,7 @@ export function EditSentenceScreen({
                 placeholder="마음에 담고 싶은 문장을 적어주세요."
                 placeholderTextColor={colors.mutedForeground}
                 textAlignVertical="top"
-                className="w-full rounded-2xl border border-border bg-card p-4 text-[15px] leading-relaxed text-foreground focus:border-galpi-ink"
+                className="w-full rounded-2xl border border-border bg-card p-4 text-[15px] leading-relaxed text-foreground focus:border-ring"
                 style={{ minHeight: 120 }}
               />
             </Field>
@@ -179,7 +180,7 @@ export function EditSentenceScreen({
                 placeholder="이 문장에 대한 생각을 남겨보세요. (선택)"
                 placeholderTextColor={colors.mutedForeground}
                 textAlignVertical="top"
-                className="w-full rounded-2xl border border-border bg-card p-4 text-sm leading-relaxed text-foreground focus:border-galpi-ink"
+                className="w-full rounded-2xl border border-border bg-card p-4 text-sm leading-relaxed text-foreground focus:border-ring"
                 style={{ minHeight: 80 }}
               />
             </Field>

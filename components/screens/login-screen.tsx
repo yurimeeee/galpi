@@ -13,7 +13,7 @@ import Svg, { Path } from 'react-native-svg';
 import { GalpiHeaderLogo } from '../galpi/galpi-logo';
 import { TextField, PasswordField, CheckOption } from '../galpi/auth-field';
 import { getAuthErrorMessage } from '../../lib/auth';
-import { colors } from '../../lib/theme';
+import { useThemeColors } from '../../lib/theme';
 
 export function LoginScreen({
   onLogin,
@@ -29,6 +29,7 @@ export function LoginScreen({
   const [remember, setRemember] = useState(true);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState<'email' | 'google' | null>(null);
+  const colors = useThemeColors();
 
   const canSubmit = email.trim() !== '' && password.length > 0 && submitting === null;
 
@@ -73,7 +74,6 @@ export function LoginScreen({
           <View className="items-center pt-16">
             <GalpiHeaderLogo
               className="flex-col gap-3"
-              markColor={colors.galpiInk}
               markSize={44}
               wordClassName="text-2xl text-foreground"
             />

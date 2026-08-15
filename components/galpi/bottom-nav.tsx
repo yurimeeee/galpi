@@ -3,7 +3,7 @@ import { Pressable, Text, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { Library, Plus, BarChart3, UserRound, type LucideIcon } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors } from '../../lib/theme';
+import { useThemeColors } from '../../lib/theme';
 
 export type NavKey = 'library' | 'add' | 'stats' | 'mypage';
 
@@ -15,6 +15,7 @@ export function BottomNav({
   onChange: (key: NavKey) => void;
 }) {
   const insets = useSafeAreaInsets();
+  const colors = useThemeColors();
 
   return (
     <View
@@ -78,6 +79,7 @@ function NavButton({
   // one, so switching tabs reads as a small deliberate motion instead of an
   // instant color swap.
   const lift = useSharedValue(0);
+  const colors = useThemeColors();
 
   useEffect(() => {
     lift.value = withSpring(active ? -3 : 0, { damping: 14, stiffness: 260 });

@@ -5,11 +5,13 @@
 import 'react-native-gesture-handler';
 
 import { useEffect } from 'react';
+import { View } from 'react-native';
 import { Stack } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
+import { useEffectiveScheme } from '../lib/use-effective-scheme';
 import {
   useFonts,
   NotoSansKR_100Thin,
@@ -37,6 +39,7 @@ export default function RootLayout() {
     getAnalyticsIfSupported();
   }, []);
 
+  const colorScheme = useEffectiveScheme();
   const { authResolved } = useAuthSync();
   // Recomputes/reschedules today's "1년 전 오늘" notification on every launch —
   // mounted here (not just the settings screen) so it runs regardless of
@@ -72,26 +75,37 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaProvider>
-        <WebFrame>
-          <StatusBar style="dark" />
-          <Stack screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
-            <Stack.Screen name="index" />
-            <Stack.Screen name="onboarding" />
-            <Stack.Screen name="login" />
-            <Stack.Screen name="signup" />
-            <Stack.Screen name="(tabs)" />
-            <Stack.Screen name="book/[id]" />
-            <Stack.Screen name="reading-timer" />
-            <Stack.Screen name="add-sentence" options={{ presentation: 'modal' }} />
-            <Stack.Screen name="add-book" options={{ presentation: 'modal' }} />
-            <Stack.Screen name="notification-settings" />
-            <Stack.Screen name="terms" />
-            <Stack.Screen name="privacy" />
-          </Stack>
-          <ReadingTimerWidget />
-        </WebFrame>
-      </SafeAreaProvider>
+      {/*
+        The `:root`/`.dark` CSS-variable blocks in global.css only apply where
+        something in the tree actually carries the "dark" class — there's no
+        document element on native to mirror it onto automatically, so without
+        this wrapper the CSS-variable colors (bg-background, text-foreground,
+        ...) never switch even though anything reading the resolved scheme
+        directly (useThemeColors, via useEffectiveScheme) does update. This
+        wrapper is what makes dark mode actually repaint on native.
+      */}
+      <View className={colorScheme === 'dark' ? 'dark' : undefined} style={{ flex: 1 }}>
+        <SafeAreaProvider>
+          <WebFrame>
+            <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+            <Stack screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
+              <Stack.Screen name="index" />
+              <Stack.Screen name="onboarding" />
+              <Stack.Screen name="login" />
+              <Stack.Screen name="signup" />
+              <Stack.Screen name="(tabs)" />
+              <Stack.Screen name="book/[id]" />
+              <Stack.Screen name="reading-timer" />
+              <Stack.Screen name="add-sentence" options={{ presentation: 'modal' }} />
+              <Stack.Screen name="add-book" options={{ presentation: 'modal' }} />
+              <Stack.Screen name="notification-settings" />
+              <Stack.Screen name="terms" />
+              <Stack.Screen name="privacy" />
+            </Stack>
+            <ReadingTimerWidget />
+          </WebFrame>
+        </SafeAreaProvider>
+      </View>
     </GestureHandlerRootView>
   );
 }

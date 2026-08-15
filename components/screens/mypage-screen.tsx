@@ -15,13 +15,17 @@ import {
   ChevronRight,
   Flame,
   Award,
+  Moon,
   type LucideIcon,
 } from 'lucide-react-native';
 import { Skeleton } from '../galpi/skeleton';
 import { EditProfileModal } from '../galpi/edit-profile-modal';
 import { ChangePasswordModal } from '../galpi/change-password-modal';
 import { DeleteAccountModal } from '../galpi/delete-account-modal';
-import { colors } from '../../lib/theme';
+import { useThemeColors } from '../../lib/theme';
+import { useThemeStore } from '../../lib/theme-store';
+
+const THEME_MODE_LABEL = { system: '기기 설정', light: '라이트', dark: '다크' } as const;
 
 type Row = {
   key: string;
@@ -46,6 +50,7 @@ export function MyPageScreen({
   onOpenGoals,
   onOpenBadges,
   onOpenNotificationSettings,
+  onOpenThemeSettings,
   onOpenTerms,
   onOpenPrivacy,
   onOpenLinkedAccounts,
@@ -68,6 +73,7 @@ export function MyPageScreen({
   onOpenGoals: () => void;
   onOpenBadges: () => void;
   onOpenNotificationSettings: () => void;
+  onOpenThemeSettings: () => void;
   onOpenTerms: () => void;
   onOpenPrivacy: () => void;
   onOpenLinkedAccounts: () => void;
@@ -77,6 +83,8 @@ export function MyPageScreen({
   onAccountDeleted: () => void;
 }) {
   const [activeModal, setActiveModal] = useState<ActiveModal>('none');
+  const colors = useThemeColors();
+  const themeMode = useThemeStore((s) => s.mode);
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 min-h-0 bg-background">
@@ -167,6 +175,13 @@ export function MyPageScreen({
           <SettingsGroup
             title="앱 설정"
             rows={[
+              {
+                key: 'theme',
+                label: '테마',
+                Icon: Moon,
+                value: THEME_MODE_LABEL[themeMode],
+                onPress: onOpenThemeSettings,
+              },
               { key: 'noti', label: '알림 설정', Icon: Bell, onPress: onOpenNotificationSettings },
               { key: 'backup', label: '데이터 백업 및 복구', Icon: CloudDownload, onPress: onOpenDataBackup },
             ]}
@@ -222,6 +237,8 @@ function SummaryChip({ value, label }: { value: string; label: string }) {
 }
 
 function SettingsGroup({ title, rows }: { title: string; rows: Row[] }) {
+  const colors = useThemeColors();
+
   return (
     <View>
       <Text className="mb-2 pl-2 text-[13px] font-bold text-muted-foreground">{title}</Text>
@@ -257,3 +274,4 @@ function SettingsGroup({ title, rows }: { title: string; rows: Row[] }) {
     </View>
   );
 }
+

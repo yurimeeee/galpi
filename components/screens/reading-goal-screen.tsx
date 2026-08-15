@@ -18,7 +18,7 @@ import {
 import { GoalEditModal } from '../galpi/goal-edit-modal';
 import { dateKey } from '../../lib/date-utils';
 import { useReadingGoals } from '../../lib/use-reading-goals';
-import { colors, ACCENT_BG_CLASS, type Accent } from '../../lib/theme';
+import { useThemeColors, ACCENT_BG_CLASS, type Accent } from '../../lib/theme';
 
 const WEEKDAY_LABELS = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -78,6 +78,7 @@ export function ReadingGoalScreen({ onBack }: { onBack: () => void }) {
     month,
   } = useReadingGoals();
   const [editOpen, setEditOpen] = useState(false);
+  const colors = useThemeColors();
 
   const week = buildWeek(activeDays);
   const monthCells = buildMonthCells(year, month, activeDays);
@@ -314,6 +315,7 @@ function GoalProgress({
 }) {
   const pct = target > 0 ? Math.min(100, Math.round((current / target) * 100)) : 0;
   const complete = current >= target;
+  const colors = useThemeColors();
 
   return (
     <View className="rounded-2xl border border-border bg-card p-4">
@@ -332,13 +334,13 @@ function GoalProgress({
             {unit}
           </Text>
         </View>
-        <Text className={`text-[15px] font-black tabular-nums ${complete ? 'text-galpi-ink' : 'text-muted-foreground'}`}>
+        <Text className={`text-[15px] font-black tabular-nums ${complete ? 'text-foreground' : 'text-muted-foreground'}`}>
           {pct}%
         </Text>
       </View>
       <View className="mt-3 h-2 overflow-hidden rounded-full bg-secondary">
         <View
-          className={`h-full rounded-full ${complete ? 'bg-galpi-ink' : 'bg-galpi-ink/70'}`}
+          className={`h-full rounded-full ${complete ? 'bg-foreground' : 'bg-foreground/70'}`}
           style={{ width: `${pct}%` }}
         />
       </View>

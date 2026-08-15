@@ -11,7 +11,7 @@ import {
 } from '../../lib/auth';
 import { deleteAllUserData, deleteAllUserFiles } from '../../lib/data-service';
 import { auth } from '../../lib/firebase';
-import { colors } from '../../lib/theme';
+import { useThemeColors } from '../../lib/theme';
 
 export function DeleteAccountModal({
   onClose,
@@ -21,6 +21,7 @@ export function DeleteAccountModal({
   /** Called once the account and all of its data have been deleted — caller should navigate off to /login. */
   onDeleted: () => void;
 }) {
+  const colors = useThemeColors();
   const isPassword = isPasswordAccount(auth.currentUser);
 
   const [password, setPassword] = useState('');

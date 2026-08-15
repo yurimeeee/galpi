@@ -12,7 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronLeft } from 'lucide-react-native';
 import { TextField, PasswordField, CheckOption } from '../galpi/auth-field';
 import { getAuthErrorMessage } from '../../lib/auth';
-import { colors } from '../../lib/theme';
+import { useThemeColors } from '../../lib/theme';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -34,6 +34,7 @@ export function SignUpScreen({
   const [agree, setAgree] = useState(false);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const colors = useThemeColors();
 
   const emailValid = useMemo(() => email.length === 0 || EMAIL_RE.test(email), [email]);
   const pwMatch = confirm.length === 0 || confirm === password;

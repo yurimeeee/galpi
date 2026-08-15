@@ -22,7 +22,7 @@ import { SentenceCardModal } from '../galpi/sentence-card-modal';
 import { type Book, type ReadingStatus, STATUS_LABEL } from '../../lib/data/books';
 import { ENTRY_LABEL, type EntryType, type Sentence } from '../../lib/data/sentences';
 import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
-import { ACCENT_BG_CLASS, colors } from '../../lib/theme';
+import { ACCENT_BG_CLASS, useThemeColors } from '../../lib/theme';
 
 const ENTRY_ICON: Record<EntryType, LucideIcon> = {
   text: Type,
@@ -57,6 +57,7 @@ export function BookDetailScreen({
   onDeleteBook: () => Promise<void>;
   onToggleSentenceFavorite: (sentenceId: string, favorite: boolean) => void;
 }) {
+  const colors = useThemeColors();
   const inkText = book.accent === 'ink' ? colors.galpiPaper : colors.galpiInk;
   const [progressModalOpen, setProgressModalOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -366,7 +367,7 @@ export function BookDetailScreen({
                   placeholder="이 책은 어땠나요? 짧게 남겨보세요."
                   placeholderTextColor={colors.mutedForeground}
                   textAlignVertical="top"
-                  className="w-full rounded-2xl border border-border bg-card p-4 text-sm leading-relaxed text-foreground focus:border-galpi-ink"
+                  className="w-full rounded-2xl border border-border bg-card p-4 text-sm leading-relaxed text-foreground focus:border-ring"
                   style={{ minHeight: 80 }}
                 />
                 <Pressable
@@ -488,6 +489,7 @@ export function BookDetailScreen({
 
 /** A single row in the "공유할 갈피 선택" picker — favorites are surfaced first (see shareCandidates). */
 function SharePickerRow({ sentence, onPress }: { sentence: Sentence; onPress: () => void }) {
+  const colors = useThemeColors();
   return (
     <Pressable
       onPress={onPress}
@@ -524,6 +526,7 @@ function StatBit({ label, value, onPress }: { label: string; value: string; onPr
 }
 
 export function BookDetailSkeleton({ onBack }: { onBack: () => void }) {
+  const colors = useThemeColors();
   return (
     <SafeAreaView edges={['top', 'bottom']} className="flex-1 min-h-0 bg-background">
       <View className="flex-row items-center justify-between px-5 pb-2 pt-2">

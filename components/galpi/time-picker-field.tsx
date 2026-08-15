@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Platform, Pressable, Text, View } from 'react-native';
 import DateTimePicker, { type DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { Clock } from 'lucide-react-native';
-import { colors } from '../../lib/theme';
+import { useThemeColors } from '../../lib/theme';
 
 function toDate(time: string): Date {
   const [hour, minute] = time.split(':').map(Number);
@@ -26,6 +26,7 @@ export function TimePickerField({
   onChange: (next: string) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const colors = useThemeColors();
 
   function handleChange(event: DateTimePickerEvent, date?: Date) {
     if (Platform.OS === 'android') {

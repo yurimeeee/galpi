@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { Eye, EyeOff } from 'lucide-react-native';
 import Svg, { Path } from 'react-native-svg';
-import { colors } from '../../lib/theme';
+import { useThemeColors } from '../../lib/theme';
 
 type FieldProps = {
   label: string;
@@ -19,6 +19,7 @@ export function TextField({
   value,
   onChange,
 }: FieldProps) {
+  const colors = useThemeColors();
   return (
     <View>
       <Text className="mb-1.5 text-[13px] font-semibold text-foreground">{label}</Text>
@@ -29,7 +30,7 @@ export function TextField({
         keyboardType={keyboardType}
         autoCapitalize="none"
         placeholderTextColor={colors.mutedForeground}
-        className="w-full rounded-2xl border border-input bg-card px-4 py-3.5 text-[14px] text-foreground focus:border-galpi-ink"
+        className="w-full rounded-2xl border border-input bg-card px-4 py-3.5 text-[14px] text-foreground focus:border-ring"
       />
     </View>
   );
@@ -42,6 +43,7 @@ export function PasswordField({
   onChange,
 }: Omit<FieldProps, 'keyboardType'>) {
   const [show, setShow] = useState(false);
+  const colors = useThemeColors();
   return (
     <View>
       <Text className="mb-1.5 text-[13px] font-semibold text-foreground">{label}</Text>
@@ -53,7 +55,7 @@ export function PasswordField({
           secureTextEntry={!show}
           autoCapitalize="none"
           placeholderTextColor={colors.mutedForeground}
-          className="w-full rounded-2xl border border-input bg-card px-4 py-3.5 pr-12 text-[14px] text-foreground focus:border-galpi-ink"
+          className="w-full rounded-2xl border border-input bg-card px-4 py-3.5 pr-12 text-[14px] text-foreground focus:border-ring"
         />
         <Pressable
           onPress={() => setShow((s) => !s)}
@@ -80,6 +82,7 @@ export function CheckOption({
   onToggle: () => void;
   children: React.ReactNode;
 }) {
+  const colors = useThemeColors();
   return (
     <Pressable onPress={onToggle} className="web:cursor-pointer flex-row items-center gap-2.5">
       <View

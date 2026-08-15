@@ -28,7 +28,7 @@ import {
   timerFocusSecondsTotal,
   useReadingTimerStore,
 } from '../../lib/reading-timer-store';
-import { ACCENT_BG_CLASS, colors } from '../../lib/theme';
+import { ACCENT_BG_CLASS, useThemeColors } from '../../lib/theme';
 
 function fmt(seconds: number) {
   const m = Math.floor(seconds / 60);
@@ -62,6 +62,7 @@ export function ReadingTimerScreen({
   const setPresetKeyOnStore = useReadingTimerStore((s) => s.setPresetKey);
   const setCustomFocusOnStore = useReadingTimerStore((s) => s.setCustomFocus);
   const endTimer = useReadingTimerStore((s) => s.end);
+  const colors = useThemeColors();
 
   // Repaints every second while running so the store-derived selectors below
   // (computed from Date.now()) stay live — see lib/hooks/use-now.ts.
@@ -291,6 +292,7 @@ export function ReadingTimerScreen({
 /* ---------- 대상 책 선택 카드 ---------- */
 function BookSelector({ book, onPress }: { book: Book; onPress: () => void }) {
   const { showCover, onCoverError } = useCoverFallback(book.coverUrl);
+  const colors = useThemeColors();
 
   return (
     <View className="mt-2 flex-row items-center gap-3 rounded-2xl border border-border bg-card p-3">
@@ -334,6 +336,7 @@ function BookSelector({ book, onPress }: { book: Book; onPress: () => void }) {
 /* ---------- 책 선택 시트의 각 행 ---------- */
 function BookPickerRow({ book, onPress }: { book: Book; onPress: () => void }) {
   const { showCover, onCoverError } = useCoverFallback(book.coverUrl);
+  const colors = useThemeColors();
 
   return (
     <Pressable

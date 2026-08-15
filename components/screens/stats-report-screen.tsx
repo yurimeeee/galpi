@@ -28,7 +28,7 @@ import { Skeleton } from '../galpi/skeleton';
 import { BottomSheet } from '../galpi/bottom-sheet';
 import { GalpiHeaderLogo } from '../galpi/galpi-logo';
 import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
-import { colors, ACCENT_BG_CLASS } from '../../lib/theme';
+import { useThemeColors, ACCENT_BG_CLASS } from '../../lib/theme';
 import { parseDotDate, dateKey, pad2 } from '../../lib/date-utils';
 import type { Book } from '../../lib/data/books';
 import type { Sentence } from '../../lib/data/sentences';
@@ -38,7 +38,7 @@ type MonthView = 'date' | 'cover';
 type Ratio = '1:1' | '9:16';
 
 const WEEKDAY_LABELS = ['일', '월', '화', '수', '목', '금', '토'];
-const INTENSITY_CLASS = ['bg-secondary', 'bg-galpi-green/50', 'bg-galpi-green', 'bg-galpi-blue', 'bg-galpi-ink'];
+const INTENSITY_CLASS = ['bg-secondary', 'bg-galpi-green/50', 'bg-galpi-green', 'bg-galpi-blue', 'bg-foreground'];
 /** 4 six-hour buckets covering the day, indexed by `Math.floor(hour / 6)`. */
 const HOUR_BUCKET_LABELS = ['새벽', '오전', '오후', '밤'];
 
@@ -195,6 +195,7 @@ export function StatsReportScreen({ books, sentences }: { books: Book[]; sentenc
   const [period, setPeriod] = useState<Period>('month');
   const [shareOpen, setShareOpen] = useState(false);
   const [cursor, setCursor] = useState(() => new Date());
+  const colors = useThemeColors();
 
   const bookById = useMemo(() => new Map(books.map((b) => [b.id, b])), [books]);
 
@@ -258,6 +259,7 @@ export function StatsReportScreen({ books, sentences }: { books: Book[]; sentenc
 }
 
 export function StatsReportSkeleton() {
+  const colors = useThemeColors();
   return (
     <SafeAreaView edges={['top']} className="relative flex-1 min-h-0 bg-background">
       <View className="flex-row items-center justify-between px-6 pb-2 pt-1">
@@ -349,6 +351,7 @@ function MonthlyView({
   bookById: Map<string, Book>;
 }) {
   const [view, setView] = useState<MonthView>('date');
+  const colors = useThemeColors();
   const year = cursor.getFullYear();
   const month = cursor.getMonth();
 
@@ -545,6 +548,7 @@ function MonthlyView({
 /* ---------- 이달 갈피를 남긴 책 목록의 각 행 ---------- */
 function BookThisMonthRow({ book, count }: { book: Book; count: number }) {
   const { showCover, onCoverError } = useCoverFallback(book.coverUrl);
+  const colors = useThemeColors();
 
   return (
     <View className="flex-row items-center gap-3 rounded-2xl bg-card p-3">
@@ -580,6 +584,7 @@ function BookThisMonthRow({ book, count }: { book: Book; count: number }) {
 function CalendarCoverCell({ day, book, read }: { day: number; book: Book | undefined; read: boolean }) {
   const { showCover, onCoverError } = useCoverFallback(book?.coverUrl);
   const accent = book?.accent ?? 'ink';
+  const colors = useThemeColors();
 
   return (
     <View className="aspect-square w-[14.28%] p-[3px]">
@@ -622,6 +627,7 @@ function YearlyView({
   sentences: Sentence[];
 }) {
   const year = cursor.getFullYear();
+  const colors = useThemeColors();
 
   const grid = useMemo(() => buildYearHeatmap(sentences, year), [sentences, year]);
 
@@ -798,7 +804,7 @@ function DistributionBars({ labels, counts, topIndex }: { labels: string[]; coun
           <View key={label} className="flex-1 items-center gap-1.5">
             <View className="w-full flex-1 justify-end">
               <View
-                className={`w-full rounded-md ${isTop ? 'bg-galpi-ink' : 'bg-secondary'}`}
+                className={`w-full rounded-md ${isTop ? 'bg-foreground' : 'bg-secondary'}`}
                 style={{ height: Math.max(4, (counts[i] / max) * 44) }}
               />
             </View>
@@ -823,6 +829,7 @@ function MetricCard({
   label: string;
   toneClass: string;
 }) {
+  const colors = useThemeColors();
   return (
     <View className="flex-1 rounded-2xl bg-card p-3.5">
       <View className={`h-8 w-8 items-center justify-center rounded-lg ${toneClass}`}>
@@ -855,6 +862,7 @@ function ReportPublishModal({
   const [busy, setBusy] = useState<'save' | 'share' | null>(null);
   const [realCardWidth, setRealCardWidth] = useState(0);
   const cardRef = useRef<View>(null);
+  const colors = useThemeColors();
 
   const year = cursor.getFullYear();
   const month = cursor.getMonth();
@@ -1080,6 +1088,7 @@ function ReportCardBody({
 
 function CompletedBookCover({ book }: { book: Book }) {
   const { showCover, onCoverError } = useCoverFallback(book.coverUrl);
+  const colors = useThemeColors();
 
   return (
     <View
@@ -1107,6 +1116,7 @@ function CompletedBookCover({ book }: { book: Book }) {
 }
 
 function ReportMetric({ Icon, value, unit, label }: { Icon: LucideIcon; value: number; unit: string; label: string }) {
+  const colors = useThemeColors();
   return (
     <View className="flex-1 items-center gap-1.5">
       <Icon size={16} color={colors.mutedForeground} />

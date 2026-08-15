@@ -4,7 +4,7 @@ import { Clock, Bookmark, BookCheck, Check, X } from 'lucide-react-native';
 import { BottomSheet } from './bottom-sheet';
 import { type Book } from '../../lib/data/books';
 import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
-import { ACCENT_BG_CLASS, colors } from '../../lib/theme';
+import { ACCENT_BG_CLASS, useThemeColors } from '../../lib/theme';
 
 function formatMinutes(totalSeconds: number) {
   const m = Math.round(totalSeconds / 60);
@@ -38,6 +38,7 @@ export function SessionSummaryModal({
   const [startPage, setStartPage] = useState('');
   const [endPage, setEndPage] = useState('');
   const { showCover, onCoverError } = useCoverFallback(book.coverUrl);
+  const colors = useThemeColors();
 
   const pagesRead = Math.max(0, Number(endPage) - Number(startPage) || 0);
 
@@ -140,6 +141,7 @@ function SummaryStat({
   value: string;
   label: string;
 }) {
+  const colors = useThemeColors();
   return (
     <View className="flex-1 items-center gap-1.5 rounded-2xl bg-secondary py-4">
       <Icon size={16} color={colors.mutedForeground} />

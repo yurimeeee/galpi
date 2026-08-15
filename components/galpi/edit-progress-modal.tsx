@@ -3,7 +3,7 @@ import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-nativ
 import { X } from 'lucide-react-native';
 import { BottomSheet } from './bottom-sheet';
 import type { Book } from '../../lib/data/books';
-import { colors } from '../../lib/theme';
+import { useThemeColors } from '../../lib/theme';
 
 export function EditProgressModal({
   book,
@@ -14,6 +14,7 @@ export function EditProgressModal({
   onClose: () => void;
   onSave: (patch: { totalPages: number; furthestPage: number; progress: number }) => Promise<void>;
 }) {
+  const colors = useThemeColors();
   const [totalPages, setTotalPages] = useState(book.totalPages ? String(book.totalPages) : '');
   const [currentPage, setCurrentPage] = useState(book.furthestPage ? String(book.furthestPage) : '');
   const [submitting, setSubmitting] = useState(false);
@@ -77,7 +78,7 @@ export function EditProgressModal({
             keyboardType="numeric"
             placeholder="예: 314"
             placeholderTextColor={colors.mutedForeground}
-            className="w-full rounded-2xl border border-input bg-card px-4 py-3.5 text-[14px] text-foreground focus:border-galpi-ink"
+            className="w-full rounded-2xl border border-input bg-card px-4 py-3.5 text-[14px] text-foreground focus:border-ring"
           />
         </View>
         <View className="flex-1">
@@ -88,7 +89,7 @@ export function EditProgressModal({
             keyboardType="numeric"
             placeholder="예: 128"
             placeholderTextColor={colors.mutedForeground}
-            className="w-full rounded-2xl border border-input bg-card px-4 py-3.5 text-[14px] text-foreground focus:border-galpi-ink"
+            className="w-full rounded-2xl border border-input bg-card px-4 py-3.5 text-[14px] text-foreground focus:border-ring"
           />
         </View>
       </View>

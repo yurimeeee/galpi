@@ -3,7 +3,7 @@ import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { Clock, BookOpen, Target, X, type LucideIcon } from 'lucide-react-native';
 import { BottomSheet } from './bottom-sheet';
 import { type ReadingGoals } from '../../lib/data-service';
-import { colors, ACCENT_BG_CLASS, type Accent } from '../../lib/theme';
+import { useThemeColors, ACCENT_BG_CLASS, type Accent } from '../../lib/theme';
 
 export function GoalEditModal({
   goals,
@@ -16,6 +16,7 @@ export function GoalEditModal({
 }) {
   const [draft, setDraft] = useState<ReadingGoals>(goals);
   const [saving, setSaving] = useState(false);
+  const colors = useThemeColors();
 
   function set<K extends keyof ReadingGoals>(key: K, value: number, min: number, max: number) {
     setDraft((d) => ({ ...d, [key]: Math.max(min, Math.min(max, value)) }));
@@ -112,6 +113,7 @@ function Stepper({
   step: number;
   onChange: (v: number) => void;
 }) {
+  const colors = useThemeColors();
   return (
     <View className="flex-row items-center gap-3 rounded-2xl border border-border bg-card p-3.5">
       <View className={`h-11 w-11 items-center justify-center rounded-xl ${ACCENT_BG_CLASS[accent]}`}>

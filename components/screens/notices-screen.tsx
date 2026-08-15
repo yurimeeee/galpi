@@ -1,10 +1,11 @@
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronLeft, Megaphone } from 'lucide-react-native';
-import { colors } from '../../lib/theme';
+import { useThemeColors } from '../../lib/theme';
 import { NOTICES } from '../../lib/notices';
 
 export function NoticesScreen({ onBack }: { onBack: () => void }) {
+  const colors = useThemeColors();
   return (
     <SafeAreaView edges={['top', 'bottom']} className="flex-1 min-h-0 bg-background">
       <View className="flex-row items-center gap-3 px-5 pb-3 pt-2">

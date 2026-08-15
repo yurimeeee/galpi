@@ -5,9 +5,10 @@ import { BottomSheet } from './bottom-sheet';
 import { PasswordField } from './auth-field';
 import { changeUserPassword, getAuthErrorMessage, isPasswordAccount } from '../../lib/auth';
 import { auth } from '../../lib/firebase';
-import { colors } from '../../lib/theme';
+import { useThemeColors } from '../../lib/theme';
 
 export function ChangePasswordModal({ onClose }: { onClose: () => void }) {
+  const colors = useThemeColors();
   const isSocialAccount = !isPasswordAccount(auth.currentUser);
 
   const [currentPassword, setCurrentPassword] = useState('');

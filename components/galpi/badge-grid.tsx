@@ -1,7 +1,7 @@
 import { Alert, Pressable, Text, View } from 'react-native';
 import { BookCheck, Bookmark, Flame, Lock, type LucideIcon } from 'lucide-react-native';
 import { type Badge, type BadgeCategory, type BadgeProgress } from '../../lib/badges';
-import { colors } from '../../lib/theme';
+import { useThemeColors } from '../../lib/theme';
 
 const CATEGORY_ICON: Record<BadgeCategory, LucideIcon> = {
   books: BookCheck,
@@ -62,6 +62,7 @@ function badgeTargetLabel(badge: Badge): string {
 
 function BadgeTile({ badge }: { badge: BadgeProgress }) {
   const Icon = CATEGORY_ICON[badge.category];
+  const colors = useThemeColors();
 
   return (
     <Pressable

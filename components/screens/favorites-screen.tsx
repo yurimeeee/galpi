@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Bookmark, ChevronLeft, Star } from 'lucide-react-native';
 import { type Book } from '../../lib/data/books';
 import { type Sentence } from '../../lib/data/sentences';
-import { colors } from '../../lib/theme';
+import { useThemeColors } from '../../lib/theme';
 
 export function FavoritesScreen({
   books,
@@ -20,6 +20,7 @@ export function FavoritesScreen({
   onToggleFavorite: (sentenceId: string, favorite: boolean) => void;
 }) {
   const booksById = useMemo(() => new Map(books.map((b) => [b.id, b])), [books]);
+  const colors = useThemeColors();
 
   const favorites = useMemo(
     () => sentences.filter((s) => s.favorite && booksById.has(s.bookId)),
@@ -79,6 +80,7 @@ function FavoriteSentenceCard({
   onOpen: () => void;
   onToggleFavorite: (sentenceId: string, favorite: boolean) => void;
 }) {
+  const colors = useThemeColors();
   return (
     <Pressable
       onPress={onOpen}

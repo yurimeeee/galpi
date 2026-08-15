@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { TextInput, View } from 'react-native';
 import { Clock } from 'lucide-react-native';
-import { colors } from '../../lib/theme';
+import { useThemeColors } from '../../lib/theme';
 
 const TIME_RE = /^([01]\d|2[0-3]):([0-5]\d)$/;
 
@@ -19,6 +19,7 @@ export function TimePickerField({
   onChange: (next: string) => void;
 }) {
   const [draft, setDraft] = useState(value);
+  const colors = useThemeColors();
 
   function handleChangeText(next: string) {
     setDraft(next);

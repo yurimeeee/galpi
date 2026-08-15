@@ -3,7 +3,7 @@ import { Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScanLine, CalendarHeart, BarChart3, ArrowRight } from 'lucide-react-native';
 import { GalpiHeaderLogo } from '../galpi/galpi-logo';
-import { colors } from '../../lib/theme';
+import { useThemeColors } from '../../lib/theme';
 
 type Accent = 'blue' | 'green' | 'yellow';
 
@@ -49,6 +49,7 @@ export function OnboardingScreen({ onDone }: { onDone: () => void }) {
   const [index, setIndex] = useState(0);
   const isLast = index === SLIDES.length - 1;
   const slide = SLIDES[index];
+  const colors = useThemeColors();
 
   function next() {
     if (isLast) onDone();
@@ -59,7 +60,7 @@ export function OnboardingScreen({ onDone }: { onDone: () => void }) {
     <SafeAreaView edges={['top', 'bottom']} className="flex-1 min-h-0 bg-background">
       {/* 상단: 로고 + 건너뛰기 */}
       <View className="flex-row items-center justify-between px-6 pt-6">
-        <GalpiHeaderLogo markColor={colors.galpiInk} markSize={24} wordClassName="text-[17px] text-foreground" />
+        <GalpiHeaderLogo markSize={24} wordClassName="text-[17px] text-foreground" />
         <Pressable onPress={onDone} className="web:cursor-pointer">
           <Text className="text-[13px] font-medium text-muted-foreground">건너뛰기</Text>
         </Pressable>
@@ -90,7 +91,7 @@ export function OnboardingScreen({ onDone }: { onDone: () => void }) {
           {SLIDES.map((s, i) => (
             <View
               key={s.key}
-              className={`h-2 rounded-full ${i === index ? 'w-6 bg-galpi-ink' : 'w-2 bg-border'}`}
+              className={`h-2 rounded-full ${i === index ? 'w-6 bg-foreground' : 'w-2 bg-border'}`}
             />
           ))}
         </View>
@@ -113,6 +114,7 @@ export function OnboardingScreen({ onDone }: { onDone: () => void }) {
 /* ---------- 미니멀 라인아트 ---------- */
 
 function ScanArt() {
+  const colors = useThemeColors();
   return (
     <View>
       <ScanLine size={96} color={colors.galpiInk} strokeWidth={1.4} />
@@ -129,6 +131,7 @@ function ScanArt() {
 }
 
 function ArchiveArt() {
+  const colors = useThemeColors();
   return (
     <View className="flex-row items-end gap-1.5">
       {[7, 5, 8, 4, 6].map((h, i) => (
@@ -144,6 +147,7 @@ function ArchiveArt() {
 }
 
 function ReportArt() {
+  const colors = useThemeColors();
   return (
     <View>
       <BarChart3 size={96} color={colors.galpiInk} strokeWidth={1.4} />
