@@ -35,7 +35,7 @@ export default function TabsLayout() {
         (scroll position reset, images re-decoding, skeletons flashing).
       */}
       <Tabs
-        screenOptions={{ headerShown: false }}
+        screenOptions={{ headerShown: false, animation: 'fade' }}
         tabBar={(props) => <CustomTabBar {...props} onAddPress={() => setAddSheetOpen(true)} />}
       >
         <Tabs.Screen name="library" />
