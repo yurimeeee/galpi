@@ -64,6 +64,14 @@ export function AddSentenceScreen({
 
   async function handleSave() {
     if (saving) return;
+    if (mode === 'text' && !text.trim()) {
+      Alert.alert('문장을 입력해주세요', '담고 싶은 문장을 적어야 갈피를 남길 수 있어요.');
+      return;
+    }
+    if (mode === 'scan' && !scanQuote.trim()) {
+      Alert.alert('담을 문장을 선택해주세요', '인식된 단어 중 담을 부분을 눌러 선택해주세요.');
+      return;
+    }
     if (mode === 'photo' && !photoUri) {
       Alert.alert('페이지 사진을 선택해주세요', '사진을 찍거나 앨범에서 골라주세요.');
       return;
@@ -75,7 +83,7 @@ export function AddSentenceScreen({
         await onSave({
           bookId,
           page: Number(page) || 0,
-          quote: text.trim() || '마음에 담고 싶은 문장',
+          quote: text.trim(),
           memo: memo.trim() || undefined,
           tags: tags.length ? tags : undefined,
           type: 'text',
@@ -84,7 +92,7 @@ export function AddSentenceScreen({
         await onSave({
           bookId,
           page: Number(page) || 0,
-          quote: scanQuote.trim() || '마음에 담고 싶은 문장',
+          quote: scanQuote.trim(),
           type: 'scan',
         });
       } else {

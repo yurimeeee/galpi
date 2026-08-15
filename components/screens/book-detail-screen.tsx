@@ -139,7 +139,7 @@ export function BookDetailScreen({
         >
           <ChevronLeft size={20} color={colors.foreground} />
         </Pressable>
-        <View className="flex-row gap-2">
+        <View className="flex-row items-center gap-2">
           <Pressable
             onPress={onStartTimer}
             accessibilityLabel="독서 타이머"
@@ -154,10 +154,12 @@ export function BookDetailScreen({
           >
             <Share2 size={16} color={colors.foreground} />
           </Pressable>
+          <View className="mx-1 h-4 w-px bg-border" />
           <Pressable
             onPress={handleDelete}
             disabled={deleting}
             accessibilityLabel="책 삭제"
+            hitSlop={4}
             className={`web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-card ${
               deleting ? 'opacity-60' : ''
             }`}
@@ -176,15 +178,13 @@ export function BookDetailScreen({
         keyExtractor={(s) => s.id}
         contentContainerClassName="px-6 pb-28"
         ItemSeparatorComponent={() => <View className="h-4" />}
-        renderItem={({ item, index }) => {
+        renderItem={({ item }) => {
           const Icon = ENTRY_ICON[item.type];
           return (
             <Pressable
               onPress={() => onEditSentence(item.id)}
               accessibilityLabel="갈피 수정하기"
-              className={`web:cursor-pointer relative overflow-hidden rounded-2xl bg-card p-4 ${
-                index % 2 === 0 ? 'ml-0 mr-3' : 'ml-3 mr-0'
-              }`}
+              className="web:cursor-pointer relative overflow-hidden rounded-2xl bg-card p-4"
             >
               <View className={`absolute left-0 top-0 h-full w-1.5 ${ACCENT_BG_CLASS[book.accent]}`} />
               <View className="flex-row items-center justify-between pl-2">

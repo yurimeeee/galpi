@@ -190,7 +190,7 @@ export function MyPageScreen({
           </Pressable>
           <View className="h-3 w-px bg-border" />
           <Pressable onPress={() => setActiveModal('delete')} className="web:cursor-pointer">
-            <Text className="text-[13px] font-medium text-muted-foreground">회원탈퇴</Text>
+            <Text className="text-[13px] font-medium text-destructive">회원탈퇴</Text>
           </Pressable>
         </View>
       </ScrollView>
