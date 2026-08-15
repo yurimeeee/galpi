@@ -17,6 +17,8 @@ export type Sentence = {
   photoUrl?: string;
   type: EntryType;
   date: string;
+  /** Local hour (0–23) at save time — powers the stats page's time-of-day pattern. Only set on entries saved after this field was introduced, so older 갈피 won't have it. */
+  hour?: number;
   /** Starred by the user as a favorite/highlight — surfaced in the yearly report's top quote. */
   favorite?: boolean;
   /** User-defined labels for grouping 갈피 across books into themed collections (e.g. "위로가 되는 문장"). */

@@ -243,7 +243,7 @@ function furthestPagePatch(book: Book | undefined, page: number): Record<string,
 
 export async function addSentenceDoc(
   uid: string,
-  sentence: Omit<Sentence, 'id' | 'date'>,
+  sentence: Omit<Sentence, 'id' | 'date' | 'hour'>,
 ): Promise<void> {
   const bookRef = doc(booksCol(uid), sentence.bookId);
   const sentenceRef = doc(sentencesCol(uid));
@@ -251,7 +251,7 @@ export async function addSentenceDoc(
     const bookSnap = await tx.get(bookRef);
     const book = bookSnap.exists() ? (bookSnap.data() as Book) : undefined;
 
-    tx.set(sentenceRef, withoutUndefined({ ...sentence, date: todayLabel() }));
+    tx.set(sentenceRef, withoutUndefined({ ...sentence, date: todayLabel(), hour: new Date().getHours() }));
     tx.update(bookRef, { galpiCount: increment(1), ...furthestPagePatch(book, sentence.page) });
   });
 }

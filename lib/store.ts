@@ -20,7 +20,7 @@ import { ACCENT_CYCLE } from './theme';
 
 export type Gate = 'loading' | 'onboarding' | 'login' | 'signup' | 'app';
 
-type NewSentence = Omit<Sentence, 'id' | 'date'>;
+type NewSentence = Omit<Sentence, 'id' | 'date' | 'hour'>;
 type NewBook = { title: string; author: string; coverUrl?: string; totalPages?: number; genre?: string };
 
 type AppState = {

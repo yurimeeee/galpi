@@ -38,6 +38,8 @@ type Ratio = '1:1' | '9:16';
 
 const WEEKDAY_LABELS = ['일', '월', '화', '수', '목', '금', '토'];
 const INTENSITY_CLASS = ['bg-secondary', 'bg-galpi-green/50', 'bg-galpi-green', 'bg-galpi-blue', 'bg-galpi-ink'];
+/** 4 six-hour buckets covering the day, indexed by `Math.floor(hour / 6)`. */
+const HOUR_BUCKET_LABELS = ['새벽', '오전', '오후', '밤'];
 
 function seasonOf(month0: number): '봄' | '여름' | '가을' | '겨울' {
   if (month0 === 11 || month0 <= 1) return '겨울';
@@ -52,6 +54,78 @@ function intensityFromCount(count: number): number {
   if (count === 2) return 2;
   if (count === 3) return 3;
   return 4;
+}
+
+/** Index of the largest value, or -1 if every value is 0. */
+function maxIndex(counts: number[]): number {
+  let idx = -1;
+  let max = 0;
+  for (let i = 0; i < counts.length; i++) {
+    if (counts[i] > max) {
+      max = counts[i];
+      idx = i;
+    }
+  }
+  return idx;
+}
+
+/** Aladin genres arrive as a full category path ("국내도서>소설/시/희곡>한국소설"); manually-entered ones are already just the leaf label — both cases collapse to the same last-segment value. */
+function bookGenreLabel(book: Book | undefined): string | undefined {
+  return book?.genre?.split('>').pop()?.trim();
+}
+
+/** The (key, count) pair with the highest count, or null if the map is empty / all-zero. */
+function topCount(counts: Map<string, number>): { key: string; count: number } | null {
+  let top: { key: string; count: number } | null = null;
+  for (const [key, count] of counts) {
+    if (count > 0 && (!top || count > top.count)) top = { key, count };
+  }
+  return top;
+}
+
+/** Weekday (0=일~6=토) and 6-hour-bucket 갈피 distribution; scoped to one month when `month` is given, otherwise the whole year. */
+function getTimePattern(sentences: Sentence[], year: number, month?: number) {
+  const weekdayCounts = [0, 0, 0, 0, 0, 0, 0];
+  const hourBucketCounts = [0, 0, 0, 0];
+  let hasHourData = false;
+  for (const s of sentences) {
+    const d = parseDotDate(s.date);
+    if (!d || d.getFullYear() !== year) continue;
+    if (month !== undefined && d.getMonth() !== month) continue;
+    weekdayCounts[d.getDay()] += 1;
+    if (typeof s.hour === 'number') {
+      hasHourData = true;
+      hourBucketCounts[Math.min(3, Math.floor(s.hour / 6))] += 1;
+    }
+  }
+  return { weekdayCounts, hourBucketCounts, hasHourData };
+}
+
+/**
+ * Rule-based "what books they mainly read/like" for one month: the genre with
+ * the most 갈피 saved (읽는 = read) and the genre with the most 즐겨찾기 갈피
+ * (좋아하는 = liked). Books without a genre are excluded rather than bucketed
+ * as "기타", since a manufactured catch-all bucket would just win by default
+ * once enough ungenred books accumulate.
+ */
+function getGenrePattern(sentences: Sentence[], bookById: Map<string, Book>, year: number, month: number) {
+  const readCounts = new Map<string, number>();
+  const likedCounts = new Map<string, number>();
+  for (const s of sentences) {
+    const d = parseDotDate(s.date);
+    if (!d || d.getFullYear() !== year || d.getMonth() !== month) continue;
+    const genre = bookGenreLabel(bookById.get(s.bookId));
+    if (!genre) continue;
+    readCounts.set(genre, (readCounts.get(genre) ?? 0) + 1);
+    if (s.favorite) likedCounts.set(genre, (likedCounts.get(genre) ?? 0) + 1);
+  }
+  const topRead = topCount(readCounts);
+  const topLiked = topCount(likedCounts);
+  return {
+    topReadGenre: topRead?.key ?? null,
+    topLikedGenre: topLiked?.key ?? null,
+    hasGenreData: readCounts.size > 0,
+  };
 }
 
 /** GitHub-style weekly-column grid of activity intensity for a given year; -1 marks days outside the year. */
@@ -272,6 +346,18 @@ function MonthlyView({
     return { readDays: days, booksThisMonth: list };
   }, [sentences, bookById, year, month]);
 
+  const { weekdayCounts, hourBucketCounts, hasHourData } = useMemo(
+    () => getTimePattern(sentences, year, month),
+    [sentences, year, month],
+  );
+  const topWeekdayIndex = maxIndex(weekdayCounts);
+  const topHourIndex = maxIndex(hourBucketCounts);
+
+  const { topReadGenre, topLikedGenre, hasGenreData } = useMemo(
+    () => getGenrePattern(sentences, bookById, year, month),
+    [sentences, bookById, year, month],
+  );
+
   const firstWeekday = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const readCount = readDays.size;
@@ -351,6 +437,60 @@ function MonthlyView({
             );
           })}
         </View>
+      </View>
+
+      {/* 이달 요일별 독서 패턴 */}
+      <View className="mt-5 rounded-3xl bg-card p-5">
+        <Text className="mb-4 text-sm font-black text-foreground">주로 읽는 요일</Text>
+        {topWeekdayIndex >= 0 ? (
+          <>
+            <DistributionBars labels={WEEKDAY_LABELS} counts={weekdayCounts} topIndex={topWeekdayIndex} />
+            <Text className="mt-4 text-xs leading-relaxed text-muted-foreground">
+              이달엔 <Text className="font-bold text-foreground">{WEEKDAY_LABELS[topWeekdayIndex]}요일</Text>에 갈피를 가장
+              많이 남겼어요.
+            </Text>
+          </>
+        ) : (
+          <Text className="text-xs leading-relaxed text-muted-foreground">아직 이달의 독서 기록이 없어요.</Text>
+        )}
+      </View>
+
+      {/* 이달 시간대별 기록 패턴 */}
+      <View className="mt-5 rounded-3xl bg-card p-5">
+        <Text className="mb-4 text-sm font-black text-foreground">주로 기록하는 시간대</Text>
+        {hasHourData && topHourIndex >= 0 ? (
+          <>
+            <DistributionBars labels={HOUR_BUCKET_LABELS} counts={hourBucketCounts} topIndex={topHourIndex} />
+            <Text className="mt-4 text-xs leading-relaxed text-muted-foreground">
+              이달엔 <Text className="font-bold text-foreground">{HOUR_BUCKET_LABELS[topHourIndex]}</Text>에 갈피를 가장
+              많이 남겼어요.
+            </Text>
+          </>
+        ) : (
+          <Text className="text-xs leading-relaxed text-muted-foreground">
+            이 기능이 추가된 이후 남기는 갈피부터 시간대가 쌓여요.{'\n'}새로운 갈피를 남기면 여기에 패턴이 나타나요.
+          </Text>
+        )}
+      </View>
+
+      {/* 이달의 취향 */}
+      <View className="mt-5 rounded-3xl bg-card p-5">
+        <Text className="mb-2 text-sm font-black text-foreground">이달의 취향</Text>
+        {hasGenreData ? (
+          <Text className="text-xs leading-relaxed text-muted-foreground">
+            이달엔 주로 <Text className="font-bold text-foreground">{topReadGenre}</Text> 책을 읽었어요.
+            {topLikedGenre ? (
+              <>
+                {'\n'}그중에서도 <Text className="font-bold text-foreground">{topLikedGenre}</Text> 갈피를 가장 많이
+                즐겨찾기했어요.
+              </>
+            ) : null}
+          </Text>
+        ) : (
+          <Text className="text-xs leading-relaxed text-muted-foreground">
+            장르 정보가 있는 책의 갈피가 쌓이면 여기에 취향이 나타나요.
+          </Text>
+        )}
       </View>
 
       {/* 이달 갈피를 남긴 책 */}
@@ -505,6 +645,11 @@ function YearlyView({
 
   const { doneCount, galpiCount, readDaysCount } = useMemo(() => getYearMetrics(books, sentences, year), [books, sentences, year]);
 
+  const { weekdayCounts, hourBucketCounts, hasHourData } = useMemo(() => getTimePattern(sentences, year), [sentences, year]);
+
+  const topWeekdayIndex = maxIndex(weekdayCounts);
+  const topHourIndex = maxIndex(hourBucketCounts);
+
   return (
     <>
       {/* 연 네비게이터 */}
@@ -560,6 +705,40 @@ function YearlyView({
         </Text>
       </View>
 
+      {/* 요일별 독서 패턴 */}
+      <View className="mt-5 rounded-3xl bg-card p-5">
+        <Text className="mb-4 text-sm font-black text-foreground">주로 읽는 요일</Text>
+        {topWeekdayIndex >= 0 ? (
+          <>
+            <DistributionBars labels={WEEKDAY_LABELS} counts={weekdayCounts} topIndex={topWeekdayIndex} />
+            <Text className="mt-4 text-xs leading-relaxed text-muted-foreground">
+              {year}년, <Text className="font-bold text-foreground">{WEEKDAY_LABELS[topWeekdayIndex]}요일</Text>에 갈피를 가장
+              많이 남겼어요.
+            </Text>
+          </>
+        ) : (
+          <Text className="text-xs leading-relaxed text-muted-foreground">아직 {year}년의 독서 기록이 없어요.</Text>
+        )}
+      </View>
+
+      {/* 시간대별 기록 패턴 */}
+      <View className="mt-5 rounded-3xl bg-card p-5">
+        <Text className="mb-4 text-sm font-black text-foreground">주로 기록하는 시간대</Text>
+        {hasHourData && topHourIndex >= 0 ? (
+          <>
+            <DistributionBars labels={HOUR_BUCKET_LABELS} counts={hourBucketCounts} topIndex={topHourIndex} />
+            <Text className="mt-4 text-xs leading-relaxed text-muted-foreground">
+              {year}년, <Text className="font-bold text-foreground">{HOUR_BUCKET_LABELS[topHourIndex]}</Text>에 갈피를 가장
+              많이 남겼어요.
+            </Text>
+          </>
+        ) : (
+          <Text className="text-xs leading-relaxed text-muted-foreground">
+            이 기능이 추가된 이후 남기는 갈피부터 시간대가 쌓여요.{'\n'}새로운 갈피를 남기면 여기에 패턴이 나타나요.
+          </Text>
+        )}
+      </View>
+
       {/* 올해 가장 많이 담은 책 */}
       <View className="mt-5 rounded-3xl bg-galpi-ink p-5">
         <View className="flex-row items-center gap-1.5">
@@ -580,6 +759,29 @@ function YearlyView({
         )}
       </View>
     </>
+  );
+}
+
+/** Small vertical bar chart used by the weekday/time-of-day pattern cards — tallest bar (or a tie) highlighted in ink. */
+function DistributionBars({ labels, counts, topIndex }: { labels: string[]; counts: number[]; topIndex: number }) {
+  const max = Math.max(1, ...counts);
+  return (
+    <View className="flex-row items-end gap-2" style={{ height: 64 }}>
+      {labels.map((label, i) => {
+        const isTop = i === topIndex;
+        return (
+          <View key={label} className="flex-1 items-center gap-1.5">
+            <View className="w-full flex-1 justify-end">
+              <View
+                className={`w-full rounded-md ${isTop ? 'bg-galpi-ink' : 'bg-secondary'}`}
+                style={{ height: Math.max(4, (counts[i] / max) * 44) }}
+              />
+            </View>
+            <Text className={`text-[10px] font-bold ${isTop ? 'text-foreground' : 'text-muted-foreground'}`}>{label}</Text>
+          </View>
+        );
+      })}
+    </View>
   );
 }
 
