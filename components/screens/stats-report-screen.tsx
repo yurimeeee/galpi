@@ -1,6 +1,7 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Image, Platform, Pressable, Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   captureViewAsImage,
@@ -219,23 +220,7 @@ export function StatsReportScreen({ books, sentences }: { books: Book[]; sentenc
 
       <ScrollView className="flex-1 px-6" contentContainerClassName={period === 'month' ? 'pb-28' : 'pb-6'}>
         {/* 기간 선택 */}
-        <View className="mt-2 flex-row gap-1 rounded-2xl bg-secondary p-1">
-          {(['month', 'year'] as Period[]).map((key) => {
-            const label = key === 'month' ? '월간' : '연간';
-            const active = period === key;
-            return (
-              <Pressable
-                key={key}
-                onPress={() => setPeriod(key)}
-                className={`web:cursor-pointer flex-1 rounded-xl py-2.5 ${active ? 'bg-card' : ''}`}
-              >
-                <Text className={`text-center text-sm font-bold ${active ? 'text-foreground' : 'text-muted-foreground'}`}>
-                  {label}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
+        <PeriodToggle period={period} onChange={setPeriod} />
 
         {period === 'month' ? (
           <MonthlyView cursor={cursor} onPrev={() => shiftMonth(-1)} onNext={() => shiftMonth(1)} sentences={sentences} bookById={bookById} />
@@ -306,6 +291,46 @@ export function StatsReportSkeleton() {
         </View>
       </View>
     </SafeAreaView>
+  );
+}
+
+function PeriodToggle({ period, onChange }: { period: Period; onChange: (period: Period) => void }) {
+  const [trackWidth, setTrackWidth] = useState(0);
+  const segmentWidth = trackWidth > 0 ? (trackWidth - 8 - 4) / 2 : 0; // p-1 (4px * 2) + gap-1 (4px) between 2 segments
+  const index = period === 'month' ? 0 : 1;
+  const indicatorX = useSharedValue(0);
+
+  useEffect(() => {
+    if (segmentWidth > 0) {
+      indicatorX.value = withTiming(index * (segmentWidth + 4), { duration: 220, easing: Easing.out(Easing.cubic) });
+    }
+  }, [index, segmentWidth, indicatorX]);
+
+  const indicatorStyle = useAnimatedStyle(() => ({
+    width: segmentWidth,
+    transform: [{ translateX: indicatorX.value }],
+  }));
+
+  return (
+    <View
+      className="mt-2 flex-row gap-1 rounded-2xl bg-secondary p-1"
+      onLayout={(e) => setTrackWidth(e.nativeEvent.layout.width)}
+    >
+      {segmentWidth > 0 && (
+        <Animated.View pointerEvents="none" className="absolute bottom-1 left-1 top-1 rounded-xl bg-card" style={indicatorStyle} />
+      )}
+      {(['month', 'year'] as Period[]).map((key) => {
+        const label = key === 'month' ? '월간' : '연간';
+        const active = period === key;
+        return (
+          <Pressable key={key} onPress={() => onChange(key)} className="web:cursor-pointer flex-1 rounded-xl py-2.5">
+            <Text className={`text-center text-sm font-bold ${active ? 'text-foreground' : 'text-muted-foreground'}`}>
+              {label}
+            </Text>
+          </Pressable>
+        );
+      })}
+    </View>
   );
 }
 
