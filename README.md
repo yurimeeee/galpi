@@ -12,6 +12,16 @@
 - Firebase 기반 계정(이메일/소셜 로그인 연동) 및 데이터 백업
 - 다크모드(시스템/라이트/다크) 지원
 
+## 스크린샷
+
+| 내 서재 | 상세 | 독서 집중 뽀모도로 |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/my-library.png" width="240" /> | <img src="docs/screenshots/book-detail.png" width="240" /> | <img src="docs/screenshots/reading-timer.png" width="240" /> |
+
+| 독서 알림 | 독서 리포트 | 독서 목표 |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/reading-notification.png" width="240" /> | <img src="docs/screenshots/reading-report.png" width="240" /> | <img src="docs/screenshots/reading-goal.png" width="240" /> |
+
 ## 기술 스택
 
 - [Expo](https://expo.dev) / React Native / Expo Router
