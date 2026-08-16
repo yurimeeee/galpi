@@ -134,14 +134,14 @@ export function LinkedAccountsScreen({ onBack }: { onBack: () => void }) {
             <Pressable
               onPress={handleLink}
               disabled={linking || !ready}
-              className={`web:cursor-pointer rounded-full bg-galpi-ink px-3.5 py-2 ${
+              className={`web:cursor-pointer rounded-full bg-primary px-3.5 py-2 ${
                 linking || !ready ? 'opacity-60' : ''
               }`}
             >
               {linking ? (
-                <ActivityIndicator size="small" color={colors.galpiPaper} />
+                <ActivityIndicator size="small" color={colors.primaryForeground} />
               ) : (
-                <Text className="text-xs font-bold text-galpi-paper">연동하기</Text>
+                <Text className="text-xs font-bold text-primary-foreground">연동하기</Text>
               )}
             </Pressable>
           )}

@@ -116,13 +116,13 @@ export function LoginScreen({
             <Pressable
               onPress={handleEmailLogin}
               disabled={!canSubmit}
-              className={`web:cursor-pointer mt-2 w-full flex-row items-center justify-center gap-2 rounded-2xl bg-galpi-ink py-4 ${
+              className={`web:cursor-pointer mt-2 w-full flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-4 ${
                 !canSubmit ? 'opacity-60' : ''
               }`}
               style={({ pressed }) => pressed && canSubmit && { transform: [{ scale: 0.98 }] }}
             >
-              {submitting === 'email' ? <ActivityIndicator size="small" color={colors.galpiPaper} /> : null}
-              <Text className="text-center text-[15px] font-bold text-galpi-paper">로그인</Text>
+              {submitting === 'email' ? <ActivityIndicator size="small" color={colors.primaryForeground} /> : null}
+              <Text className="text-center text-[15px] font-bold text-primary-foreground">로그인</Text>
             </Pressable>
           </View>
 

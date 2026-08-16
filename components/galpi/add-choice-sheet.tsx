@@ -67,14 +67,14 @@ export function AddChoiceSheet({
         <View className="gap-3">
           <Pressable
             onPress={() => setStep('pick-book')}
-            className="web:cursor-pointer flex-row items-center gap-3 rounded-2xl bg-galpi-ink p-4"
+            className="web:cursor-pointer flex-row items-center gap-3 rounded-2xl bg-primary p-4"
           >
-            <View className="h-10 w-10 items-center justify-center rounded-xl bg-galpi-paper/15">
-              <Bookmark size={18} color={colors.galpiPaper} />
+            <View className="h-10 w-10 items-center justify-center rounded-xl bg-primary-foreground/15">
+              <Bookmark size={18} color={colors.primaryForeground} />
             </View>
             <View className="flex-1">
-              <Text className="text-sm font-bold text-galpi-paper">갈피 남기기</Text>
-              <Text className="mt-0.5 text-[12px] text-galpi-paper/70">
+              <Text className="text-sm font-bold text-primary-foreground">갈피 남기기</Text>
+              <Text className="mt-0.5 text-[12px] text-primary-foreground/70">
                 읽고 있는 책에 문장을 담아요
               </Text>
             </View>

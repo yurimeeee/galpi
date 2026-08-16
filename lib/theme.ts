@@ -20,7 +20,9 @@ type ThemeColorMap = Record<
   | 'mutedForeground'
   | 'accent'
   | 'destructive'
-  | 'border',
+  | 'border'
+  | 'primary'
+  | 'primaryForeground',
   string
 >;
 
@@ -40,6 +42,11 @@ const LIGHT_COLORS: ThemeColorMap = {
   accent: '#D8DBE9',
   destructive: '#DC2626',
   border: '#E3E3E8',
+  // Mirrors --color-primary / --color-primary-foreground: the theme-reactive
+  // pair for solid CTA buttons (bg-galpi-ink stays fixed-black in both
+  // themes and goes near-invisible on a dark page, so CTAs use this instead).
+  primary: '#202020',
+  primaryForeground: '#F4F4F6',
 };
 
 const DARK_COLORS: ThemeColorMap = {
@@ -59,6 +66,8 @@ const DARK_COLORS: ThemeColorMap = {
   accent: '#35415A',
   destructive: '#F87171',
   border: '#313136',
+  primary: '#ECECEE',
+  primaryForeground: '#18181B',
 };
 
 /** Static light-mode colors. Prefer `useThemeColors()` inside components so colors follow the active theme. */

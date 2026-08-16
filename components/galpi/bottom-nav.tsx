@@ -39,10 +39,10 @@ export function BottomNav({
       <Pressable
         onPress={() => onChange('add')}
         accessibilityLabel="갈피 추가"
-        className="web:cursor-pointer -mt-8 h-14 w-14 items-center justify-center rounded-2xl bg-galpi-ink"
+        className="web:cursor-pointer -mt-8 h-14 w-14 items-center justify-center rounded-2xl bg-primary"
         style={({ pressed }) => [
           {
-            shadowColor: colors.galpiInk,
+            shadowColor: colors.primary,
             shadowOpacity: 0.25,
             shadowRadius: 12,
             shadowOffset: { width: 0, height: 6 },
@@ -51,7 +51,7 @@ export function BottomNav({
           pressed && { transform: [{ scale: 0.95 }] },
         ]}
       >
-        <Plus size={24} color={colors.galpiPaper} />
+        <Plus size={24} color={colors.primaryForeground} />
       </Pressable>
 
       <NavButton

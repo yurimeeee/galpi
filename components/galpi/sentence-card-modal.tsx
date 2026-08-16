@@ -217,10 +217,10 @@ export function SentenceCardModal({
         <Pressable
           onPress={handleSaveImage}
           disabled={busy !== null}
-          className={`web:cursor-pointer flex-1 flex-row items-center justify-center gap-2 rounded-2xl bg-galpi-ink py-3.5 ${busy ? 'opacity-60' : ''}`}
+          className={`web:cursor-pointer flex-1 flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-3.5 ${busy ? 'opacity-60' : ''}`}
         >
-          {busy === 'save' ? <ActivityIndicator color={themeColors.galpiPaper} /> : <Download size={16} color={themeColors.galpiPaper} />}
-          <Text className="text-sm font-bold text-galpi-paper">이미지 저장하기</Text>
+          {busy === 'save' ? <ActivityIndicator color={themeColors.primaryForeground} /> : <Download size={16} color={themeColors.primaryForeground} />}
+          <Text className="text-sm font-bold text-primary-foreground">이미지 저장하기</Text>
         </Pressable>
         <Pressable
           onPress={handleShare}

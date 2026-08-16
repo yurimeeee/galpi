@@ -128,10 +128,10 @@ export function EditProfileModal({
         <View className="flex-row gap-2">
           <Pressable
             onPress={pickImage}
-            className="web:cursor-pointer flex-row items-center gap-1.5 rounded-full bg-galpi-ink px-4 py-2"
+            className="web:cursor-pointer flex-row items-center gap-1.5 rounded-full bg-primary px-4 py-2"
           >
-            <ImageIcon size={13} color={colors.galpiPaper} />
-            <Text className="text-[12px] font-semibold text-galpi-paper">사진 선택</Text>
+            <ImageIcon size={13} color={colors.primaryForeground} />
+            <Text className="text-[12px] font-semibold text-primary-foreground">사진 선택</Text>
           </Pressable>
           {avatarUri ? (
             <Pressable
@@ -167,12 +167,12 @@ export function EditProfileModal({
       <Pressable
         onPress={handleSave}
         disabled={!canSave}
-        className={`web:cursor-pointer mt-6 w-full flex-row items-center justify-center gap-2 rounded-2xl bg-galpi-ink py-4 ${
+        className={`web:cursor-pointer mt-6 w-full flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-4 ${
           !canSave ? 'opacity-50' : ''
         }`}
       >
-        {submitting ? <ActivityIndicator color={colors.galpiPaper} /> : null}
-        <Text className="text-sm font-bold text-galpi-paper">
+        {submitting ? <ActivityIndicator color={colors.primaryForeground} /> : null}
+        <Text className="text-sm font-bold text-primary-foreground">
           {submitting ? '저장 중...' : '저장하기'}
         </Text>
       </Pressable>

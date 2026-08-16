@@ -105,16 +105,16 @@ export function ChangePasswordModal({ onClose }: { onClose: () => void }) {
           <Pressable
             onPress={handleSubmit}
             disabled={!canSubmit}
-            className={`web:cursor-pointer mt-2 w-full flex-row items-center justify-center gap-2 rounded-2xl bg-galpi-ink py-4 ${
+            className={`web:cursor-pointer mt-2 w-full flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-4 ${
               !canSubmit ? 'opacity-50' : ''
             }`}
           >
             {submitting ? (
-              <ActivityIndicator color={colors.galpiPaper} />
+              <ActivityIndicator color={colors.primaryForeground} />
             ) : (
-              <Lock size={15} color={colors.galpiPaper} />
+              <Lock size={15} color={colors.primaryForeground} />
             )}
-            <Text className="text-sm font-bold text-galpi-paper">
+            <Text className="text-sm font-bold text-primary-foreground">
               {submitting ? '변경 중...' : '비밀번호 변경하기'}
             </Text>
           </Pressable>

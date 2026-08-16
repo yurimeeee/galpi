@@ -150,11 +150,11 @@ export function SignUpScreen({
           <Pressable
             onPress={handleComplete}
             disabled={!canSubmit}
-            className={`web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-2xl bg-galpi-ink py-4 ${!canSubmit ? 'opacity-40' : ''}`}
+            className={`web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-4 ${!canSubmit ? 'opacity-40' : ''}`}
             style={({ pressed }) => pressed && canSubmit && { transform: [{ scale: 0.98 }] }}
           >
-            {submitting ? <ActivityIndicator size="small" color={colors.galpiPaper} /> : null}
-            <Text className="text-center text-[15px] font-bold text-galpi-paper">
+            {submitting ? <ActivityIndicator size="small" color={colors.primaryForeground} /> : null}
+            <Text className="text-center text-[15px] font-bold text-primary-foreground">
               회원가입 완료
             </Text>
           </Pressable>

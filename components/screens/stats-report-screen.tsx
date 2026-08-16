@@ -213,9 +213,9 @@ export function StatsReportScreen({ books, sentences }: { books: Book[]; sentenc
         <Pressable
           onPress={() => setShareOpen(true)}
           accessibilityLabel="리포트 발행"
-          className="web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-galpi-ink"
+          className="web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-primary"
         >
-          <Share2 size={16} color={colors.galpiPaper} />
+          <Share2 size={16} color={colors.primaryForeground} />
         </Pressable>
       </View>
 
@@ -234,10 +234,10 @@ export function StatsReportScreen({ books, sentences }: { books: Book[]; sentenc
         <View className="absolute inset-x-0 bottom-0 items-center px-6 pb-6">
           <Pressable
             onPress={() => setShareOpen(true)}
-            className="web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-2xl bg-galpi-ink py-4"
+            className="web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-4"
             style={({ pressed }) => [
               {
-                shadowColor: colors.galpiInk,
+                shadowColor: colors.primary,
                 shadowOpacity: 0.25,
                 shadowRadius: 16,
                 shadowOffset: { width: 0, height: 6 },
@@ -245,8 +245,8 @@ export function StatsReportScreen({ books, sentences }: { books: Book[]; sentenc
               pressed && { transform: [{ scale: 0.98 }] },
             ]}
           >
-            <Sparkles size={15} color={colors.galpiPaper} />
-            <Text className="text-sm font-bold text-galpi-paper">이달의 독서 리포트 발행하기</Text>
+            <Sparkles size={15} color={colors.primaryForeground} />
+            <Text className="text-sm font-bold text-primary-foreground">이달의 독서 리포트 발행하기</Text>
           </Pressable>
         </View>
       ) : null}
@@ -264,8 +264,8 @@ export function StatsReportSkeleton() {
     <SafeAreaView edges={['top']} className="relative flex-1 min-h-0 bg-background">
       <View className="flex-row items-center justify-between px-6 pb-2 pt-1">
         <Text className="text-xl font-black tracking-tight text-foreground">독서 통계</Text>
-        <View className="items-center justify-center rounded-full h-9 w-9 bg-galpi-ink">
-          <Share2 size={16} color={colors.galpiPaper} />
+        <View className="items-center justify-center rounded-full h-9 w-9 bg-primary">
+          <Share2 size={16} color={colors.primaryForeground} />
         </View>
       </View>
 
@@ -1008,10 +1008,10 @@ function ReportPublishModal({
         <Pressable
           onPress={handleSaveImage}
           disabled={busy !== null}
-          className={`web:cursor-pointer flex-1 flex-row items-center justify-center gap-2 rounded-2xl bg-galpi-ink py-3.5 ${busy ? 'opacity-60' : ''}`}
+          className={`web:cursor-pointer flex-1 flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-3.5 ${busy ? 'opacity-60' : ''}`}
         >
-          {busy === 'save' ? <ActivityIndicator color={colors.galpiPaper} /> : <Download size={16} color={colors.galpiPaper} />}
-          <Text className="text-sm font-bold text-galpi-paper">이미지 저장하기</Text>
+          {busy === 'save' ? <ActivityIndicator color={colors.primaryForeground} /> : <Download size={16} color={colors.primaryForeground} />}
+          <Text className="text-sm font-bold text-primary-foreground">이미지 저장하기</Text>
         </Pressable>
         <Pressable
           onPress={handleShare}

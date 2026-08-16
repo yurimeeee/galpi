@@ -59,9 +59,9 @@ export function TimePickerField({
           />
           <Pressable
             onPress={() => setOpen(false)}
-            className="web:cursor-pointer mt-1 items-center rounded-xl bg-galpi-ink py-3"
+            className="web:cursor-pointer mt-1 items-center rounded-xl bg-primary py-3"
           >
-            <Text className="text-sm font-bold text-galpi-paper">완료</Text>
+            <Text className="text-sm font-bold text-primary-foreground">완료</Text>
           </Pressable>
         </View>
       ) : null}

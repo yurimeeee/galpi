@@ -195,17 +195,17 @@ export function EditSentenceScreen({
           <Pressable
             onPress={handleSave}
             disabled={busy}
-            className={`web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-2xl bg-galpi-ink py-4 ${
+            className={`web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-4 ${
               busy ? 'opacity-60' : ''
             }`}
             style={({ pressed }) => pressed && { transform: [{ scale: 0.98 }] }}
           >
             {busy ? (
-              <ActivityIndicator color={colors.galpiPaper} />
+              <ActivityIndicator color={colors.primaryForeground} />
             ) : (
-              <Check size={16} color={colors.galpiPaper} />
+              <Check size={16} color={colors.primaryForeground} />
             )}
-            <Text className="text-sm font-bold text-galpi-paper">{busy ? '저장 중...' : '수정 완료'}</Text>
+            <Text className="text-sm font-bold text-primary-foreground">{busy ? '저장 중...' : '수정 완료'}</Text>
           </Pressable>
         </View>
       </KeyboardAvoidingView>

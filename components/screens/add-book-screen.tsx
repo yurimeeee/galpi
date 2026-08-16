@@ -311,10 +311,10 @@ export function AddBookScreen({
                   <View className="flex-row gap-2">
                     <Pressable
                       onPress={takeManualCover}
-                      className="web:cursor-pointer flex-1 flex-row items-center justify-center gap-1.5 rounded-2xl bg-galpi-ink py-3"
+                      className="web:cursor-pointer flex-1 flex-row items-center justify-center gap-1.5 rounded-2xl bg-primary py-3"
                     >
-                      <Camera size={14} color={colors.galpiPaper} />
-                      <Text className="text-xs font-bold text-galpi-paper">사진 찍기</Text>
+                      <Camera size={14} color={colors.primaryForeground} />
+                      <Text className="text-xs font-bold text-primary-foreground">사진 찍기</Text>
                     </Pressable>
                     <Pressable
                       onPress={pickManualCover}
@@ -403,17 +403,17 @@ export function AddBookScreen({
             <Pressable
               onPress={handleAddManual}
               disabled={manualSaving}
-              className={`web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-2xl bg-galpi-ink py-4 ${
+              className={`web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-4 ${
                 manualSaving ? 'opacity-60' : ''
               }`}
               style={({ pressed }) => pressed && { transform: [{ scale: 0.98 }] }}
             >
               {manualSaving ? (
-                <ActivityIndicator color={colors.galpiPaper} />
+                <ActivityIndicator color={colors.primaryForeground} />
               ) : (
-                <Check size={16} color={colors.galpiPaper} />
+                <Check size={16} color={colors.primaryForeground} />
               )}
-              <Text className="text-sm font-bold text-galpi-paper">
+              <Text className="text-sm font-bold text-primary-foreground">
                 {manualSaving ? '추가하는 중...' : '책 추가하기'}
               </Text>
             </Pressable>

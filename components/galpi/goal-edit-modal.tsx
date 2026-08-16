@@ -82,13 +82,13 @@ export function GoalEditModal({
       <Pressable
         onPress={handleSave}
         disabled={saving}
-        className={`web:cursor-pointer mt-6 w-full flex-row items-center justify-center gap-2 rounded-2xl bg-galpi-ink py-4 ${
+        className={`web:cursor-pointer mt-6 w-full flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-4 ${
           saving ? 'opacity-60' : ''
         }`}
         style={({ pressed }) => pressed && !saving && { transform: [{ scale: 0.98 }] }}
       >
-        {saving ? <ActivityIndicator color={colors.galpiPaper} /> : null}
-        <Text className="text-sm font-bold text-galpi-paper">
+        {saving ? <ActivityIndicator color={colors.primaryForeground} /> : null}
+        <Text className="text-sm font-bold text-primary-foreground">
           {saving ? '저장 중...' : '목표 저장하기'}
         </Text>
       </Pressable>
@@ -139,9 +139,9 @@ function Stepper({
         <Pressable
           onPress={() => onChange(value + step)}
           accessibilityLabel="늘리기"
-          className="web:cursor-pointer h-8 w-8 items-center justify-center rounded-full bg-galpi-ink"
+          className="web:cursor-pointer h-8 w-8 items-center justify-center rounded-full bg-primary"
         >
-          <Text className="text-lg font-bold text-galpi-paper">+</Text>
+          <Text className="text-lg font-bold text-primary-foreground">+</Text>
         </Pressable>
       </View>
     </View>

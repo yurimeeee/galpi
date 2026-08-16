@@ -94,16 +94,16 @@ export function DataBackupScreen({
           <Pressable
             onPress={handleExport}
             disabled={exporting || books.length === 0}
-            className={`web:cursor-pointer mt-1 w-full flex-row items-center justify-center gap-2 rounded-2xl bg-galpi-ink py-3.5 ${
+            className={`web:cursor-pointer mt-1 w-full flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-3.5 ${
               exporting || books.length === 0 ? 'opacity-50' : ''
             }`}
           >
             {exporting ? (
-              <ActivityIndicator color={colors.galpiPaper} />
+              <ActivityIndicator color={colors.primaryForeground} />
             ) : (
-              <CloudDownload size={15} color={colors.galpiPaper} />
+              <CloudDownload size={15} color={colors.primaryForeground} />
             )}
-            <Text className="text-sm font-bold text-galpi-paper">
+            <Text className="text-sm font-bold text-primary-foreground">
               {books.length === 0 ? '백업할 데이터가 없어요' : '백업 파일 공유하기'}
             </Text>
           </Pressable>
@@ -145,16 +145,16 @@ export function DataBackupScreen({
           <Pressable
             onPress={handleImport}
             disabled={importing || !importText.trim()}
-            className={`web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-2xl bg-galpi-ink py-3.5 ${
+            className={`web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-3.5 ${
               importing || !importText.trim() ? 'opacity-50' : ''
             }`}
           >
             {importing ? (
-              <ActivityIndicator color={colors.galpiPaper} />
+              <ActivityIndicator color={colors.primaryForeground} />
             ) : (
-              <CloudUpload size={15} color={colors.galpiPaper} />
+              <CloudUpload size={15} color={colors.primaryForeground} />
             )}
-            <Text className="text-sm font-bold text-galpi-paper">{importing ? '복구 중...' : '복구하기'}</Text>
+            <Text className="text-sm font-bold text-primary-foreground">{importing ? '복구 중...' : '복구하기'}</Text>
           </Pressable>
         </View>
       </ScrollView>

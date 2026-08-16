@@ -103,12 +103,12 @@ export function EditProgressModal({
       <Pressable
         onPress={handleSave}
         disabled={!canSave}
-        className={`web:cursor-pointer mt-6 w-full flex-row items-center justify-center gap-2 rounded-2xl bg-galpi-ink py-4 ${
+        className={`web:cursor-pointer mt-6 w-full flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-4 ${
           !canSave ? 'opacity-50' : ''
         }`}
       >
-        {submitting ? <ActivityIndicator color={colors.galpiPaper} /> : null}
-        <Text className="text-sm font-bold text-galpi-paper">{submitting ? '저장 중...' : '저장하기'}</Text>
+        {submitting ? <ActivityIndicator color={colors.primaryForeground} /> : null}
+        <Text className="text-sm font-bold text-primary-foreground">{submitting ? '저장 중...' : '저장하기'}</Text>
       </Pressable>
     </BottomSheet>
   );

@@ -122,11 +122,11 @@ export function SessionSummaryModal({
       {/* 저장 */}
       <Pressable
         onPress={onSave}
-        className="web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-2xl bg-galpi-ink py-4"
+        className="web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-4"
         style={({ pressed }) => pressed && { transform: [{ scale: 0.98 }] }}
       >
-        <Check size={16} color={colors.galpiPaper} />
-        <Text className="text-sm font-bold text-galpi-paper">독서 기록에 반영하기</Text>
+        <Check size={16} color={colors.primaryForeground} />
+        <Text className="text-sm font-bold text-primary-foreground">독서 기록에 반영하기</Text>
       </Pressable>
     </BottomSheet>
   );

@@ -235,11 +235,11 @@ export function ReadingTimerScreen({
           </Pressable>
           <Pressable
             onPress={handlePlayPause}
-            className="web:cursor-pointer h-14 flex-1 flex-row items-center justify-center gap-2 rounded-2xl bg-galpi-ink"
+            className="web:cursor-pointer h-14 flex-1 flex-row items-center justify-center gap-2 rounded-2xl bg-primary"
             style={({ pressed }) => pressed && { transform: [{ scale: 0.98 }] }}
           >
-            {running ? <Pause size={18} color={colors.galpiPaper} /> : <Play size={18} color={colors.galpiPaper} />}
-            <Text className="text-base font-bold text-galpi-paper">{running ? '일시정지' : '독서 시작'}</Text>
+            {running ? <Pause size={18} color={colors.primaryForeground} /> : <Play size={18} color={colors.primaryForeground} />}
+            <Text className="text-base font-bold text-primary-foreground">{running ? '일시정지' : '독서 시작'}</Text>
           </Pressable>
         </View>
       </View>

@@ -376,14 +376,14 @@ export function BookDetailScreen({
                   accessibilityRole="button"
                   accessibilityLabel="총평 저장"
                   className={`web:cursor-pointer mt-2 self-end rounded-full px-4 py-2 ${
-                    reviewDirty ? 'bg-galpi-ink' : 'bg-card'
+                    reviewDirty ? 'bg-primary' : 'bg-card'
                   } ${savingReview ? 'opacity-60' : ''}`}
                 >
                   {savingReview ? (
-                    <ActivityIndicator size="small" color={colors.galpiPaper} />
+                    <ActivityIndicator size="small" color={colors.primaryForeground} />
                   ) : (
                     <Text
-                      className={`text-xs font-bold ${reviewDirty ? 'text-galpi-paper' : 'text-muted-foreground'}`}
+                      className={`text-xs font-bold ${reviewDirty ? 'text-primary-foreground' : 'text-muted-foreground'}`}
                     >
                       {reviewDirty ? '저장' : '저장됨'}
                     </Text>
@@ -418,10 +418,10 @@ export function BookDetailScreen({
       <View className="absolute inset-x-0 bottom-0 items-center pb-6">
         <Pressable
           onPress={onAddSentence}
-          className="web:cursor-pointer flex-row items-center gap-2 rounded-full bg-galpi-ink px-6 py-3.5"
+          className="web:cursor-pointer flex-row items-center gap-2 rounded-full bg-primary px-6 py-3.5"
           style={({ pressed }) => [
             {
-              shadowColor: colors.galpiInk,
+              shadowColor: colors.primary,
               shadowOpacity: 0.3,
               shadowRadius: 20,
               shadowOffset: { width: 0, height: 8 },
@@ -429,8 +429,8 @@ export function BookDetailScreen({
             pressed && { transform: [{ scale: 0.95 }] },
           ]}
         >
-          <Plus size={16} color={colors.galpiPaper} />
-          <Text className="text-sm font-bold text-galpi-paper">갈피 남기기</Text>
+          <Plus size={16} color={colors.primaryForeground} />
+          <Text className="text-sm font-bold text-primary-foreground">갈피 남기기</Text>
         </Pressable>
       </View>
 

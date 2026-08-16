@@ -210,17 +210,17 @@ export function AddSentenceScreen({
           <Pressable
             onPress={handleSave}
             disabled={saving}
-            className={`web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-2xl bg-galpi-ink py-4 ${
+            className={`web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-4 ${
               saving ? 'opacity-60' : ''
             }`}
             style={({ pressed }) => pressed && { transform: [{ scale: 0.98 }] }}
           >
             {saving ? (
-              <ActivityIndicator color={colors.galpiPaper} />
+              <ActivityIndicator color={colors.primaryForeground} />
             ) : (
-              <Check size={16} color={colors.galpiPaper} />
+              <Check size={16} color={colors.primaryForeground} />
             )}
-            <Text className="text-sm font-bold text-galpi-paper">
+            <Text className="text-sm font-bold text-primary-foreground">
               {saving ? '저장 중...' : '갈피 저장하기'}
             </Text>
           </Pressable>
@@ -472,8 +472,8 @@ function ScanMode({
       {phase === 'error' ? (
         <View className="gap-2 rounded-2xl border border-destructive/30 bg-destructive/5 p-4">
           <Text className="text-sm font-semibold text-destructive">{errorMessage}</Text>
-          <Pressable onPress={retake} className="web:cursor-pointer self-start rounded-lg bg-galpi-ink px-3 py-2">
-            <Text className="text-xs font-bold text-galpi-paper">다시 촬영하기</Text>
+          <Pressable onPress={retake} className="web:cursor-pointer self-start rounded-lg bg-primary px-3 py-2">
+            <Text className="text-xs font-bold text-primary-foreground">다시 촬영하기</Text>
           </Pressable>
         </View>
       ) : null}
@@ -598,10 +598,10 @@ function PhotoMode({
             <View className="w-full max-w-[220px] gap-2">
               <Pressable
                 onPress={takePhoto}
-                className="web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-xl bg-galpi-ink py-3"
+                className="web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-xl bg-primary py-3"
               >
-                <Camera size={14} color={colors.galpiPaper} />
-                <Text className="text-xs font-bold text-galpi-paper">사진 찍기</Text>
+                <Camera size={14} color={colors.primaryForeground} />
+                <Text className="text-xs font-bold text-primary-foreground">사진 찍기</Text>
               </Pressable>
               <Pressable
                 onPress={pickFromLibrary}

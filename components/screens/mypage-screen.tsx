@@ -115,9 +115,9 @@ export function MyPageScreen({
               <Pressable
                 onPress={() => setActiveModal('profile')}
                 accessibilityLabel="프로필 수정"
-                className="web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-galpi-ink"
+                className="web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-primary"
               >
-                <Pencil size={14} color={colors.galpiPaper} />
+                <Pencil size={14} color={colors.primaryForeground} />
               </Pressable>
             </View>
 

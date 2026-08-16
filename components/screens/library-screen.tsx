@@ -152,10 +152,10 @@ export function MainLibraryScreen({
             <Pressable
               onPress={() => setReorderMode(false)}
               accessibilityLabel="순서 편집 완료"
-              className="web:cursor-pointer flex-row items-center gap-1 rounded-full bg-galpi-ink px-3.5 py-2"
+              className="web:cursor-pointer flex-row items-center gap-1 rounded-full bg-primary px-3.5 py-2"
             >
-              <Check size={14} color={colors.galpiPaper} />
-              <Text className="text-xs font-semibold text-galpi-paper">완료</Text>
+              <Check size={14} color={colors.primaryForeground} />
+              <Text className="text-xs font-semibold text-primary-foreground">완료</Text>
             </Pressable>
           </View>
           <Text className="mb-4 text-xs text-muted-foreground">오른쪽 손잡이를 눌러 드래그하면 순서를 바꿀 수 있어요</Text>

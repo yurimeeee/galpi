@@ -98,10 +98,10 @@ export function OnboardingScreen({ onDone }: { onDone: () => void }) {
 
         <Pressable
           onPress={next}
-          className="web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-2xl bg-galpi-ink py-4"
+          className="web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-4"
           style={({ pressed }) => pressed && { transform: [{ scale: 0.98 }] }}
         >
-          <Text className="text-[15px] font-bold text-galpi-paper">
+          <Text className="text-[15px] font-bold text-primary-foreground">
             {isLast ? '갈피 시작하기' : '다음'}
           </Text>
           {!isLast ? <ArrowRight size={16} color={colors.galpiPaper} /> : null}
