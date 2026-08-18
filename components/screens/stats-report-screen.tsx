@@ -22,6 +22,7 @@ import {
   Grid2x2,
   CalendarDays,
   Quote,
+  Moon,
   type LucideIcon,
 } from 'lucide-react-native';
 import { Skeleton } from '../galpi/skeleton';
@@ -30,6 +31,7 @@ import { GalpiHeaderLogo } from '../galpi/galpi-logo';
 import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
 import { useThemeColors, ACCENT_BG_CLASS } from '../../lib/theme';
 import { parseDotDate, dateKey, pad2 } from '../../lib/date-utils';
+import { useAppStore } from '../../lib/store';
 import type { Book } from '../../lib/data/books';
 import type { Sentence } from '../../lib/data/sentences';
 
@@ -41,6 +43,13 @@ const WEEKDAY_LABELS = ['일', '월', '화', '수', '목', '금', '토'];
 const INTENSITY_CLASS = ['bg-secondary', 'bg-galpi-green/50', 'bg-galpi-green', 'bg-galpi-blue', 'bg-foreground'];
 /** 4 six-hour buckets covering the day, indexed by `Math.floor(hour / 6)`. */
 const HOUR_BUCKET_LABELS = ['새벽', '오전', '오후', '밤'];
+/** Report-card flavor text for each `HOUR_BUCKET_LABELS` bucket. */
+const HOUR_BUCKET_DESC = [
+  '고요한 새벽에 문장을 모았어요',
+  '상쾌한 오전에 문장을 모았어요',
+  '여유로운 오후에 문장을 모았어요',
+  '고요한 밤에 문장을 모았어요',
+];
 
 function seasonOf(month0: number): '봄' | '여름' | '가을' | '겨울' {
   if (month0 === 11 || month0 <= 1) return '겨울';
@@ -127,6 +136,52 @@ function getGenrePattern(sentences: Sentence[], bookById: Map<string, Book>, yea
     topLikedGenre: topLiked?.key ?? null,
     hasGenreData: readCounts.size > 0,
   };
+}
+
+/** Top N genres (by 갈피 count) for a period, most-frequent first — powers the report card's "이달의 취향" tags. */
+function getTopGenres(sentences: Sentence[], bookById: Map<string, Book>, year: number, month?: number, limit = 3): string[] {
+  const counts = new Map<string, number>();
+  for (const s of sentences) {
+    const d = parseDotDate(s.date);
+    if (!d || d.getFullYear() !== year) continue;
+    if (month !== undefined && d.getMonth() !== month) continue;
+    const genre = bookGenreLabel(bookById.get(s.bookId));
+    if (!genre) continue;
+    counts.set(genre, (counts.get(genre) ?? 0) + 1);
+  }
+  return Array.from(counts.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, limit)
+    .map(([genre]) => genre);
+}
+
+/**
+ * Featured quote for the report card: the book with the most 갈피 saved this
+ * period, then its favorited 갈피 (most recent if several) — or, absent a
+ * favorite, its most recent 갈피.
+ */
+function getPeriodQuote(
+  sentences: Sentence[],
+  bookById: Map<string, Book>,
+  year: number,
+  month?: number,
+): { book: Book; sentence: Sentence } | null {
+  const inPeriod: { s: Sentence; d: Date }[] = [];
+  const bookCounts = new Map<string, number>();
+  for (const s of sentences) {
+    const d = parseDotDate(s.date);
+    if (!d || d.getFullYear() !== year) continue;
+    if (month !== undefined && d.getMonth() !== month) continue;
+    inPeriod.push({ s, d });
+    bookCounts.set(s.bookId, (bookCounts.get(s.bookId) ?? 0) + 1);
+  }
+  const top = topCount(bookCounts);
+  if (!top) return null;
+  const book = bookById.get(top.key);
+  if (!book) return null;
+  const inTopBook = inPeriod.filter((x) => x.s.bookId === top.key).sort((a, b) => b.d.getTime() - a.d.getTime());
+  const sentence = inTopBook.find((x) => x.s.favorite)?.s ?? inTopBook[0]?.s;
+  return sentence ? { book, sentence } : null;
 }
 
 /** GitHub-style weekly-column grid of activity intensity for a given year; -1 marks days outside the year. */
@@ -863,13 +918,32 @@ function ReportPublishModal({
   const [realCardWidth, setRealCardWidth] = useState(0);
   const cardRef = useRef<View>(null);
   const colors = useThemeColors();
+  const displayName = useAppStore((s) => s.user?.displayName) || '갈피 독자';
 
   const year = cursor.getFullYear();
   const month = cursor.getMonth();
+  const scopedMonth = period === 'month' ? month : undefined;
+
+  const bookById = useMemo(() => new Map(books.map((b) => [b.id, b])), [books]);
 
   const monthData = useMemo(() => getMonthMetrics(books, sentences, year, month), [books, sentences, year, month]);
   const yearData = useMemo(() => getYearMetrics(books, sentences, year), [books, sentences, year]);
   const heatmap = useMemo(() => buildYearHeatmap(sentences, year), [sentences, year]);
+
+  const { weekdayCounts, hourBucketCounts, hasHourData } = useMemo(
+    () => getTimePattern(sentences, year, scopedMonth),
+    [sentences, year, scopedMonth],
+  );
+  const topWeekdayIndex = maxIndex(weekdayCounts);
+  const topHourIndex = maxIndex(hourBucketCounts);
+  const topGenres = useMemo(
+    () => getTopGenres(sentences, bookById, year, scopedMonth),
+    [sentences, bookById, year, scopedMonth],
+  );
+  const quote = useMemo(
+    () => getPeriodQuote(sentences, bookById, year, scopedMonth),
+    [sentences, bookById, year, scopedMonth],
+  );
 
   const metrics = period === 'month' ? monthData : yearData;
   const dateLabel =
@@ -968,16 +1042,25 @@ function ReportPublishModal({
         <View className="h-0 w-full" onLayout={(e) => setRealCardWidth(e.nativeEvent.layout.width)} />
 
         <View
-          className={`justify-between overflow-hidden rounded-3xl bg-card p-5 ${ratio === '1:1' ? 'w-full' : 'w-[58%]'}`}
+          className={`overflow-hidden rounded-3xl bg-card p-5 ${ratio === '1:1' ? 'w-full' : 'w-[68%]'}`}
           style={{ aspectRatio: ratio === '1:1' ? 1 : 9 / 16 }}
         >
           <ReportCardBody
+            ratio={ratio}
             dateLabel={dateLabel}
             title={title}
             metrics={metrics}
             period={period}
             monthData={monthData}
             heatmap={heatmap}
+            weekdayCounts={weekdayCounts}
+            hourBucketCounts={hourBucketCounts}
+            hasHourData={hasHourData}
+            topWeekdayIndex={topWeekdayIndex}
+            topHourIndex={topHourIndex}
+            topGenres={topGenres}
+            quote={quote}
+            displayName={displayName}
           />
         </View>
 
@@ -987,16 +1070,25 @@ function ReportPublishModal({
             <View
               ref={cardRef}
               collapsable={false}
-              className="justify-between overflow-hidden rounded-3xl bg-card p-5"
+              className="overflow-hidden rounded-3xl bg-card p-5"
               style={{ width: realCardWidth, aspectRatio: ratio === '1:1' ? 1 : 9 / 16 }}
             >
               <ReportCardBody
+                ratio={ratio}
                 dateLabel={dateLabel}
                 title={title}
                 metrics={metrics}
                 period={period}
                 monthData={monthData}
                 heatmap={heatmap}
+                weekdayCounts={weekdayCounts}
+                hourBucketCounts={hourBucketCounts}
+                hasHourData={hasHourData}
+                topWeekdayIndex={topWeekdayIndex}
+                topHourIndex={topHourIndex}
+                topGenres={topGenres}
+                quote={quote}
+                displayName={displayName}
               />
             </View>
           </View>
@@ -1028,61 +1120,173 @@ function ReportPublishModal({
 
 /** 발행 카드의 실제 내용. 작은 미리보기와 실제 크기 캡처 대상 양쪽에서 그대로 재사용한다. */
 function ReportCardBody({
+  ratio,
   dateLabel,
   title,
   metrics,
   period,
   monthData,
   heatmap,
+  weekdayCounts,
+  hourBucketCounts,
+  hasHourData,
+  topWeekdayIndex,
+  topHourIndex,
+  topGenres,
+  quote,
+  displayName,
 }: {
+  ratio: Ratio;
   dateLabel: string;
   title: string;
   metrics: { doneCount: number; galpiCount: number; readDaysCount: number };
   period: Period;
   monthData: ReturnType<typeof getMonthMetrics>;
   heatmap: number[][];
+  weekdayCounts: number[];
+  hourBucketCounts: number[];
+  hasHourData: boolean;
+  topWeekdayIndex: number;
+  topHourIndex: number;
+  topGenres: string[];
+  quote: { book: Book; sentence: Sentence } | null;
+  displayName: string;
 }) {
+  const colors = useThemeColors();
+
   return (
-    <>
-      <View>
+    <View className="gap-1.5">
+      {ratio === '9:16' ? (
+        <View>
+          <View className="flex-row items-center justify-between">
+            <GalpiHeaderLogo markSize={13} wordClassName="text-[10px] text-foreground" />
+            <View className="rounded-full bg-secondary px-2 py-0.5">
+              <Text className="text-[8px] font-semibold text-muted-foreground">{dateLabel}</Text>
+            </View>
+          </View>
+
+          <Text className="mt-1.5 text-sm font-black leading-tight text-foreground">{title}</Text>
+
+          <View className="mt-1.5 flex-row gap-1.5">
+            <ReportMetricCard Icon={BookCheck} value={metrics.doneCount} unit="권" label="완독한 책" />
+            <ReportMetricCard Icon={Bookmark} value={metrics.galpiCount} unit="개" label="수집한 갈피" />
+            <ReportMetricCard Icon={CalendarDays} value={metrics.readDaysCount} unit="일" label="읽은 날" />
+          </View>
+        </View>
+      ) : null}
+
+      {/* 주로 읽는 요일 */}
+      <View className="rounded-2xl bg-secondary/60 p-2">
         <View className="flex-row items-center justify-between">
-          <GalpiHeaderLogo markSize={16} wordClassName="text-xs text-foreground" />
-          <Text className="text-[11px] font-semibold text-muted-foreground">{dateLabel}</Text>
+          <Text className="text-[9px] font-black text-foreground">주로 읽는 요일</Text>
+          {topWeekdayIndex >= 0 ? (
+            <View className="rounded-full bg-galpi-ink px-1.5 py-0.5">
+              <Text className="text-[7px] font-bold text-galpi-paper">{WEEKDAY_LABELS[topWeekdayIndex]}요일</Text>
+            </View>
+          ) : null}
+        </View>
+        {topWeekdayIndex >= 0 ? (
+          <>
+            <View className="mt-1.5 flex-row items-end gap-1">
+              {WEEKDAY_LABELS.map((label, i) => {
+                const isTop = i === topWeekdayIndex;
+                return (
+                  <View key={label} className="flex-1 items-center gap-0.5">
+                    <View className={`w-full rounded-full ${isTop ? 'h-2.5 bg-galpi-ink' : 'h-1 bg-border'}`} />
+                    <Text className={`text-[7px] font-bold ${isTop ? 'text-foreground' : 'text-muted-foreground'}`}>
+                      {label}
+                    </Text>
+                  </View>
+                );
+              })}
+            </View>
+            <Text className="mt-1 text-[7px] leading-relaxed text-muted-foreground" numberOfLines={1}>
+              {WEEKDAY_LABELS[topWeekdayIndex]}요일에 갈피를 가장 많이 남겼어요.
+            </Text>
+          </>
+        ) : (
+          <Text className="mt-1 text-[7px] leading-relaxed text-muted-foreground">아직 기록이 없어요.</Text>
+        )}
+      </View>
+
+      {/* 기록 시간대 · 이달의 취향 */}
+      <View className="flex-row gap-1.5">
+        <View className="flex-1 rounded-2xl bg-galpi-green p-2">
+          <View className="flex-row items-center gap-1">
+            <Moon size={8} color={colors.galpiInk} opacity={0.7} />
+            <Text className="text-[7px] font-bold text-galpi-ink/70">기록 시간대</Text>
+          </View>
+          {hasHourData && topHourIndex >= 0 ? (
+            <>
+              <Text className="mt-0.5 text-[11px] font-black text-galpi-ink">{HOUR_BUCKET_LABELS[topHourIndex]}</Text>
+              <Text className="mt-0.5 text-[6.5px] leading-tight text-galpi-ink/60" numberOfLines={1}>
+                {HOUR_BUCKET_DESC[topHourIndex]}
+              </Text>
+            </>
+          ) : (
+            <Text className="mt-0.5 text-[6.5px] leading-tight text-galpi-ink/60">기록이 쌓이면 나타나요</Text>
+          )}
         </View>
 
-        <Text className="mt-4 text-lg font-black leading-tight text-foreground">{title}</Text>
-
-        <View className="mt-5 flex-row items-center">
-          <ReportMetric Icon={BookCheck} value={metrics.doneCount} unit="권" label="완독한 책" />
-          <View className="h-9 w-px bg-border" />
-          <ReportMetric Icon={Bookmark} value={metrics.galpiCount} unit="개" label="수집한 갈피" />
-          <View className="h-9 w-px bg-border" />
-          <ReportMetric Icon={CalendarDays} value={metrics.readDaysCount} unit="일" label="읽은 날" />
+        <View className="flex-1 rounded-2xl bg-secondary/60 p-2">
+          <Text className="text-[7px] font-bold text-foreground">{period === 'month' ? '이달의 취향' : '올해의 취향'}</Text>
+          {topGenres.length > 0 ? (
+            <View className="mt-1 flex-row flex-wrap gap-1">
+              {topGenres.map((genre, i) => (
+                <View key={genre} className={`rounded-full px-1.5 py-0.5 ${i === 0 ? 'bg-galpi-yellow' : 'bg-card'}`}>
+                  <Text className="text-[6.5px] font-bold text-galpi-ink" numberOfLines={1}>
+                    #{genre}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          ) : (
+            <Text className="mt-0.5 text-[6.5px] leading-tight text-muted-foreground">취향이 쌓이면 나타나요</Text>
+          )}
         </View>
       </View>
 
       {period === 'month' ? (
         <View>
-          <Text className="mb-2.5 text-xs font-bold text-foreground">이달 완독한 책</Text>
+          <Text className="mb-1 text-[8px] font-bold text-foreground">이달 완독한 책</Text>
           {monthData.completedBooks.length > 0 ? (
-            <View className="flex-row gap-2">
+            <View className="flex-row gap-1">
               {monthData.completedBooks.slice(0, 5).map((book) => (
                 <CompletedBookCover key={book.id} book={book} />
               ))}
             </View>
           ) : (
-            <Text className="text-[11px] leading-relaxed text-muted-foreground">
-              이달 완독한 책이 아직 없어요.
-            </Text>
+            <Text className="text-[7px] leading-relaxed text-muted-foreground">이달 완독한 책이 아직 없어요.</Text>
           )}
         </View>
       ) : (
-        <View className="rounded-2xl bg-galpi-ink p-3.5">
-          <Text className="mb-2.5 text-[11px] font-bold text-galpi-paper/60">연간 독서 활동</Text>
+        <View className="rounded-2xl bg-galpi-ink p-2">
+          <Text className="mb-1 text-[7px] font-bold text-galpi-paper/60">연간 독서 활동</Text>
           <ReportHeatmap grid={heatmap} />
         </View>
       )}
-    </>
+
+      {quote ? (
+        <View className="rounded-2xl bg-galpi-ink p-2">
+          <Quote size={8} color={colors.galpiPaper} opacity={0.6} />
+          <Text className="mt-0.5 text-[9px] font-bold leading-snug text-galpi-paper" numberOfLines={2}>
+            "{quote.sentence.quote}"
+          </Text>
+          <Text className="mt-0.5 text-[7px] text-galpi-paper/50" numberOfLines={1}>
+            {quote.book.title} · P.{quote.sentence.page}
+          </Text>
+        </View>
+      ) : null}
+
+      <View className="flex-row items-center justify-between">
+        <Text className="shrink-0 text-[7px] font-bold text-foreground" numberOfLines={1}>
+          {displayName} 님의 독서 기록
+        </Text>
+        <Text className="ml-2 shrink text-[6.5px] text-muted-foreground" numberOfLines={1}>
+          책 속에서 나만의 갈피를 찾다
+        </Text>
+      </View>
+    </View>
   );
 }
 
@@ -1092,7 +1296,7 @@ function CompletedBookCover({ book }: { book: Book }) {
 
   return (
     <View
-      className={`relative aspect-square flex-1 items-start justify-end overflow-hidden rounded-xl p-2 ${
+      className={`relative h-9 w-9 items-start justify-end overflow-hidden rounded-lg p-1 ${
         showCover ? 'bg-secondary' : ACCENT_BG_CLASS[book.accent]
       }`}
     >
@@ -1104,9 +1308,9 @@ function CompletedBookCover({ book }: { book: Book }) {
           onError={onCoverError}
         />
       ) : null}
-      <View className={showCover ? 'rounded-full bg-galpi-ink/50 p-1' : undefined}>
+      <View className={showCover ? 'rounded-full bg-galpi-ink/50 p-0.5' : undefined}>
         <Bookmark
-          size={13}
+          size={9}
           color={showCover || book.accent === 'ink' ? colors.galpiPaper : colors.galpiInk}
           opacity={showCover ? 1 : book.accent === 'ink' ? 1 : 0.7}
         />
@@ -1115,16 +1319,17 @@ function CompletedBookCover({ book }: { book: Book }) {
   );
 }
 
-function ReportMetric({ Icon, value, unit, label }: { Icon: LucideIcon; value: number; unit: string; label: string }) {
+/** Compact stat card used in the 9:16 report card's metric row (icon + big number + label). */
+function ReportMetricCard({ Icon, value, unit, label }: { Icon: LucideIcon; value: number; unit: string; label: string }) {
   const colors = useThemeColors();
   return (
-    <View className="flex-1 items-center gap-1.5">
-      <Icon size={16} color={colors.mutedForeground} />
+    <View className="flex-1 items-center gap-1 rounded-xl bg-secondary py-2">
+      <Icon size={12} color={colors.mutedForeground} />
       <View className="flex-row items-baseline gap-0.5">
-        <Text className="text-lg font-black text-foreground">{value}</Text>
-        <Text className="text-[10px] font-bold text-muted-foreground">{unit}</Text>
+        <Text className="text-sm font-black text-foreground">{value}</Text>
+        <Text className="text-[8px] font-bold text-muted-foreground">{unit}</Text>
       </View>
-      <Text className="text-[10px] font-medium text-muted-foreground">{label}</Text>
+      <Text className="text-[8px] font-medium text-muted-foreground">{label}</Text>
     </View>
   );
 }
