@@ -26,6 +26,7 @@ import {
 } from '@expo-google-fonts/noto-sans-kr';
 import { WebFrame } from '../components/layout/web-frame';
 import { ReadingTimerWidget } from '../components/galpi/reading-timer-widget';
+import { UndoSnackbar } from '../components/galpi/undo-snackbar';
 import { getAnalyticsIfSupported } from '../lib/firebase';
 import { useAuthSync } from '../lib/use-auth-sync';
 import { useOnThisDayReminder } from '../lib/use-on-this-day-reminder';
@@ -103,6 +104,7 @@ export default function RootLayout() {
               <Stack.Screen name="privacy" />
             </Stack>
             <ReadingTimerWidget />
+            <UndoSnackbar />
           </WebFrame>
         </SafeAreaProvider>
       </View>

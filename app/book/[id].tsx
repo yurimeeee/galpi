@@ -11,6 +11,8 @@ export default function BookDetail() {
   const allSentences = useAppStore((s) => s.sentences);
   const updateBook = useAppStore((s) => s.updateBook);
   const deleteBook = useAppStore((s) => s.deleteBook);
+  const restoreBook = useAppStore((s) => s.restoreBook);
+  const showUndo = useAppStore((s) => s.showUndo);
   const setSentenceFavorite = useAppStore((s) => s.setSentenceFavorite);
   const { triggerStartReadingNotification } = useReadingReminder();
 
@@ -39,7 +41,12 @@ export default function BookDetail() {
       onChangeRating={(rating) => updateBook(book.id, { rating })}
       onChangeReview={(review) => updateBook(book.id, { review })}
       onEditProgress={(patch) => updateBook(book.id, patch)}
-      onDeleteBook={() => deleteBook(book.id)}
+      onDeleteBook={async () => {
+        const deletedBook = book;
+        const deletedSentences = sentencesByBook(allSentences, book.id);
+        await deleteBook(book.id);
+        showUndo('책을 삭제했어요', () => restoreBook(deletedBook, deletedSentences));
+      }}
       onToggleSentenceFavorite={(sentenceId, favorite) => setSentenceFavorite(sentenceId, favorite)}
     />
   );

@@ -18,25 +18,21 @@ import {
 import { GoalEditModal } from '../galpi/goal-edit-modal';
 import { dateKey } from '../../lib/date-utils';
 import { useReadingGoals } from '../../lib/use-reading-goals';
+import { BADGES } from '../../lib/badges';
 import { useThemeColors, ACCENT_BG_CLASS, type Accent } from '../../lib/theme';
 
 const WEEKDAY_LABELS = ['일', '월', '화', '수', '목', '금', '토'];
 
-type Milestone = {
-  key: string;
-  Icon: LucideIcon;
-  title: string;
-  desc: string;
-  threshold: number;
-  accent: Accent;
-};
+/** Streak badges, sourced from the shared `BADGES` ladder (lib/badges.ts) so this screen and 독서 업적 never disagree on thresholds/titles. */
+const STREAK_BADGES = BADGES.filter((b) => b.category === 'streak');
 
-const MILESTONES: Milestone[] = [
-  { key: 'first', Icon: Zap, title: '첫 불꽃', desc: '3일 연속 독서', threshold: 3, accent: 'yellow' },
-  { key: 'week', Icon: Flame, title: '일주일 챌린지', desc: '7일 연속 독서', threshold: 7, accent: 'green' },
-  { key: 'twoweek', Icon: Award, title: '보름의 몰입', desc: '14일 연속 독서', threshold: 14, accent: 'blue' },
-  { key: 'month', Icon: Medal, title: '한 달의 습관', desc: '30일 연속 독서', threshold: 30, accent: 'blue' },
-];
+/** Presentation only (icon/accent) — the id must match a `streak-*` entry in `BADGES`. */
+const STREAK_BADGE_VISUAL: Record<string, { Icon: LucideIcon; accent: Accent }> = {
+  'streak-3': { Icon: Zap, accent: 'yellow' },
+  'streak-7': { Icon: Flame, accent: 'green' },
+  'streak-30': { Icon: Award, accent: 'blue' },
+  'streak-100': { Icon: Medal, accent: 'blue' },
+};
 
 function buildWeek(activeDays: Set<string>) {
   const today = new Date();
@@ -242,13 +238,14 @@ export function ReadingGoalScreen({ onBack }: { onBack: () => void }) {
           <View className="mt-6">
             <Text className="mb-3 pl-1 text-[15px] font-black text-foreground">스트릭 배지</Text>
             <View className="flex-row flex-wrap gap-3">
-              {MILESTONES.map((m) => {
+              {STREAK_BADGES.map((m) => {
                 const unlocked = bestStreak >= m.threshold;
+                const { Icon, accent } = STREAK_BADGE_VISUAL[m.id];
                 return (
                   <View
-                    key={m.key}
+                    key={m.id}
                     className={`w-[48%] items-center gap-2 rounded-2xl border p-4 ${
-                      unlocked ? 'border-transparent ' + ACCENT_BG_CLASS[m.accent] : 'border-border bg-secondary'
+                      unlocked ? 'border-transparent ' + ACCENT_BG_CLASS[accent] : 'border-border bg-secondary'
                     }`}
                   >
                     <View
@@ -257,7 +254,7 @@ export function ReadingGoalScreen({ onBack }: { onBack: () => void }) {
                       }`}
                     >
                       {unlocked ? (
-                        <m.Icon size={24} color={colors.galpiInk} strokeWidth={1.9} />
+                        <Icon size={24} color={colors.galpiInk} strokeWidth={1.9} />
                       ) : (
                         <Lock size={20} color={colors.mutedForeground} strokeWidth={1.9} />
                       )}
@@ -273,7 +270,7 @@ export function ReadingGoalScreen({ onBack }: { onBack: () => void }) {
                           unlocked ? 'text-galpi-ink/60' : 'text-muted-foreground/70'
                         }`}
                       >
-                        {m.desc}
+                        {m.threshold}일 연속 독서
                       </Text>
                     </View>
                   </View>

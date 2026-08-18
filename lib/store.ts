@@ -8,6 +8,8 @@ import {
   deleteBookDoc,
   deleteSentenceDoc,
   reorderBooksDoc,
+  restoreBookDoc,
+  restoreSentenceDoc,
   setSentenceFavoriteDoc,
   updateBookDoc,
   updateSentenceDoc,
@@ -23,6 +25,9 @@ export type Gate = 'loading' | 'onboarding' | 'login' | 'signup' | 'app';
 type NewSentence = Omit<Sentence, 'id' | 'date' | 'hour'>;
 type NewBook = { title: string; author: string; coverUrl?: string; totalPages?: number; genre?: string };
 
+/** A dismissible "실행취소" snackbar request — see `showUndo`. */
+type PendingUndo = { id: number; message: string; onUndo: () => void };
+
 type AppState = {
   gate: Gate;
   user: User | null;
@@ -31,10 +36,14 @@ type AppState = {
   /** True once the first Firestore snapshot has arrived for this session. */
   booksLoaded: boolean;
   sentencesLoaded: boolean;
+  /** Set by a destructive action to surface a global "실행취소" toast (see components/galpi/undo-snackbar.tsx), which survives navigating away from the screen the action happened on. */
+  pendingUndo: PendingUndo | null;
 
   setUser: (user: User | null) => void;
   setBooks: (books: Book[]) => void;
   setSentences: (sentences: Sentence[]) => void;
+  showUndo: (message: string, onUndo: () => void) => void;
+  clearUndo: () => void;
 
   completeOnboarding: () => void;
   goToSignup: () => void;
@@ -53,6 +62,10 @@ type AppState = {
     patch: Partial<Pick<Book, 'status' | 'rating' | 'totalPages' | 'furthestPage' | 'progress' | 'review'>>,
   ) => Promise<void>;
   deleteBook: (bookId: string) => Promise<void>;
+  /** Re-creates a deleted book and its 갈피 at their original ids — pairs with `showUndo` after `deleteBook`. */
+  restoreBook: (book: Book, sentences: Sentence[]) => Promise<void>;
+  /** Re-creates a deleted 갈피 at its original id — pairs with `showUndo` after `deleteSentence`. */
+  restoreSentence: (sentence: Sentence) => Promise<void>;
   /** Applies a full manual reorder of the library: `orderedBookIds` is the new front-to-back id order. */
   reorderBooks: (orderedBookIds: string[]) => Promise<void>;
   uploadSentencePhoto: (dataUrl: string) => Promise<string>;
@@ -73,10 +86,13 @@ export const useAppStore = create<AppState>()(
       sentences: [],
       booksLoaded: false,
       sentencesLoaded: false,
+      pendingUndo: null,
 
       setUser: (user) => set({ user }),
       setBooks: (books) => set({ books, booksLoaded: true }),
       setSentences: (sentences) => set({ sentences, sentencesLoaded: true }),
+      showUndo: (message, onUndo) => set({ pendingUndo: { id: Date.now(), message, onUndo } }),
+      clearUndo: () => set({ pendingUndo: null }),
 
       completeOnboarding: () => set({ gate: 'login' }),
       goToSignup: () => set({ gate: 'signup' }),
@@ -137,6 +153,18 @@ export const useAppStore = create<AppState>()(
         const uid = get().user?.uid;
         if (!uid) return;
         await deleteBookDoc(uid, bookId);
+      },
+
+      restoreBook: async (book, sentences) => {
+        const uid = get().user?.uid;
+        if (!uid) return;
+        await restoreBookDoc(uid, book, sentences);
+      },
+
+      restoreSentence: async (sentence) => {
+        const uid = get().user?.uid;
+        if (!uid) return;
+        await restoreSentenceDoc(uid, sentence);
       },
 
       /**

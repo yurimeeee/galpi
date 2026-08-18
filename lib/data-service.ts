@@ -110,6 +110,21 @@ export async function deleteBookDoc(uid: string, bookId: string): Promise<void> 
 }
 
 /**
+ * Re-creates a deleted book and its 갈피 at their original ids — the inverse
+ * of deleteBookDoc, powering the "실행취소" snackbar after a book delete.
+ */
+export async function restoreBookDoc(uid: string, book: Book, sentences: Sentence[]): Promise<void> {
+  const { id: bookId, ...bookData } = book;
+  const batch = writeBatch(db);
+  batch.set(doc(booksCol(uid), bookId), withoutUndefined(bookData));
+  sentences.forEach((sentence) => {
+    const { id: sentenceId, ...sentenceData } = sentence;
+    batch.set(doc(sentencesCol(uid), sentenceId), withoutUndefined(sentenceData));
+  });
+  await batch.commit();
+}
+
+/**
  * Uploads a profile avatar (as a `data:image/jpeg;base64,...` URI) to
  * Firebase Storage and returns its public download URL — mirrors
  * `uploadSentencePhoto`'s fetch()-through-blob approach.
@@ -298,6 +313,19 @@ export async function deleteSentenceDoc(uid: string, sentence: Sentence): Promis
   const batch = writeBatch(db);
   batch.delete(doc(sentencesCol(uid), sentence.id));
   batch.update(doc(booksCol(uid), sentence.bookId), { galpiCount: increment(-1) });
+  await batch.commit();
+}
+
+/**
+ * Re-creates a deleted 갈피 at its original id and restores the parent book's
+ * galpiCount — the inverse of deleteSentenceDoc, powering the "실행취소"
+ * snackbar after a sentence delete.
+ */
+export async function restoreSentenceDoc(uid: string, sentence: Sentence): Promise<void> {
+  const { id: sentenceId, ...sentenceData } = sentence;
+  const batch = writeBatch(db);
+  batch.set(doc(sentencesCol(uid), sentenceId), withoutUndefined(sentenceData));
+  batch.update(doc(booksCol(uid), sentence.bookId), { galpiCount: increment(1) });
   await batch.commit();
 }
 

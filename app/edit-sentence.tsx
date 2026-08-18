@@ -9,6 +9,8 @@ export default function EditSentence() {
   const book = useAppStore((s) => (sentence ? s.bookById(sentence.bookId) : undefined));
   const updateSentence = useAppStore((s) => s.updateSentence);
   const deleteSentence = useAppStore((s) => s.deleteSentence);
+  const restoreSentence = useAppStore((s) => s.restoreSentence);
+  const showUndo = useAppStore((s) => s.showUndo);
   const sentences = useAppStore((s) => s.sentences);
 
   if (!sentence || !book) {
@@ -22,7 +24,11 @@ export default function EditSentence() {
       tagSuggestions={allTags(sentences).map((t) => t.tag)}
       onBack={() => router.back()}
       onSave={(changes) => updateSentence(sentence.id, changes)}
-      onDelete={() => deleteSentence(sentence.id)}
+      onDelete={async () => {
+        const deletedSentence = sentence;
+        await deleteSentence(sentence.id);
+        showUndo('갈피를 삭제했어요', () => restoreSentence(deletedSentence));
+      }}
     />
   );
 }
