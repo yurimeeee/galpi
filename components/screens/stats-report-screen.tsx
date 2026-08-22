@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Image, Platform, Pressable, Text, View } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+import { ActivityIndicator, Alert, Image, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
@@ -274,7 +273,7 @@ export function StatsReportScreen({ books, sentences }: { books: Book[]; sentenc
         </Pressable>
       </View>
 
-      <ScrollView className="flex-1 px-6" contentContainerClassName={period === 'month' ? 'pb-28' : 'pb-6'}>
+      <ScrollView className="flex-1" contentContainerClassName={`px-6 ${period === 'month' ? 'pb-28' : 'pb-6'}`}>
         {/* 기간 선택 */}
         <PeriodToggle period={period} onChange={setPeriod} />
 
@@ -365,6 +364,7 @@ function PeriodToggle({ period, onChange }: { period: Period; onChange: (period:
 
   const indicatorStyle = useAnimatedStyle(() => ({
     width: segmentWidth,
+    height: '100%',
     transform: [{ translateX: indicatorX.value }],
   }));
 
@@ -374,7 +374,11 @@ function PeriodToggle({ period, onChange }: { period: Period; onChange: (period:
       onLayout={(e) => setTrackWidth(e.nativeEvent.layout.width)}
     >
       {segmentWidth > 0 && (
-        <Animated.View pointerEvents="none" className="absolute bottom-1 left-1 top-1 rounded-xl bg-card" style={indicatorStyle} />
+        <View pointerEvents="none" className="absolute bottom-1 left-1 right-1 top-1">
+          <Animated.View style={indicatorStyle}>
+            <View className="h-full rounded-xl bg-card" />
+          </Animated.View>
+        </View>
       )}
       {(['month', 'year'] as Period[]).map((key) => {
         const label = key === 'month' ? '월간' : '연간';
