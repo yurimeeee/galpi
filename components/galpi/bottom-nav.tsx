@@ -96,17 +96,25 @@ function NavButton({
       accessibilityState={{ selected: active }}
       className="web:cursor-pointer w-16 items-center"
     >
-      <Animated.View style={liftStyle} className="items-center gap-1">
-        <Icon
-          size={20}
-          color={active ? colors.foreground : colors.mutedForeground}
-          strokeWidth={active ? 2.4 : 1.8}
-        />
-        <Text
-          className={`text-[11px] font-medium ${active ? 'text-foreground' : 'text-muted-foreground'}`}
-        >
-          {label}
-        </Text>
+      {/*
+        The layout classes (items-center gap-1) must live on a plain View, not
+        this Animated.View — NativeWind silently drops a className placed
+        alongside an animated `style` prop on a reanimated-wrapped component,
+        which left the icon flush-left instead of centered above the label.
+      */}
+      <Animated.View style={liftStyle}>
+        <View className="items-center gap-1">
+          <Icon
+            size={20}
+            color={active ? colors.foreground : colors.mutedForeground}
+            strokeWidth={active ? 2.4 : 1.8}
+          />
+          <Text
+            className={`text-[11px] font-medium ${active ? 'text-foreground' : 'text-muted-foreground'}`}
+          >
+            {label}
+          </Text>
+        </View>
       </Animated.View>
     </Pressable>
   );
