@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, Image, Pressable, Text, TextInput, View } from 'react-native';
+import { useMemo, useState } from 'react';
+import { ActivityIndicator, Alert, FlatList, Image, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   ChevronLeft,
@@ -13,11 +13,14 @@ import {
   Camera,
   Image as ImageIcon,
   X,
+  Pencil,
+  Quote,
   type LucideIcon,
 } from 'lucide-react-native';
 import { Skeleton } from '../galpi/skeleton';
 import { BottomSheet } from '../galpi/bottom-sheet';
 import { EditProgressModal } from '../galpi/edit-progress-modal';
+import { EditReviewModal } from '../galpi/edit-review-modal';
 import { SentenceCardModal } from '../galpi/sentence-card-modal';
 import { type Book, type ReadingStatus, STATUS_LABEL } from '../../lib/data/books';
 import { ENTRY_LABEL, type EntryType, type Sentence } from '../../lib/data/sentences';
@@ -60,9 +63,8 @@ export function BookDetailScreen({
   const colors = useThemeColors();
   const inkText = book.accent === 'ink' ? colors.galpiPaper : colors.galpiInk;
   const [progressModalOpen, setProgressModalOpen] = useState(false);
+  const [reviewModalOpen, setReviewModalOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [reviewDraft, setReviewDraft] = useState(book.review ?? '');
-  const [savingReview, setSavingReview] = useState(false);
   const [sharePickerOpen, setSharePickerOpen] = useState(false);
   const [shareSentence, setShareSentence] = useState<Sentence | null>(null);
   const { showCover, onCoverError } = useCoverFallback(book.coverUrl);
@@ -83,23 +85,6 @@ export function BookDetailScreen({
       return;
     }
     setSharePickerOpen(true);
-  }
-
-  useEffect(() => {
-    setReviewDraft(book.review ?? '');
-  }, [book.id, book.review]);
-
-  const reviewDirty = reviewDraft !== (book.review ?? '');
-
-  async function handleSaveReview() {
-    setSavingReview(true);
-    try {
-      await onChangeReview(reviewDraft);
-    } catch (err) {
-      Alert.alert('총평 저장에 실패했어요', err instanceof Error ? err.message : '잠시 후 다시 시도해주세요.');
-    } finally {
-      setSavingReview(false);
-    }
   }
 
   function handleDelete() {
@@ -335,10 +320,7 @@ export function BookDetailScreen({
                 return (
                   <Pressable
                     key={status}
-                    onPress={() => {
-                      setReviewDraft(book.review ?? '');
-                      onChangeStatus(status);
-                    }}
+                    onPress={() => onChangeStatus(status)}
                     accessibilityRole="button"
                     accessibilityState={{ selected: active }}
                     className={`web:cursor-pointer flex-1 items-center rounded-full px-3 py-2 ${
@@ -358,37 +340,39 @@ export function BookDetailScreen({
             {/* 총평 */}
             {book.status === 'done' ? (
               <View className="mt-4">
-                <Text className="mb-1.5 text-[13px] font-semibold text-foreground">총평</Text>
-                <TextInput
-                  value={reviewDraft}
-                  onChangeText={setReviewDraft}
-                  multiline
-                  numberOfLines={3}
-                  placeholder="이 책은 어땠나요? 짧게 남겨보세요."
-                  placeholderTextColor={colors.mutedForeground}
-                  textAlignVertical="top"
-                  className="w-full rounded-2xl border border-border bg-card p-4 text-sm leading-relaxed text-foreground focus:border-ring"
-                  style={{ minHeight: 80 }}
-                />
-                <Pressable
-                  onPress={handleSaveReview}
-                  disabled={!reviewDirty || savingReview}
-                  accessibilityRole="button"
-                  accessibilityLabel="총평 저장"
-                  className={`web:cursor-pointer mt-2 self-end rounded-full px-4 py-2 ${
-                    reviewDirty ? 'bg-primary' : 'bg-card'
-                  } ${savingReview ? 'opacity-60' : ''}`}
-                >
-                  {savingReview ? (
-                    <ActivityIndicator size="small" color={colors.primaryForeground} />
-                  ) : (
-                    <Text
-                      className={`text-xs font-bold ${reviewDirty ? 'text-primary-foreground' : 'text-muted-foreground'}`}
+                <View className="mb-1.5 flex-row items-center justify-between">
+                  <Text className="text-[13px] font-semibold text-foreground">총평</Text>
+                  {book.review ? (
+                    <Pressable
+                      onPress={() => setReviewModalOpen(true)}
+                      accessibilityLabel="총평 수정"
+                      hitSlop={6}
+                      className="web:cursor-pointer h-6 w-6 items-center justify-center rounded-full bg-secondary"
                     >
-                      {reviewDirty ? '저장' : '저장됨'}
+                      <Pencil size={12} color={colors.mutedForeground} />
+                    </Pressable>
+                  ) : null}
+                </View>
+
+                {book.review ? (
+                  <View className="rounded-2xl bg-galpi-ink p-4">
+                    <Quote size={14} color={colors.galpiPaper} opacity={0.5} />
+                    <Text className="mt-2 text-sm font-medium leading-relaxed text-galpi-paper">
+                      {book.review}
                     </Text>
-                  )}
-                </Pressable>
+                  </View>
+                ) : (
+                  <Pressable
+                    onPress={() => setReviewModalOpen(true)}
+                    accessibilityLabel="총평 남기기"
+                    className="web:cursor-pointer flex-row items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-card py-5"
+                  >
+                    <Pencil size={14} color={colors.mutedForeground} />
+                    <Text className="text-sm font-semibold text-muted-foreground">
+                      이 책은 어땠나요? 총평을 남겨보세요
+                    </Text>
+                  </Pressable>
+                )}
               </View>
             ) : null}
 
@@ -454,6 +438,17 @@ export function BookDetailScreen({
           onSave={async (patch) => {
             await onEditProgress(patch);
             setProgressModalOpen(false);
+          }}
+        />
+      ) : null}
+
+      {reviewModalOpen ? (
+        <EditReviewModal
+          review={book.review ?? ''}
+          onClose={() => setReviewModalOpen(false)}
+          onSave={async (review) => {
+            await onChangeReview(review);
+            setReviewModalOpen(false);
           }}
         />
       ) : null}
