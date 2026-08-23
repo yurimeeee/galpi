@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { runOnJS } from 'react-native-reanimated';
 import { X } from 'lucide-react-native';
 import { BottomSheet } from './bottom-sheet';
 import type { Book } from '../../lib/data/books';
@@ -17,23 +19,40 @@ export function EditProgressModal({
   const colors = useThemeColors();
   const [totalPages, setTotalPages] = useState(book.totalPages ? String(book.totalPages) : '');
   const [currentPage, setCurrentPage] = useState(book.furthestPage ? String(book.furthestPage) : '');
+  const [trackWidth, setTrackWidth] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
   const totalPagesNum = Number(totalPages);
   const currentPageNum = Number(currentPage);
+  const hasValidTotal = totalPages.trim() !== '' && Number.isFinite(totalPagesNum) && totalPagesNum > 0;
   const canSave =
     !submitting &&
-    totalPages.trim() !== '' &&
+    hasValidTotal &&
     currentPage.trim() !== '' &&
-    Number.isFinite(totalPagesNum) &&
     Number.isFinite(currentPageNum) &&
-    totalPagesNum > 0 &&
     currentPageNum >= 0;
 
-  const previewProgress = canSave
-    ? Math.min(100, Math.round((currentPageNum / totalPagesNum) * 100))
+  const previewProgress = hasValidTotal
+    ? Math.min(100, Math.max(0, Math.round((currentPageNum / totalPagesNum) * 100)))
     : book.progress;
+
+  /** Drives both the drag-to-set slider and tap-to-jump on the track — ratio is the touch x-position as a 0~1 fraction of trackWidth. */
+  function setPageFromRatio(ratio: number) {
+    const page = Math.round(Math.max(0, Math.min(1, ratio)) * totalPagesNum);
+    setCurrentPage(String(page));
+  }
+
+  const pan = Gesture.Pan()
+    .minDistance(0)
+    .onBegin((e) => {
+      if (trackWidth <= 0) return;
+      runOnJS(setPageFromRatio)(e.x / trackWidth);
+    })
+    .onUpdate((e) => {
+      if (trackWidth <= 0) return;
+      runOnJS(setPageFromRatio)(e.x / trackWidth);
+    });
 
   async function handleSave() {
     if (!canSave) return;
@@ -94,9 +113,45 @@ export function EditProgressModal({
         </View>
       </View>
 
-      <Text className="mt-4 text-center text-xs text-muted-foreground">
-        예상 진행률 <Text className="font-bold text-foreground">{previewProgress}%</Text>
-      </Text>
+      <View className="mt-5">
+        <View className="mb-2 flex-row items-center justify-between">
+          <Text className="text-[13px] font-semibold text-foreground">읽은 정도</Text>
+          <Text className="text-sm font-black text-foreground">{previewProgress}%</Text>
+        </View>
+
+        {hasValidTotal ? (
+          <GestureDetector gesture={pan}>
+            <View
+              onLayout={(e) => setTrackWidth(e.nativeEvent.layout.width)}
+              className="web:cursor-pointer h-8 justify-center"
+            >
+              <View className="h-2.5 w-full overflow-hidden rounded-full bg-secondary">
+                <View className="h-full rounded-full bg-primary" style={{ width: `${previewProgress}%` }} />
+              </View>
+              <View
+                pointerEvents="none"
+                className="absolute h-6 w-6 items-center justify-center rounded-full bg-primary"
+                style={{
+                  left: `${previewProgress}%`,
+                  marginLeft: -12,
+                  shadowColor: '#000',
+                  shadowOpacity: 0.25,
+                  shadowRadius: 4,
+                  shadowOffset: { width: 0, height: 2 },
+                }}
+              />
+            </View>
+          </GestureDetector>
+        ) : (
+          <View className="h-8 justify-center">
+            <View className="h-2.5 w-full overflow-hidden rounded-full bg-secondary opacity-50" />
+          </View>
+        )}
+
+        <Text className="mt-2 text-center text-[11px] text-muted-foreground">
+          {hasValidTotal ? '밀어서 읽은 정도를 조절할 수 있어요' : '총 페이지를 입력하면 밀어서 조절할 수 있어요'}
+        </Text>
+      </View>
 
       {error ? <Text className="mt-3 text-[12px] text-destructive">{error}</Text> : null}
 
