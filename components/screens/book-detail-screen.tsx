@@ -341,7 +341,7 @@ export function BookDetailScreen({
             {book.status === 'done' ? (
               <View className="mt-4">
                 <View className="mb-1.5 flex-row items-center justify-between">
-                  // <Text className="text-[13px] font-semibold text-foreground">총평</Text>
+                  <Text className="text-[13px] font-semibold text-foreground">총평</Text>
                   {book.review ? (
                     <Pressable
                       onPress={() => setReviewModalOpen(true)}
