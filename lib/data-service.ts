@@ -399,12 +399,23 @@ export function parseBackupPayload(text: string): BackupPayload {
   return payload as BackupPayload;
 }
 
+/** Normalizes a book's identity for duplicate detection on import — title + author, trimmed/lowercased. */
+function bookSignature(book: Pick<Book, 'title' | 'author'>): string {
+  return `${book.title.trim().toLowerCase()} ${book.author.trim().toLowerCase()}`;
+}
+
+/** Normalizes a sentence's identity for duplicate detection on import — its (remapped) book + page + quote text. */
+function sentenceSignature(sentence: Pick<Sentence, 'bookId' | 'page' | 'quote'>): string {
+  return `${sentence.bookId} ${sentence.page} ${sentence.quote.trim().toLowerCase()}`;
+}
+
 /**
- * Re-creates every book/sentence in `payload` as brand-new docs under
- * users/{uid} — always additive. Old ids in the payload only exist to remap
- * a sentence to its book; they're discarded in favor of freshly generated
- * Firestore ids, so importing the same backup twice (or into a different
- * account) duplicates rather than colliding with or overwriting anything.
+ * Re-creates the book/sentence in `payload` as brand-new docs under
+ * users/{uid}, skipping any that already match an entry in `existing` (by
+ * title+author for books, book+page+quote for sentences) so re-importing the
+ * same backup — or one that overlaps the current library — doesn't duplicate
+ * everything. Old ids in the payload only exist to remap a sentence to its
+ * book; they're discarded in favor of freshly generated Firestore ids.
  * Batched in chunks of 450 to stay under Firestore's 500-op batch limit, and
  * books are committed before sentences since the sentence batch needs the
  * real (post-commit) book ids to reference.
@@ -412,13 +423,26 @@ export function parseBackupPayload(text: string): BackupPayload {
 export async function importBackupData(
   uid: string,
   payload: BackupPayload,
-): Promise<{ books: number; sentences: number }> {
-  const existingBookCount = (await getDocs(booksCol(uid))).size;
+  existing: { books: Book[]; sentences: Sentence[] },
+): Promise<{ books: number; sentences: number; skippedBooks: number; skippedSentences: number }> {
+  const existingBookIdBySignature = new Map(existing.books.map((b) => [bookSignature(b), b.id]));
+  const existingBookCount = existing.books.length;
+
+  // Maps every payload book id (duplicate or not) to the real Firestore id its sentences should attach
+  // to — either a freshly created doc, or the matching existing book when the book itself was a duplicate.
   const idMap = new Map<string, string>();
-  const bookRefs = payload.books.map((book) => {
+  let skippedBooks = 0;
+  const bookRefs: { ref: ReturnType<typeof doc>; book: Book }[] = [];
+  payload.books.forEach((book) => {
+    const existingId = existingBookIdBySignature.get(bookSignature(book));
+    if (existingId) {
+      skippedBooks += 1;
+      idMap.set(book.id, existingId);
+      return;
+    }
     const ref = doc(booksCol(uid));
     idMap.set(book.id, ref.id);
-    return { ref, book };
+    bookRefs.push({ ref, book });
   });
 
   for (let i = 0; i < bookRefs.length; i += 450) {
@@ -430,15 +454,28 @@ export async function importBackupData(
     await batch.commit();
   }
 
-  const importableSentences = payload.sentences.filter((s) => idMap.has(s.bookId));
+  const existingSentenceSignatures = new Set(existing.sentences.map(sentenceSignature));
+
+  let skippedSentences = 0;
+  const importableSentences: { bookId: string; rest: Omit<Sentence, 'id' | 'bookId'> }[] = [];
+  payload.sentences.forEach((sentence) => {
+    const bookId = idMap.get(sentence.bookId);
+    if (!bookId) return;
+    const { id: _id, bookId: _oldBookId, ...rest } = sentence;
+    if (existingSentenceSignatures.has(sentenceSignature({ bookId, page: sentence.page, quote: sentence.quote }))) {
+      skippedSentences += 1;
+      return;
+    }
+    importableSentences.push({ bookId, rest });
+  });
+
   for (let i = 0; i < importableSentences.length; i += 450) {
     const batch = writeBatch(db);
-    importableSentences.slice(i, i + 450).forEach((sentence) => {
-      const { id: _id, bookId, ...rest } = sentence;
-      batch.set(doc(sentencesCol(uid)), withoutUndefined({ ...rest, bookId: idMap.get(bookId)! }));
+    importableSentences.slice(i, i + 450).forEach(({ bookId, rest }) => {
+      batch.set(doc(sentencesCol(uid)), withoutUndefined({ ...rest, bookId }));
     });
     await batch.commit();
   }
 
-  return { books: bookRefs.length, sentences: importableSentences.length };
+  return { books: bookRefs.length, sentences: importableSentences.length, skippedBooks, skippedSentences };
 }
