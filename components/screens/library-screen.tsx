@@ -101,7 +101,12 @@ export function MainLibraryScreen({
     return sentences.filter((s) => {
       const book = booksById.get(s.bookId);
       if (!book || !matchesFilters(book)) return false;
-      return !trimmedQuery || s.quote.toLowerCase().includes(trimmedQuery) || (s.memo?.toLowerCase().includes(trimmedQuery) ?? false);
+      return (
+        !trimmedQuery ||
+        s.quote.toLowerCase().includes(trimmedQuery) ||
+        (s.memo?.toLowerCase().includes(trimmedQuery) ?? false) ||
+        (s.tags?.some((t) => t.toLowerCase().includes(trimmedQuery)) ?? false)
+      );
     });
   }, [sentences, trimmedQuery, booksById, genreFilter, yearFilter]);
 
