@@ -77,7 +77,7 @@ export function EditProgressModal({
       onClose={onClose}
       header={
         <View className="mb-5 flex-row items-center justify-between">
-          <Text className="text-base font-black text-foreground">읽은 정도 수정</Text>
+          <Text className="text-base font-black text-foreground">진행도</Text>
           <Pressable
             onPress={onClose}
             accessibilityLabel="닫기"
@@ -115,7 +115,7 @@ export function EditProgressModal({
 
       <View className="mt-5">
         <View className="mb-2 flex-row items-center justify-between">
-          <Text className="text-[13px] font-semibold text-foreground">읽은 정도</Text>
+          <Text className="text-[13px] font-semibold text-foreground">진행도</Text>
           <Text className="text-sm font-black text-foreground">{previewProgress}%</Text>
         </View>
 
@@ -149,7 +149,7 @@ export function EditProgressModal({
         )}
 
         <Text className="mt-2 text-center text-[11px] text-muted-foreground">
-          {hasValidTotal ? '밀어서 읽은 정도를 조절할 수 있어요' : '총 페이지를 입력하면 밀어서 조절할 수 있어요'}
+          {hasValidTotal ? '밀어서 진행도를 조절할 수 있어요' : '총 페이지를 입력하면 밀어서 조절할 수 있어요'}
         </Text>
       </View>
 

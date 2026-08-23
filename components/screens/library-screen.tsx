@@ -327,7 +327,7 @@ export function MainLibraryScreen({
                     {/* 진행률 */}
                     <View className="mt-4">
                       <View className="mb-1.5 flex-row items-center justify-between">
-                        <Text className="text-[11px] font-semibold text-galpi-ink/70">읽은 정도</Text>
+                        <Text className="text-[11px] font-semibold text-galpi-ink/70">진행도</Text>
                         <Text className="text-[11px] font-semibold text-galpi-ink/70">{featured.progress}%</Text>
                       </View>
                       <View className="h-1.5 w-full overflow-hidden rounded-full bg-galpi-ink/15">

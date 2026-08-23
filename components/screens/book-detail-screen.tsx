@@ -341,7 +341,7 @@ export function BookDetailScreen({
             {book.status === 'done' ? (
               <View className="mt-4">
                 <View className="mb-1.5 flex-row items-center justify-between">
-                  <Text className="text-[13px] font-semibold text-foreground">총평</Text>
+                  // <Text className="text-[13px] font-semibold text-foreground">총평</Text>
                   {book.review ? (
                     <Pressable
                       onPress={() => setReviewModalOpen(true)}
@@ -378,7 +378,7 @@ export function BookDetailScreen({
 
             {/* 진행률 요약 */}
             <View className="mt-5 flex-row items-center gap-3 rounded-2xl bg-card p-4">
-              <StatBit label="읽은 정도" value={`${book.progress}%`} onPress={() => setProgressModalOpen(true)} />
+              <StatBit label="진행도" value={`${book.progress}%`} onPress={() => setProgressModalOpen(true)} />
               <View className="h-8 w-px bg-border" />
               <StatBit label="남긴 갈피" value={`${book.galpiCount}개`} />
               <View className="h-8 w-px bg-border" />
