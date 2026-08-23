@@ -9,6 +9,7 @@ import {
   MediaPermissionError,
   ShareUnavailableError,
 } from '../../lib/share-image';
+import { router } from 'expo-router';
 import {
   BookCheck,
   Bookmark,
@@ -22,6 +23,7 @@ import {
   CalendarDays,
   Quote,
   Moon,
+  PartyPopper,
   type LucideIcon,
 } from 'lucide-react-native';
 import { Skeleton } from '../galpi/skeleton';
@@ -30,6 +32,7 @@ import { GalpiHeaderLogo } from '../galpi/galpi-logo';
 import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
 import { useThemeColors, ACCENT_BG_CLASS } from '../../lib/theme';
 import { parseDotDate, dateKey, pad2 } from '../../lib/date-utils';
+import { getTopBookOfYear } from '../../lib/reading-goals';
 import { useAppStore } from '../../lib/store';
 import type { Book } from '../../lib/data/books';
 import type { Sentence } from '../../lib/data/sentences';
@@ -38,10 +41,10 @@ type Period = 'month' | 'year';
 type MonthView = 'date' | 'cover';
 type Ratio = '1:1' | '9:16';
 
-const WEEKDAY_LABELS = ['일', '월', '화', '수', '목', '금', '토'];
-const INTENSITY_CLASS = ['bg-secondary', 'bg-galpi-green/50', 'bg-galpi-green', 'bg-galpi-blue', 'bg-foreground'];
+export const WEEKDAY_LABELS = ['일', '월', '화', '수', '목', '금', '토'];
+export const INTENSITY_CLASS = ['bg-secondary', 'bg-galpi-green/50', 'bg-galpi-green', 'bg-galpi-blue', 'bg-foreground'];
 /** 4 six-hour buckets covering the day, indexed by `Math.floor(hour / 6)`. */
-const HOUR_BUCKET_LABELS = ['새벽', '오전', '오후', '밤'];
+export const HOUR_BUCKET_LABELS = ['새벽', '오전', '오후', '밤'];
 /** Report-card flavor text for each `HOUR_BUCKET_LABELS` bucket. */
 const HOUR_BUCKET_DESC = [
   '고요한 새벽에 문장을 모았어요',
@@ -93,7 +96,7 @@ function topCount(counts: Map<string, number>): { key: string; count: number } |
 }
 
 /** Weekday (0=일~6=토) and 6-hour-bucket 갈피 distribution; scoped to one month when `month` is given, otherwise the whole year. */
-function getTimePattern(sentences: Sentence[], year: number, month?: number) {
+export function getTimePattern(sentences: Sentence[], year: number, month?: number) {
   const weekdayCounts = [0, 0, 0, 0, 0, 0, 0];
   const hourBucketCounts = [0, 0, 0, 0];
   let hasHourData = false;
@@ -138,7 +141,7 @@ function getGenrePattern(sentences: Sentence[], bookById: Map<string, Book>, yea
 }
 
 /** Top N genres (by 갈피 count) for a period, most-frequent first — powers the report card's "이달의 취향" tags. */
-function getTopGenres(sentences: Sentence[], bookById: Map<string, Book>, year: number, month?: number, limit = 3): string[] {
+export function getTopGenres(sentences: Sentence[], bookById: Map<string, Book>, year: number, month?: number, limit = 3): string[] {
   const counts = new Map<string, number>();
   for (const s of sentences) {
     const d = parseDotDate(s.date);
@@ -159,7 +162,7 @@ function getTopGenres(sentences: Sentence[], bookById: Map<string, Book>, year: 
  * period, then its favorited 갈피 (most recent if several) — or, absent a
  * favorite, its most recent 갈피.
  */
-function getPeriodQuote(
+export function getPeriodQuote(
   sentences: Sentence[],
   bookById: Map<string, Book>,
   year: number,
@@ -184,7 +187,7 @@ function getPeriodQuote(
 }
 
 /** GitHub-style weekly-column grid of activity intensity for a given year; -1 marks days outside the year. */
-function buildYearHeatmap(sentences: Sentence[], year: number): number[][] {
+export function buildYearHeatmap(sentences: Sentence[], year: number): number[][] {
   const dayCounts = new Map<string, number>();
   for (const s of sentences) {
     const d = parseDotDate(s.date);
@@ -213,7 +216,7 @@ function buildYearHeatmap(sentences: Sentence[], year: number): number[][] {
   return grid;
 }
 
-function getYearMetrics(books: Book[], sentences: Sentence[], year: number) {
+export function getYearMetrics(books: Book[], sentences: Sentence[], year: number) {
   const doneCount = books.filter((b) => {
     const d = b.completedAt ? parseDotDate(b.completedAt) : null;
     return d && d.getFullYear() === year;
@@ -690,48 +693,27 @@ function YearlyView({
 
   const grid = useMemo(() => buildYearHeatmap(sentences, year), [sentences, year]);
 
-  const { seasonLabel, topBook, topQuote } = useMemo(() => {
-    const inYear = sentences
-      .map((s) => ({ s, d: parseDotDate(s.date) }))
-      .filter((x): x is { s: Sentence; d: Date } => Boolean(x.d) && x.d!.getFullYear() === year);
-
+  const seasonLabel = useMemo(() => {
     const seasonCounts: Record<string, number> = { 봄: 0, 여름: 0, 가을: 0, 겨울: 0 };
-    const bookCounts = new Map<string, number>();
-
-    for (const { s, d } of inYear) {
+    for (const s of sentences) {
+      const d = parseDotDate(s.date);
+      if (!d || d.getFullYear() !== year) continue;
       seasonCounts[seasonOf(d.getMonth())] += 1;
-      bookCounts.set(s.bookId, (bookCounts.get(s.bookId) ?? 0) + 1);
     }
-
-    let seasonLabel: string | null = null;
-    let seasonMax = 0;
+    let label: string | null = null;
+    let max = 0;
     for (const [season, count] of Object.entries(seasonCounts)) {
-      if (count > seasonMax) {
-        seasonMax = count;
-        seasonLabel = season;
+      if (count > max) {
+        max = count;
+        label = season;
       }
     }
+    return label;
+  }, [sentences, year]);
 
-    let topBook: Book | undefined;
-    let topCount = 0;
-    for (const [bookId, count] of bookCounts) {
-      if (count > topCount) {
-        topCount = count;
-        topBook = books.find((b) => b.id === bookId);
-      }
-    }
-    const topQuote = topBook
-      ? (() => {
-          const inTopBook = inYear
-            .filter((x) => x.s.bookId === topBook!.id)
-            .sort((a, b) => b.d.getTime() - a.d.getTime());
-          // 직접 즐겨찾기한 갈피가 있으면 그걸 우선 — 없으면 가장 최근 갈피로 대체
-          return (inTopBook.find((x) => x.s.favorite) ?? inTopBook[0])?.s;
-        })()
-      : undefined;
-
-    return { seasonLabel, topBook, topQuote };
-  }, [sentences, books, year]);
+  const topBookOfYear = useMemo(() => getTopBookOfYear(sentences, books, year), [sentences, books, year]);
+  const topBook = topBookOfYear?.book;
+  const topQuote = topBookOfYear?.sentence;
 
   const { doneCount, galpiCount, readDaysCount } = useMemo(() => getYearMetrics(books, sentences, year), [books, sentences, year]);
 
@@ -752,6 +734,18 @@ function YearlyView({
           <ChevronRight size={16} color={colors.foreground} />
         </Pressable>
       </View>
+
+      {/* 연말 결산 CTA */}
+      <Pressable
+        onPress={() => router.push(`/year-review?year=${year}`)}
+        className="web:cursor-pointer mt-4 flex-row items-center justify-between rounded-2xl bg-galpi-ink px-4 py-3.5"
+      >
+        <View className="flex-row items-center gap-2">
+          <PartyPopper size={16} color={colors.galpiPaper} />
+          <Text className="text-sm font-bold text-galpi-paper">{year}년 독서 결산 보기</Text>
+        </View>
+        <ChevronRight size={16} color={colors.galpiPaper} opacity={0.6} />
+      </Pressable>
 
       {/* 핵심 지표 카드 */}
       <View className="mt-5 flex-row gap-3">
@@ -853,7 +847,7 @@ function YearlyView({
 }
 
 /** Small vertical bar chart used by the weekday/time-of-day pattern cards — tallest bar (or a tie) highlighted in ink. */
-function DistributionBars({ labels, counts, topIndex }: { labels: string[]; counts: number[]; topIndex: number }) {
+export function DistributionBars({ labels, counts, topIndex }: { labels: string[]; counts: number[]; topIndex: number }) {
   const max = Math.max(1, ...counts);
   return (
     <View className="flex-row items-end gap-2" style={{ height: 64 }}>
