@@ -416,6 +416,19 @@ export function BookDetailScreen({
 
       {/* 스티키 갈피 남기기 */}
       <View className="absolute inset-x-0 bottom-0 items-center pb-6">
+        {/*
+          The list's bottom padding clears the button once scrolled all the
+          way down, but on first render (scrollTop 0) the content is often
+          only slightly taller than the viewport, so the last card's text
+          sits right behind the button with a hard, awkward-looking edge.
+          This scrim fades the background in behind the button so that looks
+          intentional instead of like clipped/broken content.
+        */}
+        <View pointerEvents="none" className="absolute inset-x-0 bottom-0 h-24">
+          {[0.05, 0.15, 0.3, 0.5, 0.7, 0.85, 0.95, 1].map((opacity, i) => (
+            <View key={i} style={{ flex: 1, backgroundColor: colors.background, opacity }} />
+          ))}
+        </View>
         <Pressable
           onPress={onAddSentence}
           className="web:cursor-pointer flex-row items-center gap-2 rounded-full bg-primary px-6 py-3.5"
