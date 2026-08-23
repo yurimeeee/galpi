@@ -171,14 +171,23 @@ export const useAppStore = create<AppState>()(
        * Applies optimistically so the drag UI doesn't snap back while the
        * batch write is in flight, then persists — the live subscription
        * (use-auth-sync.ts) will reconcile `books` once Firestore confirms.
+       * If the write fails, reverts to the pre-reorder order — Firestore
+       * never changed, so there's nothing for the live subscription to
+       * reconcile back to on its own.
        */
       reorderBooks: async (orderedBookIds) => {
         const uid = get().user?.uid;
         if (!uid) return;
-        const byId = new Map(get().books.map((b) => [b.id, b]));
+        const previous = get().books;
+        const byId = new Map(previous.map((b) => [b.id, b]));
         const reordered = orderedBookIds.map((id) => byId.get(id)).filter((b): b is Book => !!b);
         set({ books: reordered });
-        await reorderBooksDoc(uid, orderedBookIds);
+        try {
+          await reorderBooksDoc(uid, orderedBookIds);
+        } catch (err) {
+          set({ books: previous });
+          throw err;
+        }
       },
 
       uploadSentencePhoto: async (dataUrl) => {

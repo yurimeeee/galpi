@@ -1,3 +1,4 @@
+import { Alert } from 'react-native';
 import { router } from 'expo-router';
 import { LibrarySkeleton, MainLibraryScreen } from '../../components/screens/library-screen';
 import { useAppStore } from '../../lib/store';
@@ -30,7 +31,9 @@ export default function Library() {
   }
 
   function reorderBooks(orderedBookIds: string[]) {
-    useAppStore.getState().reorderBooks(orderedBookIds);
+    useAppStore.getState().reorderBooks(orderedBookIds).catch(() => {
+      Alert.alert('저장 실패', '서재 순서를 저장하는 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.');
+    });
   }
 
   if (books.length === 0 && !booksLoaded) {

@@ -48,8 +48,15 @@ export function useReadingGoals() {
   }, [uid]);
 
   async function saveGoals(next: ReadingGoals) {
+    if (!uid) return;
+    const previous = goals;
     setGoals(next);
-    if (uid) await saveReadingGoalsDoc(uid, next);
+    try {
+      await saveReadingGoalsDoc(uid, next);
+    } catch (err) {
+      setGoals(previous);
+      throw err;
+    }
   }
 
   const now = new Date();
@@ -61,6 +68,7 @@ export function useReadingGoals() {
     goals,
     saveGoals,
     activeDays,
+    readingLog,
     currentStreak,
     bestStreak,
     todayMinutes: todayReadingMinutes(readingLog),
