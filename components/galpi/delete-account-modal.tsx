@@ -8,6 +8,7 @@ import {
   getAuthErrorMessage,
   isPasswordAccount,
   reauthenticateWithPassword,
+  signOutUser,
 } from '../../lib/auth';
 import { deleteAllUserData, deleteAllUserFiles } from '../../lib/data-service';
 import { auth } from '../../lib/firebase';
@@ -53,12 +54,23 @@ export function DeleteAccountModal({
       }
       await deleteAllUserData(uid);
       await deleteAllUserFiles(uid);
-      await deleteCurrentUser();
-      onDeleted();
     } catch (err) {
+      // Nothing was deleted yet (or reauth failed) — safe to show the error and let the user retry.
       setError(getAuthErrorMessage(err) || '회원 탈퇴에 실패했어요.');
       setSubmitting(false);
+      return;
     }
+
+    try {
+      await deleteCurrentUser();
+    } catch {
+      // The user's data is already gone at this point (most commonly a social-login
+      // account hitting auth/requires-recent-login with no in-app reauth flow to
+      // recover from) — signing out locally completes the deletion from the user's
+      // perspective instead of leaving them logged into an empty library.
+      await signOutUser().catch(() => {});
+    }
+    onDeleted();
   }
 
   return (
