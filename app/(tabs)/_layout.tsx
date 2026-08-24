@@ -35,7 +35,12 @@ export default function TabsLayout() {
         (scroll position reset, images re-decoding, skeletons flashing).
       */}
       <Tabs
-        screenOptions={{ headerShown: false, animation: 'fade' }}
+        // `animation: 'fade'` is a known SDK 54 expo-router Tabs bug: it can
+        // leave the outgoing screen's touch responder in a broken state,
+        // intermittently swallowing scroll/tap gestures on the screen you
+        // land on until something forces a re-layout. See
+        // https://github.com/expo/expo/issues/39587
+        screenOptions={{ headerShown: false }}
         tabBar={(props) => <CustomTabBar {...props} onAddPress={() => setAddSheetOpen(true)} />}
       >
         <Tabs.Screen name="library" />

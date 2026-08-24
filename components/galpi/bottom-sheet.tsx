@@ -45,6 +45,16 @@ export function BottomSheet({
 }) {
   const translateY = useRef(new Animated.Value(0)).current;
 
+  // Closing tears down this whole overlay — including whichever Pressable
+  // the closing tap landed on — in the same tick as that Pressable's own
+  // onPress. On iOS that can leave the native touch handler in a stuck
+  // state (it never finishes that view's touch lifecycle), which then
+  // swallows the next gesture — e.g. scrolling — on whatever's underneath.
+  // Deferring the unmount by a frame lets the touch finish first.
+  function deferredClose() {
+    requestAnimationFrame(onClose);
+  }
+
   const panResponder = useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: (_, gesture) => gesture.dy > 4 && Math.abs(gesture.dy) > Math.abs(gesture.dx),
@@ -57,7 +67,7 @@ export function BottomSheet({
             toValue: 800,
             duration: 180,
             useNativeDriver,
-          }).start(onClose);
+          }).start(deferredClose);
         } else {
           Animated.spring(translateY, {
             toValue: 0,
@@ -75,13 +85,13 @@ export function BottomSheet({
       className="absolute inset-0 justify-end bg-galpi-ink/50 web:backdrop-blur-sm"
       style={{ zIndex }}
     >
-      <Pressable className="web:cursor-pointer flex-1" accessibilityLabel="닫기" onPress={onClose} />
+      <Pressable className="web:cursor-pointer flex-1" accessibilityLabel="닫기" onPress={deferredClose} />
 
       <Animated.View style={{ transform: [{ translateY }], maxHeight }}>
         <View className="rounded-t-3xl bg-background px-5 pb-6 pt-2">
           <View {...panResponder.panHandlers}>
             <Pressable
-              onPress={onClose}
+              onPress={deferredClose}
               accessibilityLabel="닫기"
               accessibilityRole="button"
               hitSlop={12}
