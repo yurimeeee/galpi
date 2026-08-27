@@ -24,6 +24,8 @@ import {
   Quote,
   Moon,
   PartyPopper,
+  ArrowUp,
+  ArrowDown,
   type LucideIcon,
 } from 'lucide-react-native';
 import { Skeleton } from '../galpi/skeleton';
@@ -281,7 +283,7 @@ export function StatsReportScreen({ books, sentences }: { books: Book[]; sentenc
         <PeriodToggle period={period} onChange={setPeriod} />
 
         {period === 'month' ? (
-          <MonthlyView cursor={cursor} onPrev={() => shiftMonth(-1)} onNext={() => shiftMonth(1)} sentences={sentences} bookById={bookById} />
+          <MonthlyView cursor={cursor} onPrev={() => shiftMonth(-1)} onNext={() => shiftMonth(1)} books={books} sentences={sentences} bookById={bookById} />
         ) : (
           <YearlyView cursor={cursor} onPrev={() => shiftYear(-1)} onNext={() => shiftYear(1)} books={books} sentences={sentences} />
         )}
@@ -403,12 +405,14 @@ function MonthlyView({
   cursor,
   onPrev,
   onNext,
+  books,
   sentences,
   bookById,
 }: {
   cursor: Date;
   onPrev: () => void;
   onNext: () => void;
+  books: Book[];
   sentences: Sentence[];
   bookById: Map<string, Book>;
 }) {
@@ -416,6 +420,12 @@ function MonthlyView({
   const colors = useThemeColors();
   const year = cursor.getFullYear();
   const month = cursor.getMonth();
+
+  const monthMetrics = useMemo(() => getMonthMetrics(books, sentences, year, month), [books, sentences, year, month]);
+  const prevMonthMetrics = useMemo(() => {
+    const prev = new Date(year, month - 1, 1);
+    return getMonthMetrics(books, sentences, prev.getFullYear(), prev.getMonth());
+  }, [books, sentences, year, month]);
 
   const { readDays, booksThisMonth } = useMemo(() => {
     const days = new Map<number, Book | undefined>();
@@ -450,7 +460,6 @@ function MonthlyView({
 
   const firstWeekday = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const readCount = readDays.size;
 
   const cells: (number | null)[] = [
     ...Array.from({ length: firstWeekday }, () => null),
@@ -465,10 +474,7 @@ function MonthlyView({
           <Pressable onPress={onPrev} accessibilityLabel="이전 달" className="web:cursor-pointer h-8 w-8 items-center justify-center rounded-full bg-secondary">
             <ChevronLeft size={16} color={colors.foreground} />
           </Pressable>
-          <View>
-            <Text className="text-base font-black text-foreground">{year}년 {month + 1}월</Text>
-            <Text className="text-[11px] font-medium text-muted-foreground">읽은 날 · {readCount}일</Text>
-          </View>
+          <Text className="text-base font-black text-foreground">{year}년 {month + 1}월</Text>
           <Pressable onPress={onNext} accessibilityLabel="다음 달" className="web:cursor-pointer h-8 w-8 items-center justify-center rounded-full bg-secondary">
             <ChevronRight size={16} color={colors.foreground} />
           </Pressable>
@@ -495,8 +501,36 @@ function MonthlyView({
         </View>
       </View>
 
+      {/* 핵심 지표 카드 (지난달 대비 증감) */}
+      <View className="mt-4 flex-row gap-3">
+        <MetricCard
+          Icon={BookCheck}
+          value={String(monthMetrics.doneCount)}
+          unit="권"
+          label="완독한 책"
+          toneClass="bg-galpi-green"
+          delta={monthMetrics.doneCount - prevMonthMetrics.doneCount}
+        />
+        <MetricCard
+          Icon={Bookmark}
+          value={String(monthMetrics.galpiCount)}
+          unit="개"
+          label="남긴 갈피"
+          toneClass="bg-galpi-yellow"
+          delta={monthMetrics.galpiCount - prevMonthMetrics.galpiCount}
+        />
+        <MetricCard
+          Icon={CalendarDays}
+          value={String(monthMetrics.readDaysCount)}
+          unit="일"
+          label="읽은 날"
+          toneClass="bg-galpi-blue"
+          delta={monthMetrics.readDaysCount - prevMonthMetrics.readDaysCount}
+        />
+      </View>
+
       {/* 달력 */}
-      <View className="mt-4 rounded-3xl bg-card p-4">
+      <View className="mt-5 rounded-3xl bg-card p-4">
         <View className="mb-2 flex-row">
           {WEEKDAY_LABELS.map((d) => (
             <Text key={d} className="w-[14.28%] text-center text-[10px] font-semibold text-muted-foreground">
@@ -716,6 +750,7 @@ function YearlyView({
   const topQuote = topBookOfYear?.sentence;
 
   const { doneCount, galpiCount, readDaysCount } = useMemo(() => getYearMetrics(books, sentences, year), [books, sentences, year]);
+  const prevYearMetrics = useMemo(() => getYearMetrics(books, sentences, year - 1), [books, sentences, year]);
 
   const { weekdayCounts, hourBucketCounts, hasHourData } = useMemo(() => getTimePattern(sentences, year), [sentences, year]);
 
@@ -747,11 +782,32 @@ function YearlyView({
         <ChevronRight size={16} color={colors.galpiPaper} opacity={0.6} />
       </Pressable>
 
-      {/* 핵심 지표 카드 */}
+      {/* 핵심 지표 카드 (전년 대비 증감) */}
       <View className="mt-5 flex-row gap-3">
-        <MetricCard Icon={BookCheck} value={String(doneCount)} unit="권" label="완독한 책" toneClass="bg-galpi-green" />
-        <MetricCard Icon={Bookmark} value={String(galpiCount)} unit="개" label="남긴 갈피" toneClass="bg-galpi-yellow" />
-        <MetricCard Icon={CalendarDays} value={String(readDaysCount)} unit="일" label="읽은 날" toneClass="bg-galpi-blue" />
+        <MetricCard
+          Icon={BookCheck}
+          value={String(doneCount)}
+          unit="권"
+          label="완독한 책"
+          toneClass="bg-galpi-green"
+          delta={doneCount - prevYearMetrics.doneCount}
+        />
+        <MetricCard
+          Icon={Bookmark}
+          value={String(galpiCount)}
+          unit="개"
+          label="남긴 갈피"
+          toneClass="bg-galpi-yellow"
+          delta={galpiCount - prevYearMetrics.galpiCount}
+        />
+        <MetricCard
+          Icon={CalendarDays}
+          value={String(readDaysCount)}
+          unit="일"
+          label="읽은 날"
+          toneClass="bg-galpi-blue"
+          delta={readDaysCount - prevYearMetrics.readDaysCount}
+        />
       </View>
 
       {/* 활동 히트맵 */}
@@ -875,12 +931,15 @@ function MetricCard({
   unit,
   label,
   toneClass,
+  delta,
 }: {
   Icon: LucideIcon;
   value: string;
   unit: string;
   label: string;
   toneClass: string;
+  /** Change vs. the previous period (previous month/year); omit to hide the badge. */
+  delta?: number;
 }) {
   const colors = useThemeColors();
   return (
@@ -892,7 +951,39 @@ function MetricCard({
         <Text className="text-xl font-black text-foreground">{value}</Text>
         <Text className="text-[11px] font-semibold text-muted-foreground">{unit}</Text>
       </View>
-      <Text className="mt-0.5 text-[11px] font-medium text-muted-foreground">{label}</Text>
+      <View className="mt-0.5 flex-row items-center justify-between gap-1">
+        <Text className="shrink text-[11px] font-medium text-muted-foreground" numberOfLines={1}>
+          {label}
+        </Text>
+        {delta !== undefined ? <DeltaBadge delta={delta} /> : null}
+      </View>
+    </View>
+  );
+}
+
+/**
+ * Small change-vs-previous-period indicator, right-aligned next to the
+ * label; used by `MetricCard`. Only a genuine increase gets a colored pill —
+ * a decrease or no change stays as quiet muted text, so the highlight reads
+ * as "something to notice" rather than every card wearing a badge.
+ */
+function DeltaBadge({ delta }: { delta: number }) {
+  const colors = useThemeColors();
+  if (delta === 0) {
+    return <Text className="shrink-0 text-[10px] font-bold text-muted-foreground/60">-</Text>;
+  }
+  if (delta > 0) {
+    return (
+      <View className="shrink-0 flex-row items-center gap-0.5 rounded-full bg-galpi-green py-0.5 pl-1 pr-1.5">
+        <ArrowUp size={8} color={colors.galpiInk} strokeWidth={3} />
+        <Text className="text-[10px] font-bold text-galpi-ink">{delta}</Text>
+      </View>
+    );
+  }
+  return (
+    <View className="shrink-0 flex-row items-center gap-0.5">
+      <ArrowDown size={8} color={colors.mutedForeground} strokeWidth={3} />
+      <Text className="text-[10px] font-bold text-muted-foreground">{Math.abs(delta)}</Text>
     </View>
   );
 }
