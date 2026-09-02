@@ -15,6 +15,8 @@ import {
   updateSentenceDoc,
   uploadBookCover as uploadBookCoverDoc,
   uploadSentencePhoto as uploadSentencePhotoDoc,
+  DEFAULT_READING_GOALS,
+  type ReadingGoals,
 } from './data-service';
 import { type Book } from './data/books';
 import { type Sentence } from './data/sentences';
@@ -36,12 +38,18 @@ type AppState = {
   /** True once the first Firestore snapshot has arrived for this session. */
   booksLoaded: boolean;
   sentencesLoaded: boolean;
+  /** Daily reading-timer minutes, keyed by "YYYY.MM.DD" — live-synced so a session logged from any screen is visible everywhere immediately (see lib/use-auth-sync.ts). */
+  readingLog: Record<string, number>;
+  readingGoals: ReadingGoals;
+  readingGoalsLoaded: boolean;
   /** Set by a destructive action to surface a global "실행취소" toast (see components/galpi/undo-snackbar.tsx), which survives navigating away from the screen the action happened on. */
   pendingUndo: PendingUndo | null;
 
   setUser: (user: User | null) => void;
   setBooks: (books: Book[]) => void;
   setSentences: (sentences: Sentence[]) => void;
+  setReadingLog: (log: Record<string, number>) => void;
+  setReadingGoals: (goals: ReadingGoals) => void;
   showUndo: (message: string, onUndo: () => void) => void;
   clearUndo: () => void;
 
@@ -86,11 +94,16 @@ export const useAppStore = create<AppState>()(
       sentences: [],
       booksLoaded: false,
       sentencesLoaded: false,
+      readingLog: {},
+      readingGoals: DEFAULT_READING_GOALS,
+      readingGoalsLoaded: false,
       pendingUndo: null,
 
       setUser: (user) => set({ user }),
       setBooks: (books) => set({ books, booksLoaded: true }),
       setSentences: (sentences) => set({ sentences, sentencesLoaded: true }),
+      setReadingLog: (readingLog) => set({ readingLog }),
+      setReadingGoals: (readingGoals) => set({ readingGoals, readingGoalsLoaded: true }),
       showUndo: (message, onUndo) => set({ pendingUndo: { id: Date.now(), message, onUndo } }),
       clearUndo: () => set({ pendingUndo: null }),
 
@@ -214,12 +227,18 @@ export const useAppStore = create<AppState>()(
        * Caches the last-known library so a relaunch/reload can render it
        * immediately instead of a skeleton, while the live Firestore
        * subscription (see use-auth-sync.ts) streams in fresh data behind it.
-       * `booksLoaded`/`sentencesLoaded` are intentionally left out — they
-       * must reflect *this session's* subscription state, not the cache's.
+       * `booksLoaded`/`sentencesLoaded`/`readingGoalsLoaded` are intentionally
+       * left out — they must reflect *this session's* subscription state, not
+       * the cache's.
        */
       name: 'galpi-cache',
       storage: createJSONStorage(() => AsyncStorage),
-      partialize: (state) => ({ books: state.books, sentences: state.sentences }),
+      partialize: (state) => ({
+        books: state.books,
+        sentences: state.sentences,
+        readingLog: state.readingLog,
+        readingGoals: state.readingGoals,
+      }),
     },
   ),
 );

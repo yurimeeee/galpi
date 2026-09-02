@@ -1,7 +1,13 @@
 import { useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebase';
-import { subscribeBooks, subscribeSentences } from './data-service';
+import {
+  subscribeBooks,
+  subscribeSentences,
+  subscribeReadingLog,
+  subscribeReadingGoals,
+  DEFAULT_READING_GOALS,
+} from './data-service';
 import { useAppStore } from './store';
 
 /**
@@ -36,15 +42,23 @@ export function useAuthSync(): { authResolved: boolean } {
     if (!uid) {
       useAppStore.getState().setBooks([]);
       useAppStore.getState().setSentences([]);
+      useAppStore.getState().setReadingLog({});
+      useAppStore.getState().setReadingGoals(DEFAULT_READING_GOALS);
       return;
     }
     const unsubscribeBooks = subscribeBooks(uid, (books) => useAppStore.getState().setBooks(books));
     const unsubscribeSentences = subscribeSentences(uid, (sentences) =>
       useAppStore.getState().setSentences(sentences),
     );
+    const unsubscribeReadingLog = subscribeReadingLog(uid, (log) => useAppStore.getState().setReadingLog(log));
+    const unsubscribeReadingGoals = subscribeReadingGoals(uid, (goals) =>
+      useAppStore.getState().setReadingGoals(goals),
+    );
     return () => {
       unsubscribeBooks();
       unsubscribeSentences();
+      unsubscribeReadingLog();
+      unsubscribeReadingGoals();
     };
   }, [uid]);
 

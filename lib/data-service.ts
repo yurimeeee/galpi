@@ -200,11 +200,15 @@ function readingGoalsDoc(uid: string) {
   return doc(db, 'users', uid, 'userSettings', 'readingGoals');
 }
 
-export async function getReadingGoals(uid: string): Promise<ReadingGoals> {
-  const snap = await getDoc(readingGoalsDoc(uid));
-  return snap.exists()
-    ? { ...DEFAULT_READING_GOALS, ...(snap.data() as Partial<ReadingGoals>) }
-    : DEFAULT_READING_GOALS;
+/** Live — mirrors subscribeBooks/subscribeSentences so every mounted screen sees goal edits immediately instead of only the screen that made them. */
+export function subscribeReadingGoals(uid: string, onChange: (goals: ReadingGoals) => void): Unsubscribe {
+  return onSnapshot(readingGoalsDoc(uid), (snap) => {
+    onChange(
+      snap.exists()
+        ? { ...DEFAULT_READING_GOALS, ...(snap.data() as Partial<ReadingGoals>) }
+        : DEFAULT_READING_GOALS,
+    );
+  });
 }
 
 export async function saveReadingGoals(uid: string, goals: ReadingGoals): Promise<void> {
@@ -216,9 +220,11 @@ function readingLogDoc(uid: string) {
   return doc(db, 'users', uid, 'userSettings', 'readingLog');
 }
 
-export async function getReadingLog(uid: string): Promise<Record<string, number>> {
-  const snap = await getDoc(readingLogDoc(uid));
-  return snap.exists() ? (snap.data() as Record<string, number>) : {};
+/** Live — a reading-timer session logged from any screen shows up immediately everywhere readingLog is read (today's progress card, streak-risk reminder, year review), not just on next relaunch. */
+export function subscribeReadingLog(uid: string, onChange: (log: Record<string, number>) => void): Unsubscribe {
+  return onSnapshot(readingLogDoc(uid), (snap) => {
+    onChange(snap.exists() ? (snap.data() as Record<string, number>) : {});
+  });
 }
 
 export async function logReadingMinutes(uid: string, minutes: number): Promise<void> {

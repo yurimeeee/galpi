@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
-import { getNotificationPreferences, getReadingLog, saveNotificationPreferences } from './data-service';
+import { getNotificationPreferences, saveNotificationPreferences } from './data-service';
 import { useAppStore } from './store';
 import { activeReadingDays, computeStreaks } from './reading-goals';
 import { dateKey } from './date-utils';
@@ -25,11 +25,11 @@ const SUPPORTS_NOTIFICATIONS = Platform.OS !== 'web';
 export function useStreakRiskReminder() {
   const uid = useAppStore((s) => s.user?.uid);
   const sentences = useAppStore((s) => s.sentences);
+  const readingLog = useAppStore((s) => s.readingLog);
 
   const [loading, setLoading] = useState(true);
   const [enabled, setEnabled] = useState(false);
   const [error, setError] = useState('');
-  const [readingLog, setReadingLog] = useState<Record<string, number>>({});
 
   useEffect(() => {
     if (!uid) {
@@ -39,10 +39,9 @@ export function useStreakRiskReminder() {
     let cancelled = false;
     (async () => {
       try {
-        const [prefs, log] = await Promise.all([getNotificationPreferences(uid), getReadingLog(uid)]);
+        const prefs = await getNotificationPreferences(uid);
         if (cancelled) return;
         setEnabled(!!prefs?.streakRiskReminderEnabled);
-        setReadingLog(log);
       } finally {
         if (!cancelled) setLoading(false);
       }

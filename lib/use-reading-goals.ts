@@ -1,11 +1,4 @@
-import { useEffect, useState } from 'react';
-import {
-  getReadingGoals,
-  getReadingLog,
-  saveReadingGoals as saveReadingGoalsDoc,
-  DEFAULT_READING_GOALS,
-  type ReadingGoals,
-} from './data-service';
+import { saveReadingGoals as saveReadingGoalsDoc, type ReadingGoals } from './data-service';
 import {
   activeReadingDays,
   completedBooksInMonth,
@@ -16,45 +9,29 @@ import {
 import { useAppStore } from './store';
 
 /**
- * Loads/saves the user's reading goals and derives streak + progress from
- * their real library (books, sentences) and logged timer minutes — mount
- * wherever streak/goal data is shown (mypage entry chip, reading-goal screen).
+ * Reads the user's reading goals and derives streak + progress from their
+ * real library (books, sentences) and logged timer minutes — all sourced
+ * live from the zustand store (see lib/use-auth-sync.ts), so every screen
+ * that mounts this hook stays in sync with the others instead of each
+ * holding its own stale snapshot. Mount wherever streak/goal data is shown
+ * (mypage entry chip, library's today card, reading-goal screen).
  */
 export function useReadingGoals() {
   const uid = useAppStore((s) => s.user?.uid);
   const books = useAppStore((s) => s.books);
   const sentences = useAppStore((s) => s.sentences);
-
-  const [loading, setLoading] = useState(true);
-  const [goals, setGoals] = useState<ReadingGoals>(DEFAULT_READING_GOALS);
-  const [readingLog, setReadingLog] = useState<Record<string, number>>({});
-
-  useEffect(() => {
-    if (!uid) {
-      setLoading(false);
-      return;
-    }
-    let cancelled = false;
-    (async () => {
-      const [g, log] = await Promise.all([getReadingGoals(uid), getReadingLog(uid)]);
-      if (cancelled) return;
-      setGoals(g);
-      setReadingLog(log);
-      setLoading(false);
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [uid]);
+  const goals = useAppStore((s) => s.readingGoals);
+  const readingLog = useAppStore((s) => s.readingLog);
+  const loading = useAppStore((s) => !!uid && !s.readingGoalsLoaded);
 
   async function saveGoals(next: ReadingGoals) {
     if (!uid) return;
-    const previous = goals;
-    setGoals(next);
+    const previous = useAppStore.getState().readingGoals;
+    useAppStore.getState().setReadingGoals(next);
     try {
       await saveReadingGoalsDoc(uid, next);
     } catch (err) {
-      setGoals(previous);
+      useAppStore.getState().setReadingGoals(previous);
       throw err;
     }
   }
