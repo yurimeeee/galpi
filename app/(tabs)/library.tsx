@@ -2,6 +2,7 @@ import { Alert } from 'react-native';
 import { router } from 'expo-router';
 import { LibrarySkeleton, MainLibraryScreen } from '../../components/screens/library-screen';
 import { useAppStore } from '../../lib/store';
+import { useReadingGoals } from '../../lib/use-reading-goals';
 import type { Book } from '../../lib/data/books';
 import type { Sentence } from '../../lib/data/sentences';
 
@@ -9,6 +10,7 @@ export default function Library() {
   const books = useAppStore((s) => s.books);
   const sentences = useAppStore((s) => s.sentences);
   const booksLoaded = useAppStore((s) => s.booksLoaded);
+  const { currentStreak, todayMinutes, goals } = useReadingGoals();
 
   function openBook(book: Book) {
     router.push(`/book/${book.id}`);
@@ -28,6 +30,10 @@ export default function Library() {
 
   function openCollections() {
     router.push('/collections');
+  }
+
+  function startTimer() {
+    router.push('/reading-timer');
   }
 
   function reorderBooks(orderedBookIds: string[]) {
@@ -50,6 +56,10 @@ export default function Library() {
       onReorderBooks={reorderBooks}
       onOpenFavorites={openFavorites}
       onOpenCollections={openCollections}
+      currentStreak={currentStreak}
+      todayMinutes={todayMinutes}
+      dailyGoalMinutes={goals.dailyMinutes}
+      onStartTimer={startTimer}
     />
   );
 }

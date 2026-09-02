@@ -8,6 +8,7 @@ import { ColorChips } from '../galpi/color-chips';
 import { ReorderBookList } from '../galpi/reorder-book-list';
 import { Skeleton } from '../galpi/skeleton';
 import { StatusFilter, type FilterKey } from '../galpi/status-filter';
+import { TodayProgressCard } from '../galpi/today-progress-card';
 import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
 import { type Book } from '../../lib/data/books';
 import { type Sentence } from '../../lib/data/sentences';
@@ -37,6 +38,10 @@ export function MainLibraryScreen({
   onReorderBooks,
   onOpenFavorites,
   onOpenCollections,
+  currentStreak,
+  todayMinutes,
+  dailyGoalMinutes,
+  onStartTimer,
 }: {
   books: Book[];
   sentences: Sentence[];
@@ -46,6 +51,10 @@ export function MainLibraryScreen({
   onReorderBooks: (orderedBookIds: string[]) => void;
   onOpenFavorites: () => void;
   onOpenCollections: () => void;
+  currentStreak: number;
+  todayMinutes: number;
+  dailyGoalMinutes: number;
+  onStartTimer: () => void;
 }) {
   const [filter, setFilter] = useState<FilterKey>('all');
   const [viewMode, setViewMode] = useState<ViewMode>('list');
@@ -295,6 +304,13 @@ export function MainLibraryScreen({
                   </View>
                 </View>
               </View>
+
+              <TodayProgressCard
+                currentStreak={currentStreak}
+                todayMinutes={todayMinutes}
+                dailyGoalMinutes={dailyGoalMinutes}
+                onStartTimer={onStartTimer}
+              />
 
               {/* 지금 읽는 중 — 대표 카드 */}
               {featured ? (
