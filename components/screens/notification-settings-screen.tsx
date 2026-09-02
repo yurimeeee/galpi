@@ -1,9 +1,10 @@
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronLeft, Info } from 'lucide-react-native';
+import { ChevronLeft, Flame, Info } from 'lucide-react-native';
 import { TimePickerField } from '../galpi/time-picker-field';
 import { useReadingReminder } from '../../lib/use-reading-reminder';
 import { useOnThisDayReminder } from '../../lib/use-on-this-day-reminder';
+import { useStreakRiskReminder } from '../../lib/use-streak-risk-reminder';
 import { useThemeColors } from '../../lib/theme';
 
 export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
@@ -25,6 +26,15 @@ export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
     matchBook: onThisDayBook,
     setOnThisDayEnabled,
   } = useOnThisDayReminder();
+
+  const {
+    loading: streakRiskLoading,
+    enabled: streakRiskEnabled,
+    error: streakRiskError,
+    currentStreak,
+    setStreakRiskReminderEnabled,
+  } = useStreakRiskReminder();
+
   const colors = useThemeColors();
 
   return (
@@ -107,6 +117,49 @@ export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
             잠시 책장을 넘기며 나만의 갈피를 남겨볼까요?
           </Text>
         </View>
+
+        {streakRiskLoading ? (
+          <View className="mt-6 items-center pt-4">
+            <ActivityIndicator color={colors.foreground} />
+          </View>
+        ) : (
+          <View className="mt-6 overflow-hidden rounded-2xl border border-border bg-card">
+            <View className="flex-row items-center gap-3 px-4 py-4">
+              <View className="min-w-0 flex-1">
+                <Text className="text-[14px] font-bold text-foreground">스트릭 위험 알림</Text>
+                <Text className="mt-0.5 text-[12px] leading-relaxed text-muted-foreground">
+                  오늘 기록이 없고 스트릭이 있을 때만, 밤 10시에 알려드려요.
+                </Text>
+              </View>
+              <Pressable
+                onPress={() => setStreakRiskReminderEnabled(!streakRiskEnabled)}
+                disabled={!supported}
+                accessibilityRole="switch"
+                accessibilityState={{ checked: streakRiskEnabled }}
+                accessibilityLabel="스트릭 위험 알림"
+                className={`web:cursor-pointer relative h-6 w-11 justify-center rounded-full ${
+                  streakRiskEnabled ? 'bg-galpi-ink' : 'bg-border'
+                } ${!supported ? 'opacity-50' : ''}`}
+              >
+                <View
+                  className="absolute h-5 w-5 rounded-full bg-galpi-paper"
+                  style={{ left: streakRiskEnabled ? 22 : 2 }}
+                />
+              </Pressable>
+            </View>
+          </View>
+        )}
+
+        {streakRiskError ? (
+          <Text className="mt-3 text-[12px] text-destructive">{streakRiskError}</Text>
+        ) : null}
+
+        {streakRiskEnabled && currentStreak > 0 ? (
+          <View className="mt-4 flex-row items-center gap-2 rounded-2xl bg-secondary p-4">
+            <Flame size={16} color={colors.foreground} />
+            <Text className="text-[13px] font-semibold text-foreground">지금 스트릭: {currentStreak}일</Text>
+          </View>
+        ) : null}
 
         {onThisDayLoading ? (
           <View className="mt-6 items-center pt-4">

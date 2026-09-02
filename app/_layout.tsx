@@ -30,6 +30,7 @@ import { UndoSnackbar } from '../components/galpi/undo-snackbar';
 import { getAnalyticsIfSupported } from '../lib/firebase';
 import { useAuthSync } from '../lib/use-auth-sync';
 import { useOnThisDayReminder } from '../lib/use-on-this-day-reminder';
+import { useStreakRiskReminder } from '../lib/use-streak-risk-reminder';
 import { useReadingTimerAutoAdvance } from '../lib/use-reading-timer-auto-advance';
 import '../global.css';
 
@@ -46,6 +47,8 @@ export default function RootLayout() {
   // mounted here (not just the settings screen) so it runs regardless of
   // which screen the user opens the app to.
   useOnThisDayReminder();
+  // Same reschedule-on-launch approach as above, for the streak-at-risk nudge.
+  useStreakRiskReminder();
   // Drives the reading timer's phase transitions independent of whichever
   // screen is mounted — see lib/use-reading-timer-auto-advance.ts.
   useReadingTimerAutoAdvance();

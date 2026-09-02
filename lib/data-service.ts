@@ -162,6 +162,8 @@ export type NotificationPreferences = {
   expoPushToken?: string | null;
   /** "1년 전 오늘의 갈피" reminder — resurfaces a 갈피 saved on this day in a past year. */
   onThisDayEnabled?: boolean;
+  /** Evening nudge fired only when today has no activity yet and a streak is still alive. */
+  streakRiskReminderEnabled?: boolean;
 };
 
 function notificationPreferencesDoc(uid: string) {
