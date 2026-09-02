@@ -18,3 +18,10 @@ export function todayLabel(): string {
   const d = new Date();
   return `${d.getFullYear()}.${pad2(d.getMonth() + 1)}.${pad2(d.getDate())}`;
 }
+
+/** 24h hour (0-23) as a Korean 12h label, e.g. 21 → "오후 9시", 0 → "오전 12시". */
+export function formatHourKorean(hour: number): string {
+  const period = hour < 12 ? '오전' : '오후';
+  const display = hour % 12 === 0 ? 12 : hour % 12;
+  return `${period} ${display}시`;
+}

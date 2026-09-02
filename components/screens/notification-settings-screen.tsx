@@ -1,11 +1,15 @@
+import { useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronLeft, Flame, Info } from 'lucide-react-native';
+import { ChevronLeft, Flame, Info, X } from 'lucide-react-native';
 import { TimePickerField } from '../galpi/time-picker-field';
 import { useReadingReminder } from '../../lib/use-reading-reminder';
 import { useOnThisDayReminder } from '../../lib/use-on-this-day-reminder';
 import { useStreakRiskReminder } from '../../lib/use-streak-risk-reminder';
 import { useThemeColors } from '../../lib/theme';
+import { useAppStore } from '../../lib/store';
+import { mostActiveHour } from '../../lib/data/sentences';
+import { pad2, formatHourKorean } from '../../lib/date-utils';
 
 export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
   const {
@@ -34,6 +38,12 @@ export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
     currentStreak,
     setStreakRiskReminderEnabled,
   } = useStreakRiskReminder();
+
+  const sentences = useAppStore((s) => s.sentences);
+  const [suggestionDismissed, setSuggestionDismissed] = useState(false);
+  const suggestedHour = useMemo(() => mostActiveHour(sentences), [sentences]);
+  const suggestedTime = suggestedHour !== null ? `${pad2(suggestedHour)}:00` : null;
+  const showTimeSuggestion = enabled && !suggestionDismissed && suggestedTime !== null && suggestedTime !== time;
 
   const colors = useThemeColors();
 
@@ -98,6 +108,31 @@ export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
               <View className="gap-2 px-4 py-4">
                 <Text className="text-[13px] font-semibold text-foreground">알림 시간</Text>
                 <TimePickerField value={time} onChange={setDailyReminderTime} />
+
+                {showTimeSuggestion ? (
+                  <View className="mt-2 flex-row items-center gap-3 rounded-2xl bg-secondary p-3">
+                    <Text className="flex-1 text-[12px] leading-relaxed text-foreground">
+                      가장 많이 기록한 시간대는 {formatHourKorean(suggestedHour!)}예요. 이 시간으로 바꿔볼까요?
+                    </Text>
+                    <Pressable
+                      onPress={() => {
+                        setDailyReminderTime(suggestedTime!);
+                        setSuggestionDismissed(true);
+                      }}
+                      className="web:cursor-pointer"
+                    >
+                      <Text className="text-[12px] font-black text-foreground">적용</Text>
+                    </Pressable>
+                    <Pressable
+                      onPress={() => setSuggestionDismissed(true)}
+                      accessibilityLabel="추천 닫기"
+                      hitSlop={8}
+                      className="web:cursor-pointer"
+                    >
+                      <X size={14} color={colors.mutedForeground} />
+                    </Pressable>
+                  </View>
+                ) : null}
               </View>
             ) : null}
           </View>

@@ -73,3 +73,27 @@ export function onThisDayLastYear(allSentences: Sentence[], today: Date = new Da
   if (oneYearAgo) return oneYearAgo.s;
   return matches.sort((a, b) => b.d.getFullYear() - a.d.getFullYear())[0].s;
 }
+
+const MIN_SAMPLES_FOR_HOUR_SUGGESTION = 5;
+
+/**
+ * The hour (0-23) the user has most often saved a 갈피 at, for suggesting a
+ * reminder time. Returns null with fewer than 5 timestamped entries — not
+ * enough signal to suggest anything yet.
+ */
+export function mostActiveHour(allSentences: Sentence[]): number | null {
+  const counts = new Array(24).fill(0);
+  let total = 0;
+  for (const s of allSentences) {
+    if (typeof s.hour !== 'number') continue;
+    counts[s.hour] += 1;
+    total += 1;
+  }
+  if (total < MIN_SAMPLES_FOR_HOUR_SUGGESTION) return null;
+
+  let best = 0;
+  for (let h = 1; h < 24; h++) {
+    if (counts[h] > counts[best]) best = h;
+  }
+  return best;
+}
