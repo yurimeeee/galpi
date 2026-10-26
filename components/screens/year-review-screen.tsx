@@ -200,10 +200,11 @@ function CardShell({ children }: { children: ReactNode }) {
 }
 
 function IntroCard({ year, displayName, doneCount, galpiCount }: { year: number; displayName: string; doneCount: number; galpiCount: number }) {
+  const colors = useThemeColors();
   return (
     <CardShell>
       <View className="items-center gap-3">
-        <Sparkles size={28} color="#EFF092" />
+        <Sparkles size={28} color={colors.galpiYellow} />
         <Text className="text-center text-2xl font-black leading-tight text-galpi-paper">
           {year}년,{'\n'}{displayName}님의 독서
         </Text>
@@ -238,10 +239,11 @@ function BooksCard({ year, completedBooks }: { year: number; completedBooks: Boo
 }
 
 function WeekdayCard({ readDaysCount, weekdayCounts, topWeekdayIndex }: { readDaysCount: number; weekdayCounts: number[]; topWeekdayIndex: number }) {
+  const colors = useThemeColors();
   return (
     <CardShell>
       <View className="items-center gap-1">
-        <CalendarDays size={24} color="#D8DBE9" />
+        <CalendarDays size={24} color={colors.galpiBlue} />
         <Text className="mt-2 text-center text-lg font-black text-galpi-paper">읽은 날 {readDaysCount}일</Text>
       </View>
       {topWeekdayIndex >= 0 ? (
@@ -262,10 +264,11 @@ function WeekdayCard({ readDaysCount, weekdayCounts, topWeekdayIndex }: { readDa
 }
 
 function StreakCard({ year, bestStreak, heatmap }: { year: number; bestStreak: number; heatmap: number[][] }) {
+  const colors = useThemeColors();
   return (
     <CardShell>
       <View className="items-center gap-1">
-        <Flame size={24} color="#EFF092" />
+        <Flame size={24} color={colors.galpiYellow} />
         <Text className="mt-2 text-center text-lg font-black text-galpi-paper">
           최장 연속 독서 <Text className="text-galpi-yellow">{bestStreak}일</Text>
         </Text>
@@ -285,10 +288,11 @@ function StreakCard({ year, bestStreak, heatmap }: { year: number; bestStreak: n
 }
 
 function TimeCard({ yearMinutes }: { yearMinutes: number }) {
+  const colors = useThemeColors();
   return (
     <CardShell>
       <View className="items-center gap-3">
-        <Clock size={28} color="#D8DBE9" />
+        <Clock size={28} color={colors.galpiBlue} />
         <Text className="text-center text-2xl font-black text-galpi-paper">{formatMinutes(yearMinutes)}</Text>
         <Text className="text-center text-sm leading-relaxed text-galpi-paper/60">올해 독서 타이머로 기록한{'\n'}총 독서 시간이에요.</Text>
       </View>
@@ -318,10 +322,11 @@ function GenresCard({ topGenres }: { topGenres: string[] }) {
 }
 
 function TopBookCard({ topBookOfYear }: { topBookOfYear: { book: Book; sentence: Sentence } | null }) {
+  const colors = useThemeColors();
   return (
     <CardShell>
       <View className="items-center gap-1">
-        <Quote size={22} color="#F4F4F6" opacity={0.6} />
+        <Quote size={22} color={colors.galpiPaper} opacity={0.6} />
         <Text className="mt-1 text-center text-[11px] font-bold uppercase tracking-widest text-galpi-paper/50">
           올해 가장 많이 담은 책
         </Text>
