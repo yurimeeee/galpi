@@ -468,9 +468,10 @@ function SummaryCard({
 }
 
 function SummaryStat({ Icon, value, unit, label }: { Icon: typeof BookCheck; value: number; unit: string; label: string }) {
+  const colors = useThemeColors();
   return (
     <View className="flex-1 items-center gap-1 rounded-xl bg-secondary py-2.5">
-      <Icon size={13} color="#77777D" />
+      <Icon size={13} color={colors.mutedForeground} />
       <View className="flex-row items-baseline gap-0.5">
         <Text className="text-sm font-black text-foreground">{value}</Text>
         <Text className="text-[9px] font-bold text-muted-foreground">{unit}</Text>
