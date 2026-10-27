@@ -82,8 +82,8 @@ export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
               className={`flex-row items-center gap-3 px-4 py-4 ${enabled ? 'border-b border-border' : ''}`}
             >
               <View className="min-w-0 flex-1">
-                <Text className="text-[14px] font-bold text-foreground">매일 독서 알림</Text>
-                <Text className="mt-0.5 text-[12px] leading-relaxed text-muted-foreground">
+                <Text className="text-sm font-bold text-foreground">매일 독서 알림</Text>
+                <Text className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
                   정해진 시간에 오늘의 독서를 알려드려요.
                 </Text>
               </View>
@@ -111,7 +111,7 @@ export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
 
                 {showTimeSuggestion ? (
                   <View className="mt-2 flex-row items-center gap-3 rounded-2xl bg-secondary p-3">
-                    <Text className="flex-1 text-[12px] leading-relaxed text-foreground">
+                    <Text className="flex-1 text-xs leading-relaxed text-foreground">
                       가장 많이 기록한 시간대는 {formatHourKorean(suggestedHour!)}예요. 이 시간으로 바꿔볼까요?
                     </Text>
                     <Pressable
@@ -121,7 +121,7 @@ export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
                       }}
                       className="web:cursor-pointer"
                     >
-                      <Text className="text-[12px] font-black text-foreground">적용</Text>
+                      <Text className="text-xs font-black text-foreground">적용</Text>
                     </Pressable>
                     <Pressable
                       onPress={() => setSuggestionDismissed(true)}
@@ -139,12 +139,12 @@ export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
         )}
 
         {error ? (
-          <Text className="mt-3 text-[12px] text-destructive">{error}</Text>
+          <Text className="mt-3 text-xs text-destructive">{error}</Text>
         ) : null}
 
         {/* 알림 미리보기 */}
         <View className="mt-6 gap-2 rounded-2xl bg-galpi-yellow p-4">
-          <Text className="text-[12px] font-bold text-galpi-ink/70">알림 미리보기</Text>
+          <Text className="text-xs font-bold text-galpi-ink/70">알림 미리보기</Text>
           <Text className="text-[15px] font-black text-galpi-ink">
             📚 오늘 독서 목표를 달성해 보세요!
           </Text>
@@ -161,8 +161,8 @@ export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
           <View className="mt-6 overflow-hidden rounded-2xl border border-border bg-card">
             <View className="flex-row items-center gap-3 px-4 py-4">
               <View className="min-w-0 flex-1">
-                <Text className="text-[14px] font-bold text-foreground">스트릭 위험 알림</Text>
-                <Text className="mt-0.5 text-[12px] leading-relaxed text-muted-foreground">
+                <Text className="text-sm font-bold text-foreground">스트릭 위험 알림</Text>
+                <Text className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
                   오늘 기록이 없고 스트릭이 있을 때만, 밤 10시에 알려드려요.
                 </Text>
               </View>
@@ -186,7 +186,7 @@ export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
         )}
 
         {streakRiskError ? (
-          <Text className="mt-3 text-[12px] text-destructive">{streakRiskError}</Text>
+          <Text className="mt-3 text-xs text-destructive">{streakRiskError}</Text>
         ) : null}
 
         {streakRiskEnabled && currentStreak > 0 ? (
@@ -204,8 +204,8 @@ export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
           <View className="mt-6 overflow-hidden rounded-2xl border border-border bg-card">
             <View className="flex-row items-center gap-3 px-4 py-4">
               <View className="min-w-0 flex-1">
-                <Text className="text-[14px] font-bold text-foreground">1년 전 오늘의 갈피</Text>
-                <Text className="mt-0.5 text-[12px] leading-relaxed text-muted-foreground">
+                <Text className="text-sm font-bold text-foreground">1년 전 오늘의 갈피</Text>
+                <Text className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
                   1년 전 오늘 남긴 갈피를 저녁 8시에 다시 보여드려요.
                 </Text>
               </View>
@@ -229,19 +229,19 @@ export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
         )}
 
         {onThisDayError ? (
-          <Text className="mt-3 text-[12px] text-destructive">{onThisDayError}</Text>
+          <Text className="mt-3 text-xs text-destructive">{onThisDayError}</Text>
         ) : null}
 
         {onThisDayEnabled ? (
           <View className="mt-4 gap-2 rounded-2xl bg-secondary p-4">
-            <Text className="text-[12px] font-bold text-muted-foreground">오늘의 미리보기</Text>
+            <Text className="text-xs font-bold text-muted-foreground">오늘의 미리보기</Text>
             {onThisDayMatch ? (
               <>
                 <Text className="text-[15px] font-bold leading-relaxed text-foreground">
                   "{onThisDayMatch.quote}"
                 </Text>
                 {onThisDayBook ? (
-                  <Text className="text-[12px] text-muted-foreground">
+                  <Text className="text-xs text-muted-foreground">
                     『{onThisDayBook.title}』 · P.{onThisDayMatch.page}
                   </Text>
                 ) : null}

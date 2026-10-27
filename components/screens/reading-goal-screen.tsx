@@ -91,8 +91,8 @@ export function ReadingGoalScreen({ onBack }: { onBack: () => void }) {
             <ChevronLeft size={20} color={colors.foreground} />
           </Pressable>
           <View>
-            <Text className="text-[18px] font-black tracking-tight text-foreground">독서 목표</Text>
-            <Text className="text-[12px] text-muted-foreground">꾸준함이 쌓여 습관이 됩니다</Text>
+            <Text className="text-lg font-black tracking-tight text-foreground">독서 목표</Text>
+            <Text className="text-xs text-muted-foreground">꾸준함이 쌓여 습관이 됩니다</Text>
           </View>
         </View>
         <Pressable
@@ -100,7 +100,7 @@ export function ReadingGoalScreen({ onBack }: { onBack: () => void }) {
           className="web:cursor-pointer flex-row items-center gap-1.5 rounded-full bg-secondary px-3.5 py-2"
         >
           <Pencil size={14} color={colors.foreground} />
-          <Text className="text-[12px] font-bold text-foreground">목표 수정</Text>
+          <Text className="text-xs font-bold text-foreground">목표 수정</Text>
         </Pressable>
       </View>
 
@@ -325,8 +325,8 @@ function GoalProgress({
           <Icon size={20} color={colors.galpiInk} strokeWidth={1.9} />
         </View>
         <View className="min-w-0 flex-1">
-          <Text className="text-[14px] font-bold text-foreground">{label}</Text>
-          <Text className="text-[12px] text-muted-foreground">
+          <Text className="text-sm font-bold text-foreground">{label}</Text>
+          <Text className="text-xs text-muted-foreground">
             <Text className="font-bold text-foreground tabular-nums">
               {current}
               {unit}

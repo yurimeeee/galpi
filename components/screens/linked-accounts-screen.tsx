@@ -147,7 +147,7 @@ export function LinkedAccountsScreen({ onBack }: { onBack: () => void }) {
           )}
         </View>
 
-        {linkError ? <Text className="px-1 text-[12px] text-destructive">{linkError}</Text> : null}
+        {linkError ? <Text className="px-1 text-xs text-destructive">{linkError}</Text> : null}
       </View>
     </SafeAreaView>
   );

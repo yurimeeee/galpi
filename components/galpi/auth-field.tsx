@@ -30,7 +30,7 @@ export function TextField({
         keyboardType={keyboardType}
         autoCapitalize="none"
         placeholderTextColor={colors.mutedForeground}
-        className="w-full rounded-2xl border border-input bg-card px-4 py-3.5 text-[14px] text-foreground focus:border-ring"
+        className="w-full rounded-2xl border border-input bg-card px-4 py-3.5 text-sm text-foreground focus:border-ring"
       />
     </View>
   );
@@ -55,7 +55,7 @@ export function PasswordField({
           secureTextEntry={!show}
           autoCapitalize="none"
           placeholderTextColor={colors.mutedForeground}
-          className="w-full rounded-2xl border border-input bg-card px-4 py-3.5 pr-12 text-[14px] text-foreground focus:border-ring"
+          className="w-full rounded-2xl border border-input bg-card px-4 py-3.5 pr-12 text-sm text-foreground focus:border-ring"
         />
         <Pressable
           onPress={() => setShow((s) => !s)}

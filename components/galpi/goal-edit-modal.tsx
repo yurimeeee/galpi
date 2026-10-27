@@ -120,8 +120,8 @@ function Stepper({
         <Icon size={20} color={colors.galpiInk} strokeWidth={1.9} />
       </View>
       <View className="min-w-0 flex-1">
-        <Text className="text-[14px] font-bold text-foreground">{label}</Text>
-        <Text className="text-[12px] text-muted-foreground">목표를 조절해 보세요</Text>
+        <Text className="text-sm font-bold text-foreground">{label}</Text>
+        <Text className="text-xs text-muted-foreground">목표를 조절해 보세요</Text>
       </View>
 
       <View className="flex-row items-center gap-2">
@@ -134,7 +134,7 @@ function Stepper({
         </Pressable>
         <Text className="w-16 text-center text-[15px] font-black tabular-nums text-foreground">
           {value}
-          <Text className="ml-0.5 text-[12px] font-medium text-muted-foreground">{unit}</Text>
+          <Text className="ml-0.5 text-xs font-medium text-muted-foreground">{unit}</Text>
         </Text>
         <Pressable
           onPress={() => onChange(value + step)}

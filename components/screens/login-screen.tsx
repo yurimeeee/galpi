@@ -99,7 +99,7 @@ export function LoginScreen({
             />
 
             {error ? (
-              <Text className="pl-1 text-[12px] text-destructive">{error}</Text>
+              <Text className="pl-1 text-xs text-destructive">{error}</Text>
             ) : null}
 
             <View className="flex-row items-center justify-between">
@@ -129,7 +129,7 @@ export function LoginScreen({
           {/* 구분선 */}
           <View className="my-7 flex-row items-center gap-4">
             <View className="h-px flex-1 bg-border" />
-            <Text className="text-[12px] text-muted-foreground">또는</Text>
+            <Text className="text-xs text-muted-foreground">또는</Text>
             <View className="h-px flex-1 bg-border" />
           </View>
 
@@ -143,7 +143,7 @@ export function LoginScreen({
               }`}
             >
               {submitting === 'google' ? <ActivityIndicator size="small" color={colors.foreground} /> : <GoogleMark />}
-              <Text className="text-[14px] font-semibold text-foreground">Google로 시작하기</Text>
+              <Text className="text-sm font-semibold text-foreground">Google로 시작하기</Text>
             </Pressable>
           </View>
 

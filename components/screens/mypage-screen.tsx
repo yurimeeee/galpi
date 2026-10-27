@@ -149,7 +149,7 @@ export function MyPageScreen({
               <Text className="text-[15px] font-black text-galpi-ink">
                 {currentStreak > 0 ? `${currentStreak}일 연속 독서 중` : '독서 목표를 세워보세요'}
               </Text>
-              <Text className="text-[12px] text-galpi-ink/60">목표와 스트릭을 확인해 보세요</Text>
+              <Text className="text-xs text-galpi-ink/60">목표와 스트릭을 확인해 보세요</Text>
             </View>
             <ChevronRight size={20} color={colors.galpiInk} opacity={0.5} />
           </Pressable>
@@ -230,8 +230,8 @@ export function MyPageScreen({
 function SummaryChip({ value, label }: { value: string; label: string }) {
   return (
     <View className="flex-1 flex-row items-baseline gap-1.5 rounded-2xl bg-galpi-paper px-4 py-3">
-      <Text className="text-[18px] font-black text-galpi-ink">{value}</Text>
-      <Text className="text-[12px] text-galpi-ink/60">{label}</Text>
+      <Text className="text-lg font-black text-galpi-ink">{value}</Text>
+      <Text className="text-xs text-galpi-ink/60">{label}</Text>
     </View>
   );
 }
@@ -249,7 +249,7 @@ function SettingsGroup({ title, rows }: { title: string; rows: Row[] }) {
               <View className="h-9 w-9 items-center justify-center rounded-xl bg-secondary">
                 <row.Icon size={18} color={colors.foreground} strokeWidth={1.8} />
               </View>
-              <Text className="flex-1 text-[14px] font-medium text-foreground">{row.label}</Text>
+              <Text className="flex-1 text-sm font-medium text-foreground">{row.label}</Text>
 
               {row.value ? <Text className="text-[13px] text-muted-foreground">{row.value}</Text> : null}
               {row.onPress ? <ChevronRight size={16} color={colors.mutedForeground} /> : null}

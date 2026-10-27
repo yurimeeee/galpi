@@ -59,7 +59,7 @@ export function EditReviewModal({
         style={{ minHeight: 140 }}
       />
 
-      {error ? <Text className="mt-3 text-[12px] text-destructive">{error}</Text> : null}
+      {error ? <Text className="mt-3 text-xs text-destructive">{error}</Text> : null}
 
       <Pressable
         onPress={handleSave}

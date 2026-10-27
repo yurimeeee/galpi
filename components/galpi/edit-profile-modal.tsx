@@ -131,14 +131,14 @@ export function EditProfileModal({
             className="web:cursor-pointer flex-row items-center gap-1.5 rounded-full bg-primary px-4 py-2"
           >
             <ImageIcon size={13} color={colors.primaryForeground} />
-            <Text className="text-[12px] font-semibold text-primary-foreground">사진 선택</Text>
+            <Text className="text-xs font-semibold text-primary-foreground">사진 선택</Text>
           </Pressable>
           {avatarUri ? (
             <Pressable
               onPress={clearAvatar}
               className="web:cursor-pointer rounded-full border border-border px-4 py-2"
             >
-              <Text className="text-[12px] font-semibold text-muted-foreground">기본 이미지로</Text>
+              <Text className="text-xs font-semibold text-muted-foreground">기본 이미지로</Text>
             </Pressable>
           ) : null}
         </View>
@@ -153,16 +153,16 @@ export function EditProfileModal({
           placeholder="2~12자, 특수문자 제외"
           placeholderTextColor={colors.mutedForeground}
           maxLength={12}
-          className="w-full rounded-2xl border border-input bg-card px-4 py-3.5 text-[14px] text-foreground focus:border-ring"
+          className="w-full rounded-2xl border border-input bg-card px-4 py-3.5 text-sm text-foreground focus:border-ring"
         />
         {!nameValid && trimmedName.length > 0 ? (
-          <Text className="mt-1.5 text-[12px] text-destructive">
+          <Text className="mt-1.5 text-xs text-destructive">
             닉네임은 특수문자 없이 2~12자로 입력해 주세요.
           </Text>
         ) : null}
       </View>
 
-      {error ? <Text className="mt-3 text-[12px] text-destructive">{error}</Text> : null}
+      {error ? <Text className="mt-3 text-xs text-destructive">{error}</Text> : null}
 
       <Pressable
         onPress={handleSave}

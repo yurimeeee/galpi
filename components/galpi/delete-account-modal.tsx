@@ -112,7 +112,7 @@ export function DeleteAccountModal({
           위 내용을 확인했으며, 계정과 모든 데이터를 삭제하는 데 동의해요.
         </CheckOption>
 
-        {error ? <Text className="text-[12px] text-destructive">{error}</Text> : null}
+        {error ? <Text className="text-xs text-destructive">{error}</Text> : null}
 
         <Pressable
           onPress={confirmAndDelete}

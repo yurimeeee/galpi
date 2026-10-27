@@ -81,7 +81,7 @@ export function ChangePasswordModal({ onClose }: { onClose: () => void }) {
               onChange={setNewPassword}
             />
             {!newPasswordValid && newPassword.length > 0 ? (
-              <Text className="mt-1.5 text-[12px] text-destructive">
+              <Text className="mt-1.5 text-xs text-destructive">
                 비밀번호는 8자 이상이어야 해요.
               </Text>
             ) : null}
@@ -94,13 +94,13 @@ export function ChangePasswordModal({ onClose }: { onClose: () => void }) {
               onChange={setConfirmNewPassword}
             />
             {!confirmValid ? (
-              <Text className="mt-1.5 text-[12px] text-destructive">
+              <Text className="mt-1.5 text-xs text-destructive">
                 비밀번호가 일치하지 않아요.
               </Text>
             ) : null}
           </View>
 
-          {error ? <Text className="text-[12px] text-destructive">{error}</Text> : null}
+          {error ? <Text className="text-xs text-destructive">{error}</Text> : null}
 
           <Pressable
             onPress={handleSubmit}

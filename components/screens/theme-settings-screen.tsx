@@ -50,8 +50,8 @@ export function ThemeSettingsScreen({ onBack }: { onBack: () => void }) {
                   <opt.Icon size={18} color={colors.foreground} strokeWidth={1.8} />
                 </View>
                 <View className="min-w-0 flex-1">
-                  <Text className="text-[14px] font-medium text-foreground">{opt.label}</Text>
-                  <Text className="mt-0.5 text-[12px] text-muted-foreground">{opt.desc}</Text>
+                  <Text className="text-sm font-medium text-foreground">{opt.label}</Text>
+                  <Text className="mt-0.5 text-xs text-muted-foreground">{opt.desc}</Text>
                 </View>
                 {active ? <Check size={18} color={colors.foreground} /> : null}
               </Pressable>

@@ -97,7 +97,7 @@ export function EditProgressModal({
             keyboardType="numeric"
             placeholder="예: 314"
             placeholderTextColor={colors.mutedForeground}
-            className="w-full rounded-2xl border border-input bg-card px-4 py-3.5 text-[14px] text-foreground focus:border-ring"
+            className="w-full rounded-2xl border border-input bg-card px-4 py-3.5 text-sm text-foreground focus:border-ring"
           />
         </View>
         <View className="flex-1">
@@ -108,7 +108,7 @@ export function EditProgressModal({
             keyboardType="numeric"
             placeholder="예: 128"
             placeholderTextColor={colors.mutedForeground}
-            className="w-full rounded-2xl border border-input bg-card px-4 py-3.5 text-[14px] text-foreground focus:border-ring"
+            className="w-full rounded-2xl border border-input bg-card px-4 py-3.5 text-sm text-foreground focus:border-ring"
           />
         </View>
       </View>
@@ -153,7 +153,7 @@ export function EditProgressModal({
         </Text>
       </View>
 
-      {error ? <Text className="mt-3 text-[12px] text-destructive">{error}</Text> : null}
+      {error ? <Text className="mt-3 text-xs text-destructive">{error}</Text> : null}
 
       <Pressable
         onPress={handleSave}

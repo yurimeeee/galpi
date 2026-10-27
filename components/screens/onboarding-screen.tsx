@@ -80,7 +80,7 @@ export function OnboardingScreen({ onDone }: { onDone: () => void }) {
         <Text className="text-[26px] font-black leading-tight tracking-tight text-foreground">
           {slide.title}
         </Text>
-        <Text className="mt-3 text-[14px] leading-relaxed text-muted-foreground">
+        <Text className="mt-3 text-sm leading-relaxed text-muted-foreground">
           {slide.desc}
         </Text>
       </View>

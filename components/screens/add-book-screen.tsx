@@ -243,7 +243,7 @@ export function AddBookScreen({
           </View>
 
           {addError ? (
-            <Text className="px-5 pt-2 text-[12px] text-destructive">{addError}</Text>
+            <Text className="px-5 pt-2 text-xs text-destructive">{addError}</Text>
           ) : null}
 
           <View className="flex-1 px-5 pt-4">
@@ -396,7 +396,7 @@ export function AddBookScreen({
           </ScrollView>
 
           {manualError ? (
-            <Text className="px-5 pb-2 text-[12px] text-destructive">{manualError}</Text>
+            <Text className="px-5 pb-2 text-xs text-destructive">{manualError}</Text>
           ) : null}
 
           <View className="border-t border-border bg-card/80 px-5 py-4 web:backdrop-blur">

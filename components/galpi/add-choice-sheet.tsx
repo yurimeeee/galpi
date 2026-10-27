@@ -74,7 +74,7 @@ export function AddChoiceSheet({
             </View>
             <View className="flex-1">
               <Text className="text-sm font-bold text-primary-foreground">갈피 남기기</Text>
-              <Text className="mt-0.5 text-[12px] text-primary-foreground/70">
+              <Text className="mt-0.5 text-xs text-primary-foreground/70">
                 읽고 있는 책에 문장을 담아요
               </Text>
             </View>
@@ -89,7 +89,7 @@ export function AddChoiceSheet({
             </View>
             <View className="flex-1">
               <Text className="text-sm font-bold text-foreground">독서 타이머 시작</Text>
-              <Text className="mt-0.5 text-[12px] text-muted-foreground">
+              <Text className="mt-0.5 text-xs text-muted-foreground">
                 집중해서 읽고 갈피를 남겨요
               </Text>
             </View>
@@ -104,7 +104,7 @@ export function AddChoiceSheet({
             </View>
             <View className="flex-1">
               <Text className="text-sm font-bold text-foreground">새 책 추가하기</Text>
-              <Text className="mt-0.5 text-[12px] text-muted-foreground">
+              <Text className="mt-0.5 text-xs text-muted-foreground">
                 서재에 책을 새로 등록해요
               </Text>
             </View>

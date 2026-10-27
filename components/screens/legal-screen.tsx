@@ -28,14 +28,14 @@ export function LegalScreen({
       </View>
 
       <ScrollView className="flex-1 px-5 pt-2" contentContainerClassName="pb-10">
-        <Text className="mb-5 text-[12px] text-muted-foreground">
+        <Text className="mb-5 text-xs text-muted-foreground">
           최종 개정일: {LEGAL_EFFECTIVE_DATE}
         </Text>
 
         <View className="gap-6">
           {sections.map((section) => (
             <View key={section.heading} className="gap-2">
-              <Text className="text-[14px] font-bold text-foreground">{section.heading}</Text>
+              <Text className="text-sm font-bold text-foreground">{section.heading}</Text>
               {section.paragraphs.map((paragraph, i) => (
                 <Text key={i} className="text-[13px] leading-relaxed text-muted-foreground">
                   {paragraph}

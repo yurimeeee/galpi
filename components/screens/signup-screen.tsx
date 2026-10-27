@@ -99,7 +99,7 @@ export function SignUpScreen({
                 onChange={setEmail}
               />
               {!emailValid ? (
-                <Text className="mt-1.5 pl-1 text-[12px] text-destructive">
+                <Text className="mt-1.5 pl-1 text-xs text-destructive">
                   올바른 이메일 형식이 아니에요.
                 </Text>
               ) : null}
@@ -120,7 +120,7 @@ export function SignUpScreen({
                 onChange={setConfirm}
               />
               {!pwMatch ? (
-                <Text className="mt-1.5 pl-1 text-[12px] text-destructive">
+                <Text className="mt-1.5 pl-1 text-xs text-destructive">
                   비밀번호가 일치하지 않아요.
                 </Text>
               ) : null}
@@ -140,7 +140,7 @@ export function SignUpScreen({
             </View>
 
             {error ? (
-              <Text className="pl-1 text-[12px] text-destructive">{error}</Text>
+              <Text className="pl-1 text-xs text-destructive">{error}</Text>
             ) : null}
           </View>
         </ScrollView>
