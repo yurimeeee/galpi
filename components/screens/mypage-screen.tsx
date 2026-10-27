@@ -90,7 +90,7 @@ export function MyPageScreen({
     <SafeAreaView edges={['top']} className="flex-1 min-h-0 bg-background">
       <ScrollView className="flex-1" contentContainerClassName="pb-10">
         <View className="px-6 pt-2">
-          <Text className="text-[22px] font-black tracking-tight text-foreground">마이페이지</Text>
+          <Text className="text-xl font-black tracking-tight text-foreground">마이페이지</Text>
         </View>
 
         {/* 프로필 카드 */}
