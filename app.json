@@ -32,6 +32,19 @@
       "expo-font",
       "expo-web-browser",
       [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#f4f4f6",
+          "dark": {
+            "image": "./assets/splash-icon.png",
+            "backgroundColor": "#18181b"
+          }
+        }
+      ],
+      [
         "expo-camera",
         {
           "cameraPermission": "갈피가 책 문장을 스캔할 수 있도록 카메라 접근을 허용해주세요."
