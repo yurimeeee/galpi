@@ -5,6 +5,7 @@ import { ArrowUpDown, Bookmark, Check, Search, ChevronRight, Quote, Star, Tags, 
 import { GalpiHeaderLogo } from '../galpi/galpi-logo';
 import { BookCard } from '../galpi/book-card';
 import { ColorChips } from '../galpi/color-chips';
+import { IconButton } from '../galpi/icon-button';
 import { ReorderBookList } from '../galpi/reorder-book-list';
 import { Skeleton } from '../galpi/skeleton';
 import { StatusFilter, type FilterKey } from '../galpi/status-filter';
@@ -270,27 +271,9 @@ export function MainLibraryScreen({
               <View className="flex-row items-center justify-between pt-1 pb-4">
                 <GalpiHeaderLogo markSize={28} wordClassName="text-xl text-foreground" />
                 <View className="flex-row items-center gap-2">
-                  <Pressable
-                    onPress={onOpenCollections}
-                    accessibilityLabel="태그 모음집 보기"
-                    className="items-center justify-center rounded-full web:cursor-pointer h-9 w-9 bg-card"
-                  >
-                    <Tags size={16} color={colors.foreground} />
-                  </Pressable>
-                  <Pressable
-                    onPress={onOpenFavorites}
-                    accessibilityLabel="즐겨찾는 갈피 모아보기"
-                    className="items-center justify-center rounded-full web:cursor-pointer h-9 w-9 bg-card"
-                  >
-                    <Star size={16} color={colors.foreground} />
-                  </Pressable>
-                  <Pressable
-                    onPress={() => setSearchOpen(true)}
-                    accessibilityLabel="책·갈피 검색"
-                    className="items-center justify-center rounded-full web:cursor-pointer h-9 w-9 bg-card"
-                  >
-                    <Search size={16} color={colors.foreground} />
-                  </Pressable>
+                  <IconButton Icon={Tags} label="태그 모음집 보기" onPress={onOpenCollections} />
+                  <IconButton Icon={Star} label="즐겨찾는 갈피 모아보기" onPress={onOpenFavorites} />
+                  <IconButton Icon={Search} label="책·갈피 검색" onPress={() => setSearchOpen(true)} />
                 </View>
               </View>
 

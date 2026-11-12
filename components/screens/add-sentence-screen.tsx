@@ -16,7 +16,6 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import {
-  ChevronLeft,
   Type,
   Camera,
   Image as ImageIcon,
@@ -29,6 +28,7 @@ import {
 import type { EntryType, Sentence } from '../../lib/data/sentences';
 import { useThemeColors } from '../../lib/theme';
 import { scanBookText } from '../../lib/ocr';
+import { ScreenHeader } from '../galpi/screen-header';
 import { TagInput } from '../galpi/tag-input';
 
 const MODES: { key: EntryType; label: string; Icon: LucideIcon }[] = [
@@ -127,21 +127,7 @@ export function AddSentenceScreen({
 
   return (
     <SafeAreaView edges={['top', 'bottom']} className="flex-1 min-h-0 bg-background">
-      <View className="flex-row items-center gap-3 px-5 pb-3 pt-2">
-        <Pressable
-          onPress={onBack}
-          accessibilityLabel="닫기"
-          className="web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-card"
-        >
-          <ChevronLeft size={20} color={colors.foreground} />
-        </Pressable>
-        <View className="min-w-0">
-          <Text className="text-base font-black text-foreground">갈피 남기기</Text>
-          <Text numberOfLines={1} className="text-xs text-muted-foreground">
-            {bookTitle}
-          </Text>
-        </View>
-      </View>
+      <ScreenHeader title="갈피 남기기" subtitle={bookTitle} onBack={onBack} backLabel="닫기" />
 
       {/* 모드 스위처 */}
       <View className="px-5">

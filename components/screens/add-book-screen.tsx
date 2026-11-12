@@ -19,7 +19,6 @@ import * as ImagePicker from 'expo-image-picker';
 import {
   Camera,
   Check,
-  ChevronLeft,
   Images,
   Plus,
   Search,
@@ -28,6 +27,7 @@ import {
   RotateCcw,
   type LucideIcon,
 } from 'lucide-react-native';
+import { ScreenHeader } from '../galpi/screen-header';
 import { searchAladinBooks, type AladinBookResult } from '../../lib/aladin-books';
 import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
 import { useThemeColors } from '../../lib/theme';
@@ -190,16 +190,7 @@ export function AddBookScreen({
 
   return (
     <SafeAreaView edges={['top', 'bottom']} className="flex-1 min-h-0 bg-background">
-      <View className="flex-row items-center gap-3 px-5 pb-3 pt-2">
-        <Pressable
-          onPress={onBack}
-          accessibilityLabel="닫기"
-          className="web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-card"
-        >
-          <ChevronLeft size={20} color={colors.foreground} />
-        </Pressable>
-        <Text className="text-base font-black text-foreground">책 추가</Text>
-      </View>
+      <ScreenHeader title="책 추가" onBack={onBack} backLabel="닫기" />
 
       <View className="px-5">
         <View className="flex-row gap-1 rounded-xl bg-secondary p-1">

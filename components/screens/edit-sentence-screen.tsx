@@ -12,7 +12,9 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronLeft, Share2, Trash2, Check } from 'lucide-react-native';
+import { Share2, Trash2, Check } from 'lucide-react-native';
+import { IconButton } from '../galpi/icon-button';
+import { ScreenHeader } from '../galpi/screen-header';
 import { SentenceCardModal } from '../galpi/sentence-card-modal';
 import { TagInput } from '../galpi/tag-input';
 import type { Book } from '../../lib/data/books';
@@ -87,41 +89,24 @@ export function EditSentenceScreen({
 
   return (
     <SafeAreaView edges={['top', 'bottom']} className="flex-1 min-h-0 bg-background">
-      <View className="flex-row items-center justify-between gap-3 px-5 pb-3 pt-2">
-        <View className="flex-row items-center gap-3">
-          <Pressable
-            onPress={onBack}
-            accessibilityLabel="닫기"
-            className="web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-card"
-          >
-            <ChevronLeft size={20} color={colors.foreground} />
-          </Pressable>
-          <View className="min-w-0">
-            <Text className="text-base font-black text-foreground">갈피 수정하기</Text>
-            <Text numberOfLines={1} className="text-xs text-muted-foreground">
-              {book.title}
-            </Text>
-          </View>
-        </View>
-        <View className="flex-row gap-2">
-          <Pressable
-            onPress={() => setCardOpen(true)}
-            disabled={busy}
-            accessibilityLabel="갈피 카드로 공유"
-            className={`web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-card ${busy ? 'opacity-60' : ''}`}
-          >
-            <Share2 size={16} color={colors.foreground} />
-          </Pressable>
-          <Pressable
-            onPress={handleDelete}
-            disabled={busy}
-            accessibilityLabel="갈피 삭제"
-            className={`web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-card ${busy ? 'opacity-60' : ''}`}
-          >
-            <Trash2 size={16} color={colors.destructive} />
-          </Pressable>
-        </View>
-      </View>
+      <ScreenHeader
+        title="갈피 수정하기"
+        subtitle={book.title}
+        onBack={onBack}
+        backLabel="닫기"
+        right={
+          <>
+            <IconButton Icon={Share2} label="갈피 카드로 공유" onPress={() => setCardOpen(true)} disabled={busy} />
+            <IconButton
+              Icon={Trash2}
+              label="갈피 삭제"
+              onPress={handleDelete}
+              disabled={busy}
+              iconColor={colors.destructive}
+            />
+          </>
+        }
+      />
 
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} className="flex-1 min-h-0">
         <ScrollView

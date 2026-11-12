@@ -18,6 +18,7 @@ import {
   Moon,
   type LucideIcon,
 } from 'lucide-react-native';
+import { IconButton } from '../galpi/icon-button';
 import { Skeleton } from '../galpi/skeleton';
 import { EditProfileModal } from '../galpi/edit-profile-modal';
 import { ChangePasswordModal } from '../galpi/change-password-modal';
@@ -112,13 +113,13 @@ export function MyPageScreen({
                   {email}
                 </Text>
               </View>
-              <Pressable
+              <IconButton
+                Icon={Pencil}
+                label="프로필 수정"
                 onPress={() => setActiveModal('profile')}
-                accessibilityLabel="프로필 수정"
-                className="web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-primary"
-              >
-                <Pencil size={14} color={colors.primaryForeground} />
-              </Pressable>
+                variant="primary"
+                iconSize={14}
+              />
             </View>
 
             {/* 독서 요약 칩 */}

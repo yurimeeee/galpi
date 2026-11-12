@@ -2,6 +2,7 @@ import { useMemo, useRef, useState, type ReactNode } from 'react';
 import { ActivityIndicator, Alert, Image, Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BookCheck, Bookmark, CalendarDays, ChevronLeft, ChevronRight, Clock, Download, Flame, Quote, Share2, Sparkles, X } from 'lucide-react-native';
+import { IconButton } from '../galpi/icon-button';
 import { captureViewAsImage, saveImageToDevice, shareImage, MediaPermissionError, ShareUnavailableError } from '../../lib/share-image';
 import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
 import { ACCENT_BG_CLASS, useThemeColors } from '../../lib/theme';
@@ -169,25 +170,29 @@ export function YearReviewScreen({
           </ScrollView>
 
           {pageIndex > 0 ? (
-            <Pressable
+            <IconButton
+              Icon={ChevronLeft}
+              label="이전 카드"
               onPress={() => goToIndex(pageIndex - 1)}
-              accessibilityLabel="이전 카드"
+              variant="ghost"
+              iconSize={18}
+              iconColor={colors.galpiPaper}
               style={{ top: '50%', marginTop: -18 }}
-              className="web:cursor-pointer absolute left-2 h-9 w-9 items-center justify-center rounded-full bg-galpi-paper/10"
-            >
-              <ChevronLeft size={18} color={colors.galpiPaper} />
-            </Pressable>
+              className="absolute left-2 bg-galpi-paper/10"
+            />
           ) : null}
 
           {pageIndex < cards.length - 1 ? (
-            <Pressable
+            <IconButton
+              Icon={ChevronRight}
+              label="다음 카드"
               onPress={() => goToIndex(pageIndex + 1)}
-              accessibilityLabel="다음 카드"
+              variant="ghost"
+              iconSize={18}
+              iconColor={colors.galpiPaper}
               style={{ top: '50%', marginTop: -18 }}
-              className="web:cursor-pointer absolute right-2 h-9 w-9 items-center justify-center rounded-full bg-galpi-paper/10"
-            >
-              <ChevronRight size={18} color={colors.galpiPaper} />
-            </Pressable>
+              className="absolute right-2 bg-galpi-paper/10"
+            />
           ) : null}
         </View>
       )}

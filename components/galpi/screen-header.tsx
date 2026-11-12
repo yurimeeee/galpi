@@ -13,6 +13,7 @@ export function ScreenHeader({
   title,
   subtitle,
   onBack,
+  backLabel = '뒤로 가기',
   right,
   className = '',
 }: {
@@ -20,12 +21,14 @@ export function ScreenHeader({
   subtitle?: string;
   /** Omit on tab roots that have no back navigation. */
   onBack?: () => void;
+  /** Spoken name of the back button — "닫기" on modal-presented screens. */
+  backLabel?: string;
   right?: ReactNode;
   className?: string;
 }) {
   return (
     <View className={`min-h-11 flex-row items-center gap-3 px-5 pb-3 pt-1 ${className}`}>
-      {onBack ? <IconButton Icon={ChevronLeft} label="뒤로 가기" onPress={onBack} iconSize={20} /> : null}
+      {onBack ? <IconButton Icon={ChevronLeft} label={backLabel} onPress={onBack} iconSize={20} /> : null}
       <View className="min-w-0 flex-1">
         <Text numberOfLines={1} className="text-xl font-black tracking-tight text-foreground">
           {title}

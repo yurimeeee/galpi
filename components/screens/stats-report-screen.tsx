@@ -30,6 +30,7 @@ import {
 } from 'lucide-react-native';
 import { Skeleton } from '../galpi/skeleton';
 import { BottomSheet } from '../galpi/bottom-sheet';
+import { IconButton } from '../galpi/icon-button';
 import { GalpiHeaderLogo } from '../galpi/galpi-logo';
 import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
 import { useThemeColors, ACCENT_BG_CLASS, SHADOW } from '../../lib/theme';
@@ -269,16 +270,10 @@ export function StatsReportScreen({ books, sentences }: { books: Book[]; sentenc
     <SafeAreaView edges={['top']} className="relative flex-1 min-h-0 bg-background">
       <View className="flex-row items-center justify-between px-5 pb-2 pt-1">
         <Text className="text-xl font-black tracking-tight text-foreground">독서 통계</Text>
-        <Pressable
-          onPress={() => setShareOpen(true)}
-          accessibilityLabel="리포트 발행"
-          className="web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-primary"
-        >
-          <Share2 size={16} color={colors.primaryForeground} />
-        </Pressable>
+        <IconButton Icon={Share2} label="리포트 발행" onPress={() => setShareOpen(true)} variant="primary" />
       </View>
 
-      <ScrollView className="flex-1" contentContainerClassName={`px-6 ${period === 'month' ? 'pb-28' : 'pb-6'}`}>
+      <ScrollView className="flex-1" contentContainerClassName={`px-5 ${period === 'month' ? 'pb-28' : 'pb-6'}`}>
         {/* 기간 선택 */}
         <PeriodToggle period={period} onChange={setPeriod} />
 
