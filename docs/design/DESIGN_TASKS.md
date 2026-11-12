@@ -17,11 +17,11 @@
 
 | ID | 대상 | 파일 | 목표 | 완료 조건 | 의존 | 상태 |
 |---|---|---|---|---|---|---|
-| CP-01 | `BookCover` | `components/galpi/book-cover.tsx`(신규) | 2:3 비율, 크기별 반경, hairline, 폴백 내장(`useCoverFallback` 재사용) | 단독 렌더 시 커버/폴백 2상태 정상, 스토리 없음(앱 내 확인) | DS-01 | 대기 |
-| CP-02 | `IconButton` | `components/galpi/icon-button.tsx`(신규) | 36px 원형, variant 3종, role·hitSlop 기본 | 라벨 누락 시 타입 오류 | — | 대기 |
-| CP-03 | `Chip` | `components/galpi/chip.tsx`(신규) | 선택/기본 2상태 + 카운트 슬롯, `accessibilityState.selected` | `StatusFilter`가 Chip으로 재구성되어 동작 동일 | DS-01, DS-02 | 대기 |
-| CP-04 | `Button` | `components/galpi/button.tsx`(신규) | primary / secondary / pill, loading·disabled | 로그인 화면 CTA 1곳 교체로 검증 | DS-01 | 대기 |
-| CP-05 | `ScreenHeader` | `components/galpi/screen-header.tsx`(신규) | 뒤로 + 제목(+부제) + 우측 슬롯, 높이 44 | 알림 설정 화면 1곳 교체로 검증 | CP-02 | 대기 |
+| CP-01 | `BookCover` | `components/galpi/book-cover.tsx`(신규) | 2:3 비율, 크기별 반경, hairline, 폴백 내장(`useCoverFallback` 재사용) | 단독 렌더 시 커버/폴백 2상태 정상, 스토리 없음(앱 내 확인) | DS-01 | 완료 `4f74cb9` (앱 내 확인은 GX-10에서) |
+| CP-02 | `IconButton` | `components/galpi/icon-button.tsx`(신규) | 36px 원형, variant 3종, role·hitSlop 기본 | 라벨 누락 시 타입 오류 | — | 완료 `22a573d` |
+| CP-03 | `Chip` | `components/galpi/chip.tsx`(신규) | 선택/기본 2상태 + 카운트 슬롯, `accessibilityState.selected` | `StatusFilter`가 Chip으로 재구성되어 동작 동일 | DS-01, DS-02 | 완료 `be09382` |
+| CP-04 | `Button` | `components/galpi/button.tsx`(신규) | primary / secondary / pill, loading·disabled | 로그인 화면 CTA 1곳 교체로 검증 | DS-01 | 완료 `5c6b0d0` |
+| CP-05 | `ScreenHeader` | `components/galpi/screen-header.tsx`(신규) | 뒤로 + 제목(+부제) + 우측 슬롯, 높이 44 | 알림 설정 화면 1곳 교체로 검증 | CP-02 | 완료 `1d05fa4` |
 
 ## Phase C. 전역 치환 (기계적, 레이아웃 불변)
 
