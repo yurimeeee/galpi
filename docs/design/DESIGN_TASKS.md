@@ -42,17 +42,17 @@
 
 | ID | 대상 | 파일 | 목표 | 완료 조건 | 의존 | 상태 |
 |---|---|---|---|---|---|---|
-| PG-01 | 서재 히어로 | `library-screen.tsx`, `today-progress-card.tsx` | 3단 → 2단: 오늘 카드를 `bg-primary` 한 줄 스트립(스트릭·분·시작 버튼)으로 축소, 다크 대비 해결(§1.2) | 서재 그리드 첫 행이 iPhone 13 높이에서 노출 | GX-01~05 | 대기 |
-| PG-02 | 서재 리스트/그리드 | `library-screen.tsx`, `book-card.tsx` | 항목 간격 12, 뷰 토글 터치 40, 그리드 열 수 §8 규칙 | 토글 hitSlop, 폭별 열 수 확인 | CP-01, GX-10 | 대기 |
-| PG-03 | 책 상세 | `book-detail-screen.tsx` | 진행률 카드 → 구분선 행, 갈피 항목 카드 → 배경 위 spine + hairline, 표지 `SHADOW.cover` | 카드 수 3→0(갈피 항목 제외 시), 스크롤 리듬 확인 | GX-03, GX-06 | 대기 |
-| PG-04 | 독서 통계 | `stats-report-screen.tsx` | 캘린더·요일 카드 배경 제거, 플로팅 CTA → 리스트 푸터 `Button`, 헤더 공유 아이콘 1개 유지, 히트맵 `text-micro` | CTA 겹침 없음, 공유 진입 1개 | CP-04, GX-01 | 대기 |
-| PG-05 | 독서 목표 | `reading-goal-screen.tsx` | 목표 3카드 → 리스트 그룹 1개, 스트릭 요일 점 대비(잉크 테두리) | 카드 3→1 | GX-03 | 대기 |
-| PG-06 | 독서 타이머 | `reading-timer-screen.tsx` | 프리셋 선택 = `Chip` 선택 상태, 썸네일 `BookCover sm` | 선택 상태가 잉크 필 | CP-03, CP-01 | 대기 |
-| PG-07 | 마이페이지 | `mypage-screen.tsx` | 설정 그룹 테두리 제거, 목표 진입 카드 `py-4→py-3.5`, 프로필 아바타 `BookCover` 아님(원형 유지) | 그룹 `border` 0 | GX-03 | 대기 |
-| PG-08 | 입력 화면 | `add-sentence-screen.tsx`, `edit-sentence-screen.tsx`, `add-book-screen.tsx`, `tag-input.tsx` | 입력 규격 §6, 라벨 `text-sm`, 저장 `Button primary` | 입력 3종 동일 높이·반경 | CP-04, GX-01 | 대기 |
-| PG-09 | 인증/온보딩 | `login-screen.tsx`, `signup-screen.tsx`, `onboarding-screen.tsx`, `auth-field.tsx` | `Button`·입력 규격, 거터 `px-5` | 로그인/가입 CTA 동일 | CP-04, GX-05 | 대기 |
-| PG-10 | 알림 설정 | `notification-settings-screen.tsx` | 카드 2 → 리스트 그룹 1 + 미리보기 | — | GX-03 | 대기 |
-| PG-11 | 시트·공유 카드 | `bottom-sheet.tsx`, `sentence-card-modal.tsx`, `session-summary-modal.tsx` | 인라인 스타일 → 토큰, 반경 §4 | 인라인 `style={{` 색상값 0 | DS-03 | 대기 |
+| PG-01 | 서재 히어로 | `library-screen.tsx`, `today-progress-card.tsx` | 3단 → 2단: 오늘 카드를 `bg-primary` 한 줄 스트립(스트릭·분·시작 버튼)으로 축소, 다크 대비 해결(§1.2) | 서재 그리드 첫 행이 iPhone 13 높이에서 노출 | GX-01~05 | 완료 `9a660b2` |
+| PG-02 | 서재 리스트/그리드 | `library-screen.tsx`, `book-card.tsx` | 항목 간격 12, 뷰 토글 터치 40, 그리드 열 수 §8 규칙 | 토글 hitSlop, 폭별 열 수 확인 | CP-01, GX-10 | 완료 `ddac5d3` |
+| PG-03 | 책 상세 | `book-detail-screen.tsx` | 진행률 카드 → 구분선 행, 갈피 항목 카드 → 배경 위 spine + hairline, 표지 `SHADOW.cover` | 카드 수 3→0(갈피 항목 제외 시), 스크롤 리듬 확인 | GX-03, GX-06 | 완료 `016bead` |
+| PG-04 | 독서 통계 | `stats-report-screen.tsx` | 캘린더·요일 카드 배경 제거, 플로팅 CTA → 리스트 푸터 `Button`, 헤더 공유 아이콘 1개 유지, 히트맵 `text-micro` | CTA 겹침 없음, 공유 진입 1개 | CP-04, GX-01 | 완료 `89dff3e` |
+| PG-05 | 독서 목표 | `reading-goal-screen.tsx` | 목표 3카드 → 리스트 그룹 1개, 스트릭 요일 점 대비(잉크 테두리) | 카드 3→1 | GX-03 | 완료 `ec8f975` |
+| PG-06 | 독서 타이머 | `reading-timer-screen.tsx` | 프리셋 선택 = `Chip` 선택 상태, 썸네일 `BookCover sm` | 선택 상태가 잉크 필 | CP-03, CP-01 | 완료 `c56fb09` |
+| PG-07 | 마이페이지 | `mypage-screen.tsx` | 설정 그룹 테두리 제거, 목표 진입 카드 `py-4→py-3.5`, 프로필 아바타 `BookCover` 아님(원형 유지) | 그룹 `border` 0 | GX-03 | 완료 `6809abd` |
+| PG-08 | 입력 화면 | `add-sentence-screen.tsx`, `edit-sentence-screen.tsx`, `add-book-screen.tsx`, `tag-input.tsx` | 입력 규격 §6, 라벨 `text-sm`, 저장 `Button primary` | 입력 3종 동일 높이·반경 | CP-04, GX-01 | 완료 `53fe362` |
+| PG-09 | 인증/온보딩 | `login-screen.tsx`, `signup-screen.tsx`, `onboarding-screen.tsx`, `auth-field.tsx` | `Button`·입력 규격, 거터 `px-5` | 로그인/가입 CTA 동일 | CP-04, GX-05 | 완료 `fb68226` |
+| PG-10 | 알림 설정 | `notification-settings-screen.tsx` | 카드 2 → 리스트 그룹 1 + 미리보기 | — | GX-03 | 완료 `156f909` |
+| PG-11 | 시트·공유 카드 | `bottom-sheet.tsx`, `sentence-card-modal.tsx`, `session-summary-modal.tsx` | 인라인 스타일 → 토큰, 반경 §4 | 인라인 `style={{` 색상값 0 | DS-03 | 완료 `850587d` (카드 팔레트 인라인 색은 사용자 선택 테마라 유지) |
 
 ## Phase E. 반응형
 
