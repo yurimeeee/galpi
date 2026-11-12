@@ -66,6 +66,21 @@ module.exports = {
         sans: ['NotoSansKR_400Regular'],
         mono: ['Courier'],
       },
+      /**
+       * Role-named sizes that fill the gaps in Tailwind's scale (see
+       * docs/design/DESIGN_SYSTEM.md §2). Line heights are fixed px so
+       * Korean text keeps the same rhythm on native and web.
+       *   display  26/32  editorial headline, year-review numbers
+       *   md       15/22  card titles, quote body
+       *   2xs      11/14  badge/chip numbers, progress %
+       *   micro     9/10  heatmap/calendar axis labels only
+       */
+      fontSize: {
+        display: ['26px', { lineHeight: '32px' }],
+        md: ['15px', { lineHeight: '22px' }],
+        '2xs': ['11px', { lineHeight: '14px' }],
+        micro: ['9px', { lineHeight: '10px' }],
+      },
       borderRadius: {
         sm: '0.375rem',
         md: '0.5rem',
