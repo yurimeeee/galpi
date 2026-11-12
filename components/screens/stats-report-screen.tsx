@@ -32,7 +32,7 @@ import { Skeleton } from '../galpi/skeleton';
 import { BottomSheet } from '../galpi/bottom-sheet';
 import { GalpiHeaderLogo } from '../galpi/galpi-logo';
 import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
-import { useThemeColors, ACCENT_BG_CLASS } from '../../lib/theme';
+import { useThemeColors, ACCENT_BG_CLASS, SHADOW } from '../../lib/theme';
 import { parseDotDate, dateKey, pad2 } from '../../lib/date-utils';
 import { getTopBookOfYear } from '../../lib/reading-goals';
 import { useAppStore } from '../../lib/store';
@@ -294,15 +294,7 @@ export function StatsReportScreen({ books, sentences }: { books: Book[]; sentenc
           <Pressable
             onPress={() => setShareOpen(true)}
             className="web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-xl bg-primary py-4"
-            style={({ pressed }) => [
-              {
-                shadowColor: colors.primary,
-                shadowOpacity: 0.25,
-                shadowRadius: 16,
-                shadowOffset: { width: 0, height: 6 },
-              },
-              pressed && { transform: [{ scale: 0.98 }] },
-            ]}
+            style={({ pressed }) => [SHADOW.floating, pressed && { transform: [{ scale: 0.98 }] }]}
           >
             <Sparkles size={15} color={colors.primaryForeground} />
             <Text className="text-sm font-bold text-primary-foreground">이달의 독서 리포트 발행하기</Text>

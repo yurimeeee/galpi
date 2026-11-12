@@ -3,7 +3,7 @@ import { Pressable, Text, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { Library, Plus, BarChart3, UserRound, type LucideIcon } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useThemeColors } from '../../lib/theme';
+import { SHADOW, useThemeColors } from '../../lib/theme';
 
 export type NavKey = 'library' | 'add' | 'stats' | 'mypage';
 
@@ -40,16 +40,7 @@ export function BottomNav({
         onPress={() => onChange('add')}
         accessibilityLabel="갈피 추가"
         className="web:cursor-pointer -mt-8 h-14 w-14 items-center justify-center rounded-xl bg-primary"
-        style={({ pressed }) => [
-          {
-            shadowColor: colors.primary,
-            shadowOpacity: 0.25,
-            shadowRadius: 12,
-            shadowOffset: { width: 0, height: 6 },
-            elevation: 6,
-          },
-          pressed && { transform: [{ scale: 0.95 }] },
-        ]}
+        style={({ pressed }) => [SHADOW.floating, pressed && { transform: [{ scale: 0.95 }] }]}
       >
         <Plus size={24} color={colors.primaryForeground} />
       </Pressable>

@@ -12,7 +12,7 @@ import { BookOpen, Coffee } from 'lucide-react-native';
 import { useReadingTimerStore, timerSecondsLeft } from '../../lib/reading-timer-store';
 import { useNow } from '../../lib/hooks/use-now';
 import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
-import { ACCENT_BG_CLASS, useThemeColors } from '../../lib/theme';
+import { ACCENT_BG_CLASS, SHADOW, useThemeColors } from '../../lib/theme';
 
 const SIZE = 64;
 const MARGIN = 14;
@@ -126,13 +126,7 @@ export function ReadingTimerWidget() {
               className={`h-full w-full items-center justify-center overflow-hidden rounded-full ${
                 showCover ? '' : isRest ? 'bg-galpi-green' : 'bg-galpi-ink'
               }`}
-              style={{
-                shadowColor: colors.galpiInk,
-                shadowOpacity: 0.3,
-                shadowRadius: 10,
-                shadowOffset: { width: 0, height: 4 },
-                elevation: 8,
-              }}
+              style={SHADOW.floating}
             >
               {showCover ? (
                 <>

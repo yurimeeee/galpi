@@ -25,7 +25,7 @@ import { SentenceCardModal } from '../galpi/sentence-card-modal';
 import { type Book, type ReadingStatus, STATUS_LABEL } from '../../lib/data/books';
 import { ENTRY_LABEL, type EntryType, type Sentence } from '../../lib/data/sentences';
 import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
-import { ACCENT_BG_CLASS, useThemeColors } from '../../lib/theme';
+import { ACCENT_BG_CLASS, SHADOW, useThemeColors } from '../../lib/theme';
 
 const ENTRY_ICON: Record<EntryType, LucideIcon> = {
   text: Type,
@@ -253,12 +253,7 @@ export function BookDetailScreen({
               {/* 표지 */}
               <View
                 className={`h-40 w-28 shrink-0 overflow-hidden rounded-xl ${showCover ? 'bg-secondary' : `justify-between ${ACCENT_BG_CLASS[book.accent]} p-3`}`}
-                style={{
-                  shadowColor: colors.galpiInk,
-                  shadowOpacity: 0.1,
-                  shadowRadius: 16,
-                  shadowOffset: { width: 0, height: 8 },
-                }}
+                style={SHADOW.cover}
               >
                 {showCover ? (
                   <Image
@@ -416,15 +411,7 @@ export function BookDetailScreen({
         <Pressable
           onPress={onAddSentence}
           className="web:cursor-pointer flex-row items-center gap-2 rounded-full bg-primary px-6 py-3.5"
-          style={({ pressed }) => [
-            {
-              shadowColor: colors.primary,
-              shadowOpacity: 0.3,
-              shadowRadius: 20,
-              shadowOffset: { width: 0, height: 8 },
-            },
-            pressed && { transform: [{ scale: 0.95 }] },
-          ]}
+          style={({ pressed }) => [SHADOW.floating, pressed && { transform: [{ scale: 0.95 }] }]}
         >
           <Plus size={16} color={colors.primaryForeground} />
           <Text className="text-sm font-bold text-primary-foreground">갈피 남기기</Text>
