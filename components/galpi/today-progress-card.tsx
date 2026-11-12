@@ -23,7 +23,7 @@ export function TodayProgressCard({
   const goalMet = dailyGoalMinutes > 0 && todayMinutes >= dailyGoalMinutes;
 
   return (
-    <View className="mb-7 overflow-hidden rounded-3xl bg-galpi-ink p-5">
+    <View className="mb-7 overflow-hidden rounded-2xl bg-galpi-ink p-5">
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
           <Flame size={16} color={colors.galpiYellow} strokeWidth={2} />

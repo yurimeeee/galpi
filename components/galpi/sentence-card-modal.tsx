@@ -131,7 +131,7 @@ export function SentenceCardModal({
       }
     >
       {/* 비율 선택 */}
-      <View className="mb-4 flex-row gap-1 rounded-2xl bg-secondary p-1">
+      <View className="mb-4 flex-row gap-1 rounded-xl bg-secondary p-1">
         {([
           { key: '1:1' as Ratio, label: '1:1 인스타 피드' },
           { key: '9:16' as Ratio, label: '9:16 스토리' },
@@ -175,12 +175,12 @@ export function SentenceCardModal({
       </View>
 
       {/* 카드 미리보기 — 화면엔 작게 보여주고, 캡처는 실제 크기(전체 너비)로 별도 렌더링 */}
-      <View className="items-center rounded-2xl bg-secondary p-4">
+      <View className="items-center rounded-xl bg-secondary p-4">
         {/* 실제 크기 측정용 스페이서: 시각적으로는 차지하는 공간이 없음 */}
         <View className="h-0 w-full" onLayout={(e) => setRealCardWidth(e.nativeEvent.layout.width)} />
 
         <View
-          className={`overflow-hidden rounded-3xl p-6 ${ratio === '1:1' ? 'w-full' : 'w-[58%]'}`}
+          className={`overflow-hidden rounded-2xl p-6 ${ratio === '1:1' ? 'w-full' : 'w-[58%]'}`}
           style={{
             aspectRatio: ratio === '1:1' ? 1 : 9 / 16,
             backgroundColor: palette.bg,
@@ -197,7 +197,7 @@ export function SentenceCardModal({
             <View
               ref={cardRef}
               collapsable={false}
-              className="overflow-hidden rounded-3xl p-6"
+              className="overflow-hidden rounded-2xl p-6"
               style={{
                 width: realCardWidth,
                 aspectRatio: ratio === '1:1' ? 1 : 9 / 16,
@@ -217,7 +217,7 @@ export function SentenceCardModal({
         <Pressable
           onPress={handleSaveImage}
           disabled={busy !== null}
-          className={`web:cursor-pointer flex-1 flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-3.5 ${busy ? 'opacity-60' : ''}`}
+          className={`web:cursor-pointer flex-1 flex-row items-center justify-center gap-2 rounded-xl bg-primary py-3.5 ${busy ? 'opacity-60' : ''}`}
         >
           {busy === 'save' ? <ActivityIndicator color={themeColors.primaryForeground} /> : <Download size={16} color={themeColors.primaryForeground} />}
           <Text className="text-sm font-bold text-primary-foreground">이미지 저장하기</Text>
@@ -225,7 +225,7 @@ export function SentenceCardModal({
         <Pressable
           onPress={handleShare}
           disabled={busy !== null}
-          className={`web:cursor-pointer flex-1 flex-row items-center justify-center gap-2 rounded-2xl border border-border bg-card py-3.5 ${busy ? 'opacity-60' : ''}`}
+          className={`web:cursor-pointer flex-1 flex-row items-center justify-center gap-2 rounded-xl border border-border bg-card py-3.5 ${busy ? 'opacity-60' : ''}`}
         >
           {busy === 'share' ? <ActivityIndicator color={themeColors.foreground} /> : <Share2 size={16} color={themeColors.foreground} />}
           <Text className="text-sm font-bold text-foreground">SNS 공유하기</Text>

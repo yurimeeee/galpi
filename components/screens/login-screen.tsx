@@ -135,7 +135,7 @@ export function LoginScreen({
             <Pressable
               onPress={handleGoogleLogin}
               disabled={submitting !== null}
-              className={`web:cursor-pointer w-full flex-row items-center justify-center gap-3 rounded-2xl border border-input bg-card py-3.5 ${
+              className={`web:cursor-pointer w-full flex-row items-center justify-center gap-3 rounded-xl border border-input bg-card py-3.5 ${
                 submitting !== null ? 'opacity-60' : ''
               }`}
             >

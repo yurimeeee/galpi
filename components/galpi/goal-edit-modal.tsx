@@ -82,7 +82,7 @@ export function GoalEditModal({
       <Pressable
         onPress={handleSave}
         disabled={saving}
-        className={`web:cursor-pointer mt-6 w-full flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-4 ${
+        className={`web:cursor-pointer mt-6 w-full flex-row items-center justify-center gap-2 rounded-xl bg-primary py-4 ${
           saving ? 'opacity-60' : ''
         }`}
         style={({ pressed }) => pressed && !saving && { transform: [{ scale: 0.98 }] }}
@@ -115,7 +115,7 @@ function Stepper({
 }) {
   const colors = useThemeColors();
   return (
-    <View className="flex-row items-center gap-3 rounded-2xl border border-border bg-card p-3.5">
+    <View className="flex-row items-center gap-3 rounded-xl border border-border bg-card p-3.5">
       <View className={`h-11 w-11 items-center justify-center rounded-xl ${ACCENT_BG_CLASS[accent]}`}>
         <Icon size={20} color={colors.galpiInk} strokeWidth={1.9} />
       </View>

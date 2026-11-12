@@ -69,7 +69,7 @@ function BadgeTile({ badge }: { badge: BadgeProgress }) {
       onPress={() =>
         Alert.alert(badge.title, badge.achieved ? badge.description : `${badgeTargetLabel(badge)} 달성 시 잠금 해제돼요.`)
       }
-      className="web:cursor-pointer w-full items-center gap-1.5 rounded-2xl bg-card p-3"
+      className="web:cursor-pointer w-full items-center gap-1.5 rounded-xl bg-card p-3"
     >
       <View
         className={`relative h-11 w-11 items-center justify-center rounded-full ${

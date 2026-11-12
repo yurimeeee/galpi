@@ -132,7 +132,7 @@ export function EditSentenceScreen({
           <View className="gap-4">
             {sentence.type === 'photo' && sentence.photoUrl ? (
               <Field label="페이지 사진">
-                <View className="h-40 w-full overflow-hidden rounded-2xl bg-secondary">
+                <View className="h-40 w-full overflow-hidden rounded-xl bg-secondary">
                   <Image
                     source={{ uri: sentence.photoUrl }}
                     className="h-full w-full"
@@ -152,13 +152,13 @@ export function EditSentenceScreen({
                 placeholder="마음에 담고 싶은 문장을 적어주세요."
                 placeholderTextColor={colors.mutedForeground}
                 textAlignVertical="top"
-                className="w-full rounded-2xl border border-border bg-card p-4 text-md leading-relaxed text-foreground focus:border-ring"
+                className="w-full rounded-xl border border-border bg-card p-4 text-md leading-relaxed text-foreground focus:border-ring"
                 style={{ minHeight: 120 }}
               />
             </Field>
 
             <Field label="페이지">
-              <View className="flex-row items-center gap-2 rounded-2xl border border-border bg-card px-4 py-3.5">
+              <View className="flex-row items-center gap-2 rounded-xl border border-border bg-card px-4 py-3.5">
                 <Text className="font-mono text-sm font-bold text-muted-foreground">P.</Text>
                 <TextInput
                   value={page}
@@ -180,7 +180,7 @@ export function EditSentenceScreen({
                 placeholder="이 문장에 대한 생각을 남겨보세요. (선택)"
                 placeholderTextColor={colors.mutedForeground}
                 textAlignVertical="top"
-                className="w-full rounded-2xl border border-border bg-card p-4 text-sm leading-relaxed text-foreground focus:border-ring"
+                className="w-full rounded-xl border border-border bg-card p-4 text-sm leading-relaxed text-foreground focus:border-ring"
                 style={{ minHeight: 80 }}
               />
             </Field>
@@ -195,7 +195,7 @@ export function EditSentenceScreen({
           <Pressable
             onPress={handleSave}
             disabled={busy}
-            className={`web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-4 ${
+            className={`web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-xl bg-primary py-4 ${
               busy ? 'opacity-60' : ''
             }`}
             style={({ pressed }) => pressed && { transform: [{ scale: 0.98 }] }}

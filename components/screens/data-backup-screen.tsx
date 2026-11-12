@@ -100,7 +100,7 @@ export function DataBackupScreen({
 
       <ScrollView className="flex-1 px-5 pt-2" contentContainerClassName="pb-10" keyboardShouldPersistTaps="handled">
         {/* 백업(내보내기) */}
-        <View className="gap-3 rounded-2xl border border-border bg-card p-4">
+        <View className="gap-3 rounded-xl border border-border bg-card p-4">
           <View className="flex-row items-center gap-2">
             <View className="h-9 w-9 items-center justify-center rounded-xl bg-secondary">
               <CloudDownload size={18} color={colors.foreground} strokeWidth={1.8} />
@@ -119,7 +119,7 @@ export function DataBackupScreen({
           <Pressable
             onPress={handleExport}
             disabled={exporting || books.length === 0}
-            className={`web:cursor-pointer mt-1 w-full flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-3.5 ${
+            className={`web:cursor-pointer mt-1 w-full flex-row items-center justify-center gap-2 rounded-xl bg-primary py-3.5 ${
               exporting || books.length === 0 ? 'opacity-50' : ''
             }`}
           >
@@ -135,7 +135,7 @@ export function DataBackupScreen({
         </View>
 
         {/* 복구(가져오기) */}
-        <View className="mt-4 gap-3 rounded-2xl border border-border bg-card p-4">
+        <View className="mt-4 gap-3 rounded-xl border border-border bg-card p-4">
           <View className="flex-row items-center gap-2">
             <View className="h-9 w-9 items-center justify-center rounded-xl bg-secondary">
               <CloudUpload size={18} color={colors.foreground} strokeWidth={1.8} />
@@ -156,7 +156,7 @@ export function DataBackupScreen({
           <Pressable
             onPress={handlePickFile}
             disabled={pickingFile}
-            className={`web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-2xl border border-border bg-background py-3.5 ${
+            className={`web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-xl border border-border bg-background py-3.5 ${
               pickingFile ? 'opacity-50' : ''
             }`}
           >
@@ -180,14 +180,14 @@ export function DataBackupScreen({
             textAlignVertical="top"
             autoCapitalize="none"
             autoCorrect={false}
-            className="w-full rounded-2xl border border-border bg-background p-4 font-mono text-xs leading-relaxed text-foreground focus:border-ring"
+            className="w-full rounded-xl border border-border bg-background p-4 font-mono text-xs leading-relaxed text-foreground focus:border-ring"
             style={{ minHeight: 120 }}
           />
 
           <Pressable
             onPress={handleImport}
             disabled={importing || !importText.trim()}
-            className={`web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-3.5 ${
+            className={`web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-xl bg-primary py-3.5 ${
               importing || !importText.trim() ? 'opacity-50' : ''
             }`}
           >

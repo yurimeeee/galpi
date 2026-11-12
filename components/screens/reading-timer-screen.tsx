@@ -203,7 +203,7 @@ export function ReadingTimerScreen({
                 key={p.key}
                 onPress={() => setPresetKeyOnStore(p.key)}
                 disabled={running}
-                className={`web:cursor-pointer flex-row items-center justify-between rounded-2xl border px-4 py-3 ${
+                className={`web:cursor-pointer flex-row items-center justify-between rounded-xl border px-4 py-3 ${
                   running ? 'opacity-40' : ''
                 } ${selected ? 'border-galpi-ink bg-galpi-ink' : 'border-border bg-card'}`}
               >
@@ -228,14 +228,14 @@ export function ReadingTimerScreen({
           <Pressable
             onPress={resetTimer}
             accessibilityLabel="처음부터"
-            className="web:cursor-pointer h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-secondary"
+            className="web:cursor-pointer h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-secondary"
             style={({ pressed }) => pressed && { transform: [{ scale: 0.95 }] }}
           >
             <RotateCcw size={20} color={colors.foreground} />
           </Pressable>
           <Pressable
             onPress={handlePlayPause}
-            className="web:cursor-pointer h-14 flex-1 flex-row items-center justify-center gap-2 rounded-2xl bg-primary"
+            className="web:cursor-pointer h-14 flex-1 flex-row items-center justify-center gap-2 rounded-xl bg-primary"
             style={({ pressed }) => pressed && { transform: [{ scale: 0.98 }] }}
           >
             {running ? <Pause size={18} color={colors.primaryForeground} /> : <Play size={18} color={colors.primaryForeground} />}
@@ -295,7 +295,7 @@ function BookSelector({ book, onPress }: { book: Book; onPress: () => void }) {
   const colors = useThemeColors();
 
   return (
-    <View className="mt-2 flex-row items-center gap-3 rounded-2xl border border-border bg-card p-3">
+    <View className="mt-2 flex-row items-center gap-3 rounded-xl border border-border bg-card p-3">
       <View
         className={`relative h-16 w-12 shrink-0 items-center justify-end overflow-hidden rounded-lg ${
           showCover ? 'bg-secondary' : ACCENT_BG_CLASS[book.accent]
@@ -341,7 +341,7 @@ function BookPickerRow({ book, onPress }: { book: Book; onPress: () => void }) {
   return (
     <Pressable
       onPress={onPress}
-      className="web:cursor-pointer flex-row items-center gap-3 rounded-2xl border border-border bg-card p-3"
+      className="web:cursor-pointer flex-row items-center gap-3 rounded-xl border border-border bg-card p-3"
     >
       <View
         className={`relative h-12 w-9 shrink-0 items-center justify-end overflow-hidden rounded-md ${

@@ -27,7 +27,7 @@ export function NoticesScreen({ onBack }: { onBack: () => void }) {
         ) : (
           <View className="gap-3">
             {NOTICES.map((notice) => (
-              <View key={notice.id} className="gap-2 rounded-2xl border border-border bg-card p-4">
+              <View key={notice.id} className="gap-2 rounded-xl border border-border bg-card p-4">
                 <View className="flex-row items-center gap-2">
                   <View className="h-7 w-7 items-center justify-center rounded-full bg-secondary">
                     <Megaphone size={14} color={colors.foreground} strokeWidth={1.8} />

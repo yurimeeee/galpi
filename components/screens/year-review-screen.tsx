@@ -248,7 +248,7 @@ function WeekdayCard({ readDaysCount, weekdayCounts, topWeekdayIndex }: { readDa
       </View>
       {topWeekdayIndex >= 0 ? (
         <>
-          <View className="rounded-2xl bg-galpi-paper/5 p-4">
+          <View className="rounded-xl bg-galpi-paper/5 p-4">
             <DistributionBars labels={WEEKDAY_LABELS} counts={weekdayCounts} topIndex={topWeekdayIndex} />
           </View>
           <Text className="text-center text-sm leading-relaxed text-galpi-paper/60">
@@ -415,7 +415,7 @@ function SummaryCard({
 
   return (
     <View className="w-full max-w-sm gap-5">
-      <View ref={cardRef} collapsable={false} className="gap-4 rounded-3xl bg-card p-5">
+      <View ref={cardRef} collapsable={false} className="gap-4 rounded-2xl bg-card p-5">
         <View className="flex-row items-center justify-between">
           <Text className="text-base font-black text-foreground">{year}년 독서 결산</Text>
           <Text className="text-xs font-semibold text-muted-foreground">{displayName}</Text>
@@ -439,7 +439,7 @@ function SummaryCard({
         ) : null}
 
         {topBookOfYear ? (
-          <View className="rounded-2xl bg-galpi-ink p-3.5">
+          <View className="rounded-xl bg-galpi-ink p-3.5">
             <Text numberOfLines={2} className="text-sm font-bold leading-relaxed text-galpi-paper">
               "{topBookOfYear.sentence.quote}"
             </Text>
@@ -454,7 +454,7 @@ function SummaryCard({
         <Pressable
           onPress={handleSaveImage}
           disabled={busy !== null}
-          className={`web:cursor-pointer flex-1 flex-row items-center justify-center gap-2 rounded-2xl bg-galpi-paper py-3.5 ${busy ? 'opacity-60' : ''}`}
+          className={`web:cursor-pointer flex-1 flex-row items-center justify-center gap-2 rounded-xl bg-galpi-paper py-3.5 ${busy ? 'opacity-60' : ''}`}
         >
           {busy === 'save' ? <ActivityIndicator color={colors.galpiInk} /> : <Download size={16} color={colors.galpiInk} />}
           <Text className="text-sm font-bold text-galpi-ink">이미지 저장</Text>
@@ -462,7 +462,7 @@ function SummaryCard({
         <Pressable
           onPress={handleShare}
           disabled={busy !== null}
-          className={`web:cursor-pointer flex-1 flex-row items-center justify-center gap-2 rounded-2xl border border-galpi-paper/30 py-3.5 ${busy ? 'opacity-60' : ''}`}
+          className={`web:cursor-pointer flex-1 flex-row items-center justify-center gap-2 rounded-xl border border-galpi-paper/30 py-3.5 ${busy ? 'opacity-60' : ''}`}
         >
           {busy === 'share' ? <ActivityIndicator color={colors.galpiPaper} /> : <Share2 size={16} color={colors.galpiPaper} />}
           <Text className="text-sm font-bold text-galpi-paper">공유하기</Text>

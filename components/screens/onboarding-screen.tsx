@@ -98,7 +98,7 @@ export function OnboardingScreen({ onDone }: { onDone: () => void }) {
 
         <Pressable
           onPress={next}
-          className="web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-4"
+          className="web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-xl bg-primary py-4"
           style={({ pressed }) => pressed && { transform: [{ scale: 0.98 }] }}
         >
           <Text className="text-md font-bold text-primary-foreground">

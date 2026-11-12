@@ -91,7 +91,7 @@ export function LinkedAccountsScreen({ onBack }: { onBack: () => void }) {
         </Text>
 
         {/* 이메일/비밀번호 — 정보 표시 전용 */}
-        <View className="flex-row items-center gap-3 rounded-2xl border border-border bg-card p-4">
+        <View className="flex-row items-center gap-3 rounded-xl border border-border bg-card p-4">
           <View className="h-10 w-10 items-center justify-center rounded-xl bg-secondary">
             <Mail size={18} color={colors.foreground} strokeWidth={1.8} />
           </View>
@@ -105,7 +105,7 @@ export function LinkedAccountsScreen({ onBack }: { onBack: () => void }) {
         </View>
 
         {/* 구글 — 연동/해제 가능 */}
-        <View className="flex-row items-center gap-3 rounded-2xl border border-border bg-card p-4">
+        <View className="flex-row items-center gap-3 rounded-xl border border-border bg-card p-4">
           <View className="h-10 w-10 items-center justify-center rounded-xl bg-secondary">
             <Link2 size={18} color={colors.foreground} strokeWidth={1.8} />
           </View>

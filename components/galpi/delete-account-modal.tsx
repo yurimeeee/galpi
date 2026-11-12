@@ -90,7 +90,7 @@ export function DeleteAccountModal({
       }
     >
       <View className="gap-4">
-        <View className="flex-row items-start gap-3 rounded-2xl border border-destructive/30 bg-destructive/5 p-4">
+        <View className="flex-row items-start gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4">
           <View className="mt-0.5 h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-destructive/10">
             <AlertTriangle size={16} color={colors.destructive} />
           </View>
@@ -117,7 +117,7 @@ export function DeleteAccountModal({
         <Pressable
           onPress={confirmAndDelete}
           disabled={!canSubmit}
-          className={`web:cursor-pointer mt-2 w-full flex-row items-center justify-center gap-2 rounded-2xl bg-destructive py-4 ${
+          className={`web:cursor-pointer mt-2 w-full flex-row items-center justify-center gap-2 rounded-xl bg-destructive py-4 ${
             !canSubmit ? 'opacity-50' : ''
           }`}
         >

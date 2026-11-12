@@ -97,7 +97,7 @@ export function EditProgressModal({
             keyboardType="numeric"
             placeholder="예: 314"
             placeholderTextColor={colors.mutedForeground}
-            className="w-full rounded-2xl border border-input bg-card px-4 py-3.5 text-sm text-foreground focus:border-ring"
+            className="w-full rounded-xl border border-input bg-card px-4 py-3.5 text-sm text-foreground focus:border-ring"
           />
         </View>
         <View className="flex-1">
@@ -108,7 +108,7 @@ export function EditProgressModal({
             keyboardType="numeric"
             placeholder="예: 128"
             placeholderTextColor={colors.mutedForeground}
-            className="w-full rounded-2xl border border-input bg-card px-4 py-3.5 text-sm text-foreground focus:border-ring"
+            className="w-full rounded-xl border border-input bg-card px-4 py-3.5 text-sm text-foreground focus:border-ring"
           />
         </View>
       </View>
@@ -158,7 +158,7 @@ export function EditProgressModal({
       <Pressable
         onPress={handleSave}
         disabled={!canSave}
-        className={`web:cursor-pointer mt-6 w-full flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-4 ${
+        className={`web:cursor-pointer mt-6 w-full flex-row items-center justify-center gap-2 rounded-xl bg-primary py-4 ${
           !canSave ? 'opacity-50' : ''
         }`}
       >

@@ -317,7 +317,7 @@ export function MainLibraryScreen({
                 <View accessibilityLabel="지금 읽는 중" className="mb-7">
                   <Pressable
                     onPress={() => onOpenBook(featured)}
-                    className={`web:cursor-pointer overflow-hidden rounded-3xl ${ACCENT_BG_CLASS[featured.accent]} p-5`}
+                    className={`web:cursor-pointer overflow-hidden rounded-2xl ${ACCENT_BG_CLASS[featured.accent]} p-5`}
                     style={({ pressed }) => pressed && { transform: [{ scale: 0.99 }] }}
                   >
                     <View className="flex-row items-center justify-between">
@@ -334,7 +334,7 @@ export function MainLibraryScreen({
                     <Text className="mt-0.5 text-xs font-medium text-galpi-ink/60">{featured.author}</Text>
 
                     {featured.quote ? (
-                      <View className="flex-row gap-2 p-3 mt-4 rounded-2xl bg-galpi-paper/60">
+                      <View className="flex-row gap-2 p-3 mt-4 rounded-xl bg-galpi-paper/60">
                         <Quote size={14} color={colors.galpiInk} opacity={0.5} />
                         <Text className="flex-1 text-xs leading-relaxed text-galpi-ink/80">{featured.quote}</Text>
                       </View>
@@ -397,7 +397,7 @@ export function MainLibraryScreen({
           searchOpen ? null : (
             <Pressable
               onPress={onAddBook}
-              className="flex-row items-center justify-center w-full gap-2 py-4 mt-5 border border-dashed web:cursor-pointer rounded-2xl border-border bg-card"
+              className="flex-row items-center justify-center w-full gap-2 py-4 mt-5 border border-dashed web:cursor-pointer rounded-xl border-border bg-card"
             >
               <View className="items-center justify-center w-5 h-5 rounded-full bg-galpi-green">
                 <Text className="text-galpi-ink">+</Text>
@@ -505,7 +505,7 @@ function SentenceResultCard({ sentence, book, query }: { sentence: Sentence; boo
   const colors = useThemeColors();
 
   return (
-    <View className="p-4 rounded-2xl bg-card">
+    <View className="p-4 rounded-xl bg-card">
       <View className="flex-row items-center justify-between">
         <View className="min-w-0 flex-1 flex-row items-center gap-1.5">
           <Bookmark size={11} color={colors.mutedForeground} />
@@ -551,7 +551,7 @@ export function LibrarySkeleton() {
           <Skeleton className="mt-1.5 h-8 w-32 rounded-lg" />
         </View>
 
-        <Skeleton className="w-full h-40 mb-7 rounded-3xl" />
+        <Skeleton className="w-full h-40 mb-7 rounded-2xl" />
 
         <View className="flex-row items-center justify-between mb-3">
           <Text className="text-lg font-bold tracking-tight text-foreground">내 서재</Text>

@@ -111,7 +111,7 @@ export function ReadingGoalScreen({ onBack }: { onBack: () => void }) {
       ) : (
         <ScrollView className="flex-1 min-h-0" contentContainerClassName="px-5 pb-10 pt-3">
           {/* 스트릭 히어로 */}
-          <View className="overflow-hidden rounded-3xl bg-galpi-yellow p-6">
+          <View className="overflow-hidden rounded-2xl bg-galpi-yellow p-6">
             <View className="flex-row items-center justify-between">
               <View>
                 <View className="flex-row items-center gap-2">
@@ -194,7 +194,7 @@ export function ReadingGoalScreen({ onBack }: { onBack: () => void }) {
           </View>
 
           {/* 이번 달 스트릭 달력 */}
-          <View className="mt-6 rounded-3xl border border-border bg-card p-5">
+          <View className="mt-6 rounded-2xl border border-border bg-card p-5">
             <View className="mb-4 flex-row items-center justify-between">
               <Text className="text-md font-black text-foreground">
                 {year}년 {month + 1}월 기록
@@ -244,7 +244,7 @@ export function ReadingGoalScreen({ onBack }: { onBack: () => void }) {
                 return (
                   <View
                     key={m.id}
-                    className={`w-[48%] items-center gap-2 rounded-2xl border p-4 ${
+                    className={`w-[48%] items-center gap-2 rounded-xl border p-4 ${
                       unlocked ? 'border-transparent ' + ACCENT_BG_CLASS[accent] : 'border-border bg-secondary'
                     }`}
                   >
@@ -319,7 +319,7 @@ function GoalProgress({
   const colors = useThemeColors();
 
   return (
-    <View className="rounded-2xl border border-border bg-card p-4">
+    <View className="rounded-xl border border-border bg-card p-4">
       <View className="flex-row items-center gap-3">
         <View className={`h-10 w-10 items-center justify-center rounded-xl ${ACCENT_BG_CLASS[accent]}`}>
           <Icon size={20} color={colors.galpiInk} strokeWidth={1.9} />

@@ -55,7 +55,7 @@ export function EditReviewModal({
         placeholder="이 책은 어땠나요? 짧게 남겨보세요."
         placeholderTextColor={colors.mutedForeground}
         textAlignVertical="top"
-        className="w-full rounded-2xl border border-input bg-card p-4 text-sm leading-relaxed text-foreground focus:border-ring"
+        className="w-full rounded-xl border border-input bg-card p-4 text-sm leading-relaxed text-foreground focus:border-ring"
         style={{ minHeight: 140 }}
       />
 
@@ -64,7 +64,7 @@ export function EditReviewModal({
       <Pressable
         onPress={handleSave}
         disabled={submitting}
-        className={`web:cursor-pointer mt-5 w-full flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-4 ${
+        className={`web:cursor-pointer mt-5 w-full flex-row items-center justify-center gap-2 rounded-xl bg-primary py-4 ${
           submitting ? 'opacity-60' : ''
         }`}
       >

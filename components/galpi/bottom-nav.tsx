@@ -39,7 +39,7 @@ export function BottomNav({
       <Pressable
         onPress={() => onChange('add')}
         accessibilityLabel="갈피 추가"
-        className="web:cursor-pointer -mt-8 h-14 w-14 items-center justify-center rounded-2xl bg-primary"
+        className="web:cursor-pointer -mt-8 h-14 w-14 items-center justify-center rounded-xl bg-primary"
         style={({ pressed }) => [
           {
             shadowColor: colors.primary,

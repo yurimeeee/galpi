@@ -33,7 +33,7 @@ export function ThemeSettingsScreen({ onBack }: { onBack: () => void }) {
           갈피 화면의 밝기를 선택해 주세요.
         </Text>
 
-        <View className="overflow-hidden rounded-2xl border border-border bg-card">
+        <View className="overflow-hidden rounded-xl border border-border bg-card">
           {THEME_OPTIONS.map((opt, i) => {
             const active = opt.key === mode;
             return (

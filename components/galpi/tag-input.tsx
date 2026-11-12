@@ -73,7 +73,7 @@ export function TagInput({
       ) : null}
 
       {tags.length < MAX_TAGS ? (
-        <View className="flex-row items-center gap-2 rounded-2xl border border-border bg-card px-4 py-3">
+        <View className="flex-row items-center gap-2 rounded-xl border border-border bg-card px-4 py-3">
           <TagIcon size={14} color={colors.mutedForeground} />
           <TextInput
             value={draft}

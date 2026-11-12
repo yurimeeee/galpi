@@ -57,7 +57,7 @@ export function ChangePasswordModal({ onClose }: { onClose: () => void }) {
       }
     >
       {isSocialAccount ? (
-        <View className="flex-row items-start gap-3 rounded-2xl border border-border bg-card p-4">
+        <View className="flex-row items-start gap-3 rounded-xl border border-border bg-card p-4">
           <View className="mt-0.5 h-8 w-8 items-center justify-center rounded-xl bg-secondary">
             <Info size={16} color={colors.foreground} />
           </View>
@@ -105,7 +105,7 @@ export function ChangePasswordModal({ onClose }: { onClose: () => void }) {
           <Pressable
             onPress={handleSubmit}
             disabled={!canSubmit}
-            className={`web:cursor-pointer mt-2 w-full flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-4 ${
+            className={`web:cursor-pointer mt-2 w-full flex-row items-center justify-center gap-2 rounded-xl bg-primary py-4 ${
               !canSubmit ? 'opacity-50' : ''
             }`}
           >

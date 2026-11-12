@@ -54,7 +54,7 @@ export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
 
       <ScrollView className="flex-1 px-5 pt-4" contentContainerClassName="pb-10">
         {!supported ? (
-          <View className="mb-4 flex-row items-start gap-3 rounded-2xl border border-border bg-card p-4">
+          <View className="mb-4 flex-row items-start gap-3 rounded-xl border border-border bg-card p-4">
             <View className="mt-0.5 h-8 w-8 items-center justify-center rounded-xl bg-secondary">
               <Info size={16} color={colors.foreground} />
             </View>
@@ -69,7 +69,7 @@ export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
             <ActivityIndicator color={colors.foreground} />
           </View>
         ) : (
-          <View className="overflow-hidden rounded-2xl border border-border bg-card">
+          <View className="overflow-hidden rounded-xl border border-border bg-card">
             <View
               className={`flex-row items-center gap-3 px-4 py-4 ${enabled ? 'border-b border-border' : ''}`}
             >
@@ -102,7 +102,7 @@ export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
                 <TimePickerField value={time} onChange={setDailyReminderTime} />
 
                 {showTimeSuggestion ? (
-                  <View className="mt-2 flex-row items-center gap-3 rounded-2xl bg-secondary p-3">
+                  <View className="mt-2 flex-row items-center gap-3 rounded-xl bg-secondary p-3">
                     <Text className="flex-1 text-xs leading-relaxed text-foreground">
                       가장 많이 기록한 시간대는 {formatHourKorean(suggestedHour!)}예요. 이 시간으로 바꿔볼까요?
                     </Text>
@@ -135,7 +135,7 @@ export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
         ) : null}
 
         {/* 알림 미리보기 */}
-        <View className="mt-6 gap-2 rounded-2xl bg-galpi-yellow p-4">
+        <View className="mt-6 gap-2 rounded-xl bg-galpi-yellow p-4">
           <Text className="text-xs font-bold text-galpi-ink/70">알림 미리보기</Text>
           <Text className="text-md font-black text-galpi-ink">
             📚 오늘 독서 목표를 달성해 보세요!
@@ -150,7 +150,7 @@ export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
             <ActivityIndicator color={colors.foreground} />
           </View>
         ) : (
-          <View className="mt-6 overflow-hidden rounded-2xl border border-border bg-card">
+          <View className="mt-6 overflow-hidden rounded-xl border border-border bg-card">
             <View className="flex-row items-center gap-3 px-4 py-4">
               <View className="min-w-0 flex-1">
                 <Text className="text-sm font-bold text-foreground">스트릭 위험 알림</Text>
@@ -182,7 +182,7 @@ export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
         ) : null}
 
         {streakRiskEnabled && currentStreak > 0 ? (
-          <View className="mt-4 flex-row items-center gap-2 rounded-2xl bg-secondary p-4">
+          <View className="mt-4 flex-row items-center gap-2 rounded-xl bg-secondary p-4">
             <Flame size={16} color={colors.foreground} />
             <Text className="text-sm font-semibold text-foreground">지금 스트릭: {currentStreak}일</Text>
           </View>
@@ -193,7 +193,7 @@ export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
             <ActivityIndicator color={colors.foreground} />
           </View>
         ) : (
-          <View className="mt-6 overflow-hidden rounded-2xl border border-border bg-card">
+          <View className="mt-6 overflow-hidden rounded-xl border border-border bg-card">
             <View className="flex-row items-center gap-3 px-4 py-4">
               <View className="min-w-0 flex-1">
                 <Text className="text-sm font-bold text-foreground">1년 전 오늘의 갈피</Text>
@@ -225,7 +225,7 @@ export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
         ) : null}
 
         {onThisDayEnabled ? (
-          <View className="mt-4 gap-2 rounded-2xl bg-secondary p-4">
+          <View className="mt-4 gap-2 rounded-xl bg-secondary p-4">
             <Text className="text-xs font-bold text-muted-foreground">오늘의 미리보기</Text>
             {onThisDayMatch ? (
               <>

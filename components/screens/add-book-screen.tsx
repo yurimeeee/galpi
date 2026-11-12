@@ -202,7 +202,7 @@ export function AddBookScreen({
       </View>
 
       <View className="px-5">
-        <View className="flex-row gap-1 rounded-2xl bg-secondary p-1">
+        <View className="flex-row gap-1 rounded-xl bg-secondary p-1">
           {MODES.map(({ key, label, Icon }) => {
             const active = mode === key;
             return (
@@ -228,7 +228,7 @@ export function AddBookScreen({
       {mode === 'search' ? (
         <>
           <View className="px-5 pt-4">
-            <View className="flex-row items-center gap-2 rounded-2xl border border-border bg-card px-4 py-3">
+            <View className="flex-row items-center gap-2 rounded-xl border border-border bg-card px-4 py-3">
               <Search size={16} color={colors.mutedForeground} />
               <TextInput
                 value={query}
@@ -298,7 +298,7 @@ export function AddBookScreen({
             <View className="gap-4">
               <Field label="표지 이미지">
                 {coverUri ? (
-                  <View className="relative aspect-[2/3] w-32 overflow-hidden rounded-2xl bg-galpi-ink">
+                  <View className="relative aspect-[2/3] w-32 overflow-hidden rounded-xl bg-galpi-ink">
                     <Image source={{ uri: coverUri }} style={{ flex: 1 }} resizeMode="cover" />
                     <Pressable
                       onPress={() => setCoverUri(null)}
@@ -311,14 +311,14 @@ export function AddBookScreen({
                   <View className="flex-row gap-2">
                     <Pressable
                       onPress={takeManualCover}
-                      className="web:cursor-pointer flex-1 flex-row items-center justify-center gap-1.5 rounded-2xl bg-primary py-3"
+                      className="web:cursor-pointer flex-1 flex-row items-center justify-center gap-1.5 rounded-xl bg-primary py-3"
                     >
                       <Camera size={14} color={colors.primaryForeground} />
                       <Text className="text-xs font-bold text-primary-foreground">사진 찍기</Text>
                     </Pressable>
                     <Pressable
                       onPress={pickManualCover}
-                      className="web:cursor-pointer flex-1 flex-row items-center justify-center gap-1.5 rounded-2xl border border-border bg-card py-3"
+                      className="web:cursor-pointer flex-1 flex-row items-center justify-center gap-1.5 rounded-xl border border-border bg-card py-3"
                     >
                       <Images size={14} color={colors.foreground} />
                       <Text className="text-xs font-bold text-foreground">앨범에서 선택</Text>
@@ -333,7 +333,7 @@ export function AddBookScreen({
                   onChangeText={setManualTitle}
                   placeholder="책 제목을 입력해주세요"
                   placeholderTextColor={colors.mutedForeground}
-                  className="w-full rounded-2xl border border-border bg-card px-4 py-3.5 text-sm text-foreground focus:border-ring"
+                  className="w-full rounded-xl border border-border bg-card px-4 py-3.5 text-sm text-foreground focus:border-ring"
                 />
               </Field>
 
@@ -343,7 +343,7 @@ export function AddBookScreen({
                   onChangeText={setManualAuthor}
                   placeholder="저자 이름 (선택)"
                   placeholderTextColor={colors.mutedForeground}
-                  className="w-full rounded-2xl border border-border bg-card px-4 py-3.5 text-sm text-foreground focus:border-ring"
+                  className="w-full rounded-xl border border-border bg-card px-4 py-3.5 text-sm text-foreground focus:border-ring"
                 />
               </Field>
 
@@ -374,13 +374,13 @@ export function AddBookScreen({
                     onChangeText={setManualGenre}
                     placeholder="직접 입력하기 (선택)"
                     placeholderTextColor={colors.mutedForeground}
-                    className="w-full rounded-2xl border border-border bg-card px-4 py-3.5 text-sm text-foreground focus:border-ring"
+                    className="w-full rounded-xl border border-border bg-card px-4 py-3.5 text-sm text-foreground focus:border-ring"
                   />
                 </View>
               </Field>
 
               <Field label="전체 페이지">
-                <View className="flex-row items-center gap-2 rounded-2xl border border-border bg-card px-4 py-3.5">
+                <View className="flex-row items-center gap-2 rounded-xl border border-border bg-card px-4 py-3.5">
                   <Text className="font-mono text-sm font-bold text-muted-foreground">P.</Text>
                   <TextInput
                     value={manualPages}
@@ -403,7 +403,7 @@ export function AddBookScreen({
             <Pressable
               onPress={handleAddManual}
               disabled={manualSaving}
-              className={`web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-4 ${
+              className={`web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-xl bg-primary py-4 ${
                 manualSaving ? 'opacity-60' : ''
               }`}
               style={({ pressed }) => pressed && { transform: [{ scale: 0.98 }] }}
@@ -446,7 +446,7 @@ function ResultRow({
   const colors = useThemeColors();
 
   return (
-    <View className="flex-row items-center gap-3 rounded-2xl border border-border bg-card p-3">
+    <View className="flex-row items-center gap-3 rounded-xl border border-border bg-card p-3">
       {showCover ? (
         <Image
           source={{ uri: result.thumbnail }}

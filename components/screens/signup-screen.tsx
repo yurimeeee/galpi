@@ -126,7 +126,7 @@ export function SignUpScreen({
               ) : null}
             </View>
 
-            <View className="mt-1 rounded-2xl border border-border bg-card p-4">
+            <View className="mt-1 rounded-xl border border-border bg-card p-4">
               <CheckOption checked={agree} onToggle={() => setAgree((v) => !v)}>
                 <Text onPress={onOpenTerms} className="font-semibold text-foreground underline">
                   서비스 이용약관
@@ -150,7 +150,7 @@ export function SignUpScreen({
           <Pressable
             onPress={handleComplete}
             disabled={!canSubmit}
-            className={`web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-4 ${!canSubmit ? 'opacity-40' : ''}`}
+            className={`web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-xl bg-primary py-4 ${!canSubmit ? 'opacity-40' : ''}`}
             style={({ pressed }) => pressed && canSubmit && { transform: [{ scale: 0.98 }] }}
           >
             {submitting ? <ActivityIndicator size="small" color={colors.primaryForeground} /> : null}

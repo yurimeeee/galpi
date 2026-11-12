@@ -153,7 +153,7 @@ export function EditProfileModal({
           placeholder="2~12자, 특수문자 제외"
           placeholderTextColor={colors.mutedForeground}
           maxLength={12}
-          className="w-full rounded-2xl border border-input bg-card px-4 py-3.5 text-sm text-foreground focus:border-ring"
+          className="w-full rounded-xl border border-input bg-card px-4 py-3.5 text-sm text-foreground focus:border-ring"
         />
         {!nameValid && trimmedName.length > 0 ? (
           <Text className="mt-1.5 text-xs text-destructive">
@@ -167,7 +167,7 @@ export function EditProfileModal({
       <Pressable
         onPress={handleSave}
         disabled={!canSave}
-        className={`web:cursor-pointer mt-6 w-full flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-4 ${
+        className={`web:cursor-pointer mt-6 w-full flex-row items-center justify-center gap-2 rounded-xl bg-primary py-4 ${
           !canSave ? 'opacity-50' : ''
         }`}
       >

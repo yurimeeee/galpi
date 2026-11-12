@@ -293,7 +293,7 @@ export function StatsReportScreen({ books, sentences }: { books: Book[]; sentenc
         <View className="absolute inset-x-0 bottom-0 items-center px-6 pb-6">
           <Pressable
             onPress={() => setShareOpen(true)}
-            className="web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-4"
+            className="web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-xl bg-primary py-4"
             style={({ pressed }) => [
               {
                 shadowColor: colors.primary,
@@ -329,7 +329,7 @@ export function StatsReportSkeleton() {
       </View>
 
       <View className="flex-1 px-6">
-        <View className="mt-2 flex-row gap-1 rounded-2xl bg-secondary p-1">
+        <View className="mt-2 flex-row gap-1 rounded-xl bg-secondary p-1">
           {(['월간', '연간'] as const).map((label, i) => (
             <View key={label} className={`flex-1 rounded-xl py-2.5 ${i === 0 ? 'bg-card' : ''}`}>
               <Text className={`text-center text-sm font-bold ${i === 0 ? 'text-foreground' : 'text-muted-foreground'}`}>
@@ -343,11 +343,11 @@ export function StatsReportSkeleton() {
           <Skeleton className="h-8 w-32 rounded-lg" />
         </View>
 
-        <Skeleton className="mt-4 h-64 w-full rounded-3xl" />
+        <Skeleton className="mt-4 h-64 w-full rounded-2xl" />
 
         <View className="mt-6 gap-2.5">
           {[0, 1, 2].map((i) => (
-            <Skeleton key={i} className="h-16 w-full rounded-2xl" />
+            <Skeleton key={i} className="h-16 w-full rounded-xl" />
           ))}
         </View>
       </View>
@@ -375,7 +375,7 @@ function PeriodToggle({ period, onChange }: { period: Period; onChange: (period:
 
   return (
     <View
-      className="mt-2 flex-row gap-1 rounded-2xl bg-secondary p-1"
+      className="mt-2 flex-row gap-1 rounded-xl bg-secondary p-1"
       onLayout={(e) => setTrackWidth(e.nativeEvent.layout.width)}
     >
       {segmentWidth > 0 && (
@@ -530,7 +530,7 @@ function MonthlyView({
       </View>
 
       {/* 달력 */}
-      <View className="mt-5 rounded-3xl bg-card p-4">
+      <View className="mt-5 rounded-2xl bg-card p-4">
         <View className="mb-2 flex-row">
           {WEEKDAY_LABELS.map((d) => (
             <Text key={d} className="w-[14.28%] text-center text-2xs font-semibold text-muted-foreground">
@@ -564,7 +564,7 @@ function MonthlyView({
       </View>
 
       {/* 이달 요일별 독서 패턴 */}
-      <View className="mt-5 rounded-3xl bg-card p-5">
+      <View className="mt-5 rounded-2xl bg-card p-5">
         <Text className="mb-4 text-sm font-black text-foreground">주로 읽는 요일</Text>
         {topWeekdayIndex >= 0 ? (
           <>
@@ -580,7 +580,7 @@ function MonthlyView({
       </View>
 
       {/* 이달 시간대별 기록 패턴 */}
-      <View className="mt-5 rounded-3xl bg-card p-5">
+      <View className="mt-5 rounded-2xl bg-card p-5">
         <Text className="mb-4 text-sm font-black text-foreground">주로 기록하는 시간대</Text>
         {hasHourData && topHourIndex >= 0 ? (
           <>
@@ -598,7 +598,7 @@ function MonthlyView({
       </View>
 
       {/* 이달의 취향 */}
-      <View className="mt-5 rounded-3xl bg-card p-5">
+      <View className="mt-5 rounded-2xl bg-card p-5">
         <Text className="mb-2 text-sm font-black text-foreground">이달의 취향</Text>
         {hasGenreData ? (
           <Text className="text-xs leading-relaxed text-muted-foreground">
@@ -624,7 +624,7 @@ function MonthlyView({
           <Text className="text-xs font-medium text-muted-foreground">{booksThisMonth.length}권</Text>
         </View>
         {booksThisMonth.length === 0 ? (
-          <View className="rounded-2xl border border-dashed border-border bg-card px-6 py-8">
+          <View className="rounded-xl border border-dashed border-border bg-card px-6 py-8">
             <Text className="text-center text-sm leading-relaxed text-muted-foreground">
               이달 남긴 갈피가 아직 없어요.{'\n'}책장을 펼쳐 첫 문장을 담아보세요.
             </Text>
@@ -647,7 +647,7 @@ function BookThisMonthRow({ book, count }: { book: Book; count: number }) {
   const colors = useThemeColors();
 
   return (
-    <View className="flex-row items-center gap-3 rounded-2xl bg-card p-3">
+    <View className="flex-row items-center gap-3 rounded-xl bg-card p-3">
       <View
         className={`relative h-12 w-9 shrink-0 items-center justify-center overflow-hidden rounded-md ${
           showCover ? 'bg-secondary' : ACCENT_BG_CLASS[book.accent]
@@ -773,7 +773,7 @@ function YearlyView({
       {/* 연말 결산 CTA */}
       <Pressable
         onPress={() => router.push(`/year-review?year=${year}`)}
-        className="web:cursor-pointer mt-4 flex-row items-center justify-between rounded-2xl bg-galpi-ink px-4 py-3.5"
+        className="web:cursor-pointer mt-4 flex-row items-center justify-between rounded-xl bg-galpi-ink px-4 py-3.5"
       >
         <View className="flex-row items-center gap-2">
           <PartyPopper size={16} color={colors.galpiPaper} />
@@ -811,7 +811,7 @@ function YearlyView({
       </View>
 
       {/* 활동 히트맵 */}
-      <View className="mt-6 rounded-3xl bg-card p-5">
+      <View className="mt-6 rounded-2xl bg-card p-5">
         <View className="mb-4 flex-row items-center justify-between">
           <Text className="text-sm font-black text-foreground">연간 독서 활동</Text>
           <View className="flex-row items-center gap-1">
@@ -846,7 +846,7 @@ function YearlyView({
       </View>
 
       {/* 요일별 독서 패턴 */}
-      <View className="mt-5 rounded-3xl bg-card p-5">
+      <View className="mt-5 rounded-2xl bg-card p-5">
         <Text className="mb-4 text-sm font-black text-foreground">주로 읽는 요일</Text>
         {topWeekdayIndex >= 0 ? (
           <>
@@ -862,7 +862,7 @@ function YearlyView({
       </View>
 
       {/* 시간대별 기록 패턴 */}
-      <View className="mt-5 rounded-3xl bg-card p-5">
+      <View className="mt-5 rounded-2xl bg-card p-5">
         <Text className="mb-4 text-sm font-black text-foreground">주로 기록하는 시간대</Text>
         {hasHourData && topHourIndex >= 0 ? (
           <>
@@ -880,7 +880,7 @@ function YearlyView({
       </View>
 
       {/* 올해 가장 많이 담은 책 */}
-      <View className="mt-5 rounded-3xl bg-galpi-ink p-5">
+      <View className="mt-5 rounded-2xl bg-galpi-ink p-5">
         <View className="flex-row items-center gap-1.5">
           <Quote size={12} color={colors.galpiPaper} opacity={0.6} />
           <Text className="text-2xs font-bold text-galpi-paper/60">올해 가장 많이 담은 책</Text>
@@ -943,7 +943,7 @@ function MetricCard({
 }) {
   const colors = useThemeColors();
   return (
-    <View className="flex-1 rounded-2xl bg-card p-3.5">
+    <View className="flex-1 rounded-xl bg-card p-3.5">
       <View className={`h-8 w-8 items-center justify-center rounded-lg ${toneClass}`}>
         <Icon size={16} color={colors.galpiInk} />
       </View>
@@ -1105,7 +1105,7 @@ function ReportPublishModal({
       }
     >
       {/* 비율 선택 */}
-      <View className="mb-4 flex-row gap-1 rounded-2xl bg-secondary p-1">
+      <View className="mb-4 flex-row gap-1 rounded-xl bg-secondary p-1">
         {([
           { key: '1:1' as Ratio, label: '1:1 인스타 피드' },
           { key: '9:16' as Ratio, label: '9:16 스토리' },
@@ -1126,12 +1126,12 @@ function ReportPublishModal({
       </View>
 
       {/* 발행 카드 미리보기 — 화면엔 작게 보여주고, 캡처는 실제 크기(전체 너비)로 별도 렌더링 */}
-      <View className="items-center rounded-2xl bg-secondary p-4">
+      <View className="items-center rounded-xl bg-secondary p-4">
         {/* 실제 크기 측정용 스페이서: 시각적으로는 차지하는 공간이 없음 */}
         <View className="h-0 w-full" onLayout={(e) => setRealCardWidth(e.nativeEvent.layout.width)} />
 
         <View
-          className={`overflow-hidden rounded-3xl bg-card p-5 ${ratio === '1:1' ? 'w-full' : 'w-[68%]'}`}
+          className={`overflow-hidden rounded-2xl bg-card p-5 ${ratio === '1:1' ? 'w-full' : 'w-[68%]'}`}
           style={{ aspectRatio: ratio === '1:1' ? 1 : 9 / 16 }}
         >
           <ReportCardBody
@@ -1159,7 +1159,7 @@ function ReportPublishModal({
             <View
               ref={cardRef}
               collapsable={false}
-              className="overflow-hidden rounded-3xl bg-card p-5"
+              className="overflow-hidden rounded-2xl bg-card p-5"
               style={{ width: realCardWidth, aspectRatio: ratio === '1:1' ? 1 : 9 / 16 }}
             >
               <ReportCardBody
@@ -1189,7 +1189,7 @@ function ReportPublishModal({
         <Pressable
           onPress={handleSaveImage}
           disabled={busy !== null}
-          className={`web:cursor-pointer flex-1 flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-3.5 ${busy ? 'opacity-60' : ''}`}
+          className={`web:cursor-pointer flex-1 flex-row items-center justify-center gap-2 rounded-xl bg-primary py-3.5 ${busy ? 'opacity-60' : ''}`}
         >
           {busy === 'save' ? <ActivityIndicator color={colors.primaryForeground} /> : <Download size={16} color={colors.primaryForeground} />}
           <Text className="text-sm font-bold text-primary-foreground">이미지 저장하기</Text>
@@ -1197,7 +1197,7 @@ function ReportPublishModal({
         <Pressable
           onPress={handleShare}
           disabled={busy !== null}
-          className={`web:cursor-pointer flex-1 flex-row items-center justify-center gap-2 rounded-2xl border border-border bg-card py-3.5 ${busy ? 'opacity-60' : ''}`}
+          className={`web:cursor-pointer flex-1 flex-row items-center justify-center gap-2 rounded-xl border border-border bg-card py-3.5 ${busy ? 'opacity-60' : ''}`}
         >
           {busy === 'share' ? <ActivityIndicator color={colors.foreground} /> : <Share2 size={16} color={colors.foreground} />}
           <Text className="text-sm font-bold text-foreground">SNS 공유하기</Text>
@@ -1265,7 +1265,7 @@ function ReportCardBody({
       ) : null}
 
       {/* 주로 읽는 요일 */}
-      <View className="rounded-2xl bg-secondary/60 p-2">
+      <View className="rounded-xl bg-secondary/60 p-2">
         <View className="flex-row items-center justify-between">
           <Text className="text-[9px] font-black text-foreground">주로 읽는 요일</Text>
           {topWeekdayIndex >= 0 ? (
@@ -1300,7 +1300,7 @@ function ReportCardBody({
 
       {/* 기록 시간대 · 이달의 취향 */}
       <View className="flex-row gap-1.5">
-        <View className="flex-1 rounded-2xl bg-galpi-green p-2">
+        <View className="flex-1 rounded-xl bg-galpi-green p-2">
           <View className="flex-row items-center gap-1">
             <Moon size={8} color={colors.galpiInk} opacity={0.7} />
             <Text className="text-[7px] font-bold text-galpi-ink/70">기록 시간대</Text>
@@ -1317,7 +1317,7 @@ function ReportCardBody({
           )}
         </View>
 
-        <View className="flex-1 rounded-2xl bg-secondary/60 p-2">
+        <View className="flex-1 rounded-xl bg-secondary/60 p-2">
           <Text className="text-[7px] font-bold text-foreground">{period === 'month' ? '이달의 취향' : '올해의 취향'}</Text>
           {topGenres.length > 0 ? (
             <View className="mt-1 flex-row flex-wrap gap-1">
@@ -1349,14 +1349,14 @@ function ReportCardBody({
           )}
         </View>
       ) : (
-        <View className="rounded-2xl bg-galpi-ink p-2">
+        <View className="rounded-xl bg-galpi-ink p-2">
           <Text className="mb-1 text-[7px] font-bold text-galpi-paper/60">연간 독서 활동</Text>
           <ReportHeatmap grid={heatmap} />
         </View>
       )}
 
       {quote ? (
-        <View className="rounded-2xl bg-galpi-ink p-2">
+        <View className="rounded-xl bg-galpi-ink p-2">
           <Quote size={8} color={colors.galpiPaper} opacity={0.6} />
           <Text className="mt-0.5 text-[9px] font-bold leading-snug text-galpi-paper" numberOfLines={2}>
             "{quote.sentence.quote}"

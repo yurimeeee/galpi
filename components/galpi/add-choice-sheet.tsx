@@ -67,7 +67,7 @@ export function AddChoiceSheet({
         <View className="gap-3">
           <Pressable
             onPress={() => setStep('pick-book')}
-            className="web:cursor-pointer flex-row items-center gap-3 rounded-2xl bg-primary p-4"
+            className="web:cursor-pointer flex-row items-center gap-3 rounded-xl bg-primary p-4"
           >
             <View className="h-10 w-10 items-center justify-center rounded-xl bg-primary-foreground/15">
               <Bookmark size={18} color={colors.primaryForeground} />
@@ -82,7 +82,7 @@ export function AddChoiceSheet({
 
           <Pressable
             onPress={onStartTimer}
-            className="web:cursor-pointer flex-row items-center gap-3 rounded-2xl border border-border bg-card p-4"
+            className="web:cursor-pointer flex-row items-center gap-3 rounded-xl border border-border bg-card p-4"
           >
             <View className="h-10 w-10 items-center justify-center rounded-xl bg-galpi-blue">
               <Timer size={18} color={colors.galpiInk} />
@@ -97,7 +97,7 @@ export function AddChoiceSheet({
 
           <Pressable
             onPress={onAddNewBook}
-            className="web:cursor-pointer flex-row items-center gap-3 rounded-2xl border border-border bg-card p-4"
+            className="web:cursor-pointer flex-row items-center gap-3 rounded-xl border border-border bg-card p-4"
           >
             <View className="h-10 w-10 items-center justify-center rounded-xl bg-galpi-green">
               <Plus size={18} color={colors.galpiInk} />
@@ -125,7 +125,7 @@ export function AddChoiceSheet({
           ListFooterComponent={
             <Pressable
               onPress={onAddNewBook}
-              className="web:cursor-pointer mt-2 flex-row items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-card py-3.5"
+              className="web:cursor-pointer mt-2 flex-row items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-card py-3.5"
             >
               <Plus size={14} color={colors.foreground} />
               <Text className="text-xs font-semibold text-foreground">새 책 추가하기</Text>
@@ -143,7 +143,7 @@ function BookPickRow({ book, onPress }: { book: Book; onPress: () => void }) {
   return (
     <Pressable
       onPress={onPress}
-      className="web:cursor-pointer flex-row items-center gap-3 rounded-2xl border border-border bg-card p-3"
+      className="web:cursor-pointer flex-row items-center gap-3 rounded-xl border border-border bg-card p-3"
     >
       <View
         className={`h-12 w-9 shrink-0 overflow-hidden rounded-md ${

@@ -95,7 +95,7 @@ export function MyPageScreen({
 
         {/* 프로필 카드 */}
         <View className="px-5 pt-5">
-          <View className="rounded-3xl bg-galpi-blue p-5">
+          <View className="rounded-2xl bg-galpi-blue p-5">
             <View className="flex-row items-center gap-4">
               <View className="h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-galpi-paper">
                 {photoURL ? (
@@ -130,8 +130,8 @@ export function MyPageScreen({
                 </>
               ) : (
                 <>
-                  <Skeleton className="h-11 flex-1 rounded-2xl" />
-                  <Skeleton className="h-11 flex-1 rounded-2xl" />
+                  <Skeleton className="h-11 flex-1 rounded-xl" />
+                  <Skeleton className="h-11 flex-1 rounded-xl" />
                 </>
               )}
             </View>
@@ -140,7 +140,7 @@ export function MyPageScreen({
           {/* 독서 목표 & 스트릭 진입 */}
           <Pressable
             onPress={onOpenGoals}
-            className="web:cursor-pointer mt-3 flex-row items-center gap-3 rounded-3xl bg-galpi-yellow px-5 py-4"
+            className="web:cursor-pointer mt-3 flex-row items-center gap-3 rounded-2xl bg-galpi-yellow px-5 py-4"
           >
             <View className="h-11 w-11 items-center justify-center rounded-full bg-galpi-ink/10">
               <Flame size={24} color={colors.galpiInk} strokeWidth={1.9} />
@@ -229,7 +229,7 @@ export function MyPageScreen({
 
 function SummaryChip({ value, label }: { value: string; label: string }) {
   return (
-    <View className="flex-1 flex-row items-baseline gap-1.5 rounded-2xl bg-galpi-paper px-4 py-3">
+    <View className="flex-1 flex-row items-baseline gap-1.5 rounded-xl bg-galpi-paper px-4 py-3">
       <Text className="text-lg font-bold text-galpi-ink">{value}</Text>
       <Text className="text-xs text-galpi-ink/60">{label}</Text>
     </View>
@@ -242,7 +242,7 @@ function SettingsGroup({ title, rows }: { title: string; rows: Row[] }) {
   return (
     <View>
       <Text className="mb-2 pl-2 text-xs font-bold text-muted-foreground">{title}</Text>
-      <View className="overflow-hidden rounded-2xl border border-border bg-card">
+      <View className="overflow-hidden rounded-xl border border-border bg-card">
         {rows.map((row, i) => {
           const content = (
             <>

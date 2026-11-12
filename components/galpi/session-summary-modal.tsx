@@ -74,7 +74,7 @@ export function SessionSummaryModal({
       </View>
 
       {/* 대상 책 */}
-      <View className="mb-5 flex-row items-center gap-3 rounded-2xl border border-border bg-card p-3">
+      <View className="mb-5 flex-row items-center gap-3 rounded-xl border border-border bg-card p-3">
         <View
           className={`relative h-14 w-10 shrink-0 items-end justify-center overflow-hidden rounded-lg ${
             showCover ? 'bg-secondary' : ACCENT_BG_CLASS[book.accent]
@@ -122,7 +122,7 @@ export function SessionSummaryModal({
       {/* 저장 */}
       <Pressable
         onPress={onSave}
-        className="web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-4"
+        className="web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-xl bg-primary py-4"
         style={({ pressed }) => pressed && { transform: [{ scale: 0.98 }] }}
       >
         <Check size={16} color={colors.primaryForeground} />
@@ -143,7 +143,7 @@ function SummaryStat({
 }) {
   const colors = useThemeColors();
   return (
-    <View className="flex-1 items-center gap-1.5 rounded-2xl bg-secondary py-4">
+    <View className="flex-1 items-center gap-1.5 rounded-xl bg-secondary py-4">
       <Icon size={16} color={colors.mutedForeground} />
       <Text className="text-base font-black text-foreground">{value}</Text>
       <Text className="text-2xs font-medium text-muted-foreground">{label}</Text>

@@ -170,7 +170,7 @@ export function BookDetailScreen({
             <Pressable
               onPress={() => onEditSentence(item.id)}
               accessibilityLabel="갈피 수정하기"
-              className="web:cursor-pointer relative overflow-hidden rounded-2xl bg-card p-4"
+              className="web:cursor-pointer relative overflow-hidden rounded-xl bg-card p-4"
             >
               <View className={`absolute left-0 top-0 h-full w-1.5 ${ACCENT_BG_CLASS[book.accent]}`} />
               <View className="flex-row items-center justify-between pl-2">
@@ -240,7 +240,7 @@ export function BookDetailScreen({
           );
         }}
         ListEmptyComponent={
-          <View className="rounded-2xl border border-dashed border-border bg-card px-6 py-10">
+          <View className="rounded-xl border border-dashed border-border bg-card px-6 py-10">
             <Text className="text-center text-sm leading-relaxed text-muted-foreground">
               아직 남긴 갈피가 없어요.{'\n'}첫 문장을 담아보세요.
             </Text>
@@ -252,7 +252,7 @@ export function BookDetailScreen({
             <View className="flex-row gap-5">
               {/* 표지 */}
               <View
-                className={`h-40 w-28 shrink-0 overflow-hidden rounded-2xl ${showCover ? 'bg-secondary' : `justify-between ${ACCENT_BG_CLASS[book.accent]} p-3`}`}
+                className={`h-40 w-28 shrink-0 overflow-hidden rounded-xl ${showCover ? 'bg-secondary' : `justify-between ${ACCENT_BG_CLASS[book.accent]} p-3`}`}
                 style={{
                   shadowColor: colors.galpiInk,
                   shadowOpacity: 0.1,
@@ -355,7 +355,7 @@ export function BookDetailScreen({
                 </View>
 
                 {book.review ? (
-                  <View className="rounded-2xl bg-galpi-ink p-4">
+                  <View className="rounded-xl bg-galpi-ink p-4">
                     <Quote size={14} color={colors.galpiPaper} opacity={0.5} />
                     <Text className="mt-2 text-sm font-medium leading-relaxed text-galpi-paper">
                       {book.review}
@@ -365,7 +365,7 @@ export function BookDetailScreen({
                   <Pressable
                     onPress={() => setReviewModalOpen(true)}
                     accessibilityLabel="총평 남기기"
-                    className="web:cursor-pointer flex-row items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-card py-5"
+                    className="web:cursor-pointer flex-row items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-card py-5"
                   >
                     <Pencil size={14} color={colors.mutedForeground} />
                     <Text className="text-sm font-semibold text-muted-foreground">
@@ -377,7 +377,7 @@ export function BookDetailScreen({
             ) : null}
 
             {/* 진행률 요약 */}
-            <View className="mt-5 flex-row items-center gap-3 rounded-2xl bg-card p-4">
+            <View className="mt-5 flex-row items-center gap-3 rounded-xl bg-card p-4">
               <StatBit label="진행도" value={`${book.progress}%`} onPress={() => setProgressModalOpen(true)} />
               <View className="h-8 w-px bg-border" />
               <StatBit label="남긴 갈피" value={`${book.galpiCount}개`} />
@@ -501,7 +501,7 @@ function SharePickerRow({ sentence, onPress }: { sentence: Sentence; onPress: ()
   return (
     <Pressable
       onPress={onPress}
-      className="web:cursor-pointer flex-row items-center gap-3 rounded-2xl border border-border bg-card p-3"
+      className="web:cursor-pointer flex-row items-center gap-3 rounded-xl border border-border bg-card p-3"
     >
       <View className="shrink-0 rounded-md bg-galpi-ink px-2 py-1">
         <Text className="font-mono text-2xs font-bold text-galpi-paper">P.{sentence.page}</Text>
@@ -549,14 +549,14 @@ export function BookDetailSkeleton({ onBack }: { onBack: () => void }) {
 
       <View className="px-6 pb-28">
         <View className="flex-row gap-5">
-          <Skeleton className="h-40 w-28 shrink-0 rounded-2xl" />
+          <Skeleton className="h-40 w-28 shrink-0 rounded-xl" />
           <View className="min-w-0 flex-1 justify-center gap-2">
             <Skeleton className="h-5 w-4/5 rounded-md" />
             <Skeleton className="h-3.5 w-2/5 rounded-md" />
           </View>
         </View>
 
-        <View className="mt-5 h-20 rounded-2xl bg-card" />
+        <View className="mt-5 h-20 rounded-xl bg-card" />
 
         <View className="mb-4 mt-8">
           <Skeleton className="h-5 w-40 rounded-md" />
@@ -564,7 +564,7 @@ export function BookDetailSkeleton({ onBack }: { onBack: () => void }) {
 
         <View className="gap-4">
           {[0, 1, 2].map((i) => (
-            <Skeleton key={i} className="h-32 w-full rounded-2xl" />
+            <Skeleton key={i} className="h-32 w-full rounded-xl" />
           ))}
         </View>
       </View>

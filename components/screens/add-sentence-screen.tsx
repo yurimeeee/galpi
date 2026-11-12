@@ -145,7 +145,7 @@ export function AddSentenceScreen({
 
       {/* 모드 스위처 */}
       <View className="px-5">
-        <View className="flex-row gap-1 rounded-2xl bg-secondary p-1">
+        <View className="flex-row gap-1 rounded-xl bg-secondary p-1">
           {MODES.map(({ key, label, Icon }) => {
             const active = mode === key;
             return (
@@ -210,7 +210,7 @@ export function AddSentenceScreen({
           <Pressable
             onPress={handleSave}
             disabled={saving}
-            className={`web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-4 ${
+            className={`web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-xl bg-primary py-4 ${
               saving ? 'opacity-60' : ''
             }`}
             style={({ pressed }) => pressed && { transform: [{ scale: 0.98 }] }}
@@ -264,13 +264,13 @@ function TextMode({
           placeholder="마음에 담고 싶은 문장을 적어주세요."
           placeholderTextColor={colors.mutedForeground}
           textAlignVertical="top"
-          className="w-full rounded-2xl border border-border bg-card p-4 text-md leading-relaxed text-foreground focus:border-ring"
+          className="w-full rounded-xl border border-border bg-card p-4 text-md leading-relaxed text-foreground focus:border-ring"
           style={{ minHeight: 120 }}
         />
       </Field>
 
       <Field label="페이지">
-        <View className="flex-row items-center gap-2 rounded-2xl border border-border bg-card px-4 py-3.5">
+        <View className="flex-row items-center gap-2 rounded-xl border border-border bg-card px-4 py-3.5">
           <Text className="font-mono text-sm font-bold text-muted-foreground">P.</Text>
           <TextInput
             value={page}
@@ -292,7 +292,7 @@ function TextMode({
           placeholder="이 문장에 대한 생각을 남겨보세요. (선택)"
           placeholderTextColor={colors.mutedForeground}
           textAlignVertical="top"
-          className="w-full rounded-2xl border border-border bg-card p-4 text-sm leading-relaxed text-foreground focus:border-ring"
+          className="w-full rounded-xl border border-border bg-card p-4 text-sm leading-relaxed text-foreground focus:border-ring"
           style={{ minHeight: 80 }}
         />
       </Field>
@@ -380,7 +380,7 @@ function ScanMode({
 
   if (!permission) {
     return (
-      <View className="aspect-[4/3] items-center justify-center rounded-2xl bg-galpi-ink">
+      <View className="aspect-[4/3] items-center justify-center rounded-xl bg-galpi-ink">
         <ActivityIndicator color={colors.galpiPaper} />
       </View>
     );
@@ -389,7 +389,7 @@ function ScanMode({
   if (!permission.granted) {
     return (
       <View className="gap-4">
-        <View className="aspect-[4/3] items-center justify-center gap-3 rounded-2xl bg-galpi-ink px-8">
+        <View className="aspect-[4/3] items-center justify-center gap-3 rounded-xl bg-galpi-ink px-8">
           <Camera size={28} color={colors.galpiPaper} />
           <Text className="text-center text-sm leading-relaxed text-galpi-paper/80">
             {permission.canAskAgain
@@ -413,7 +413,7 @@ function ScanMode({
 
   return (
     <View className="gap-4">
-      <View className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-galpi-ink">
+      <View className="relative aspect-[4/3] overflow-hidden rounded-xl bg-galpi-ink">
         {showLiveCamera ? (
           <CameraView ref={cameraRef} style={{ flex: 1 }} facing="back" />
         ) : photoUri ? (
@@ -470,7 +470,7 @@ function ScanMode({
       </View>
 
       {phase === 'error' ? (
-        <View className="gap-2 rounded-2xl border border-destructive/30 bg-destructive/5 p-4">
+        <View className="gap-2 rounded-xl border border-destructive/30 bg-destructive/5 p-4">
           <Text className="text-sm font-semibold text-destructive">{errorMessage}</Text>
           <Pressable onPress={retake} className="web:cursor-pointer self-start rounded-lg bg-primary px-3 py-2">
             <Text className="text-xs font-bold text-primary-foreground">다시 촬영하기</Text>
@@ -480,7 +480,7 @@ function ScanMode({
 
       {phase === 'reviewing' ? (
         <Field label="인식된 텍스트 · 담을 단어를 눌러 선택">
-          <View className="flex-row flex-wrap gap-1.5 rounded-2xl border border-border bg-card p-4">
+          <View className="flex-row flex-wrap gap-1.5 rounded-xl border border-border bg-card p-4">
             {tokens.map((t, i) => {
               const on = selected.includes(i);
               return (
@@ -501,14 +501,14 @@ function ScanMode({
 
       {quote ? (
         <Field label="담을 문장">
-          <View className="rounded-2xl border border-border bg-card p-4">
+          <View className="rounded-xl border border-border bg-card p-4">
             <Text className="text-sm leading-relaxed text-foreground">{quote}</Text>
           </View>
         </Field>
       ) : null}
 
       <Field label="페이지">
-        <View className="flex-row items-center gap-2 rounded-2xl border border-border bg-card px-4 py-3.5">
+        <View className="flex-row items-center gap-2 rounded-xl border border-border bg-card px-4 py-3.5">
           <Text className="font-mono text-sm font-bold text-muted-foreground">P.</Text>
           <TextInput
             value={page}
@@ -579,7 +579,7 @@ function PhotoMode({
     <View className="gap-4">
       <Field label="페이지 사진">
         {photoUri ? (
-          <View className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl bg-galpi-ink">
+          <View className="relative aspect-[3/4] w-full overflow-hidden rounded-xl bg-galpi-ink">
             <Image source={{ uri: photoUri }} style={{ flex: 1 }} resizeMode="cover" />
             <Pressable
               onPress={() => setPhotoUri(null)}
@@ -590,8 +590,8 @@ function PhotoMode({
             </Pressable>
           </View>
         ) : (
-          <View className="aspect-[3/4] w-full items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-border bg-card p-6">
-            <View className="h-14 w-14 items-center justify-center rounded-2xl bg-galpi-green">
+          <View className="aspect-[3/4] w-full items-center justify-center gap-3 rounded-xl border-2 border-dashed border-border bg-card p-6">
+            <View className="h-14 w-14 items-center justify-center rounded-xl bg-galpi-green">
               <ImageIcon size={24} color={colors.galpiInk} />
             </View>
             <Text className="text-sm font-semibold text-foreground">책 페이지를 통째로 기록해요</Text>
@@ -616,7 +616,7 @@ function PhotoMode({
       </Field>
 
       <Field label="페이지">
-        <View className="flex-row items-center gap-2 rounded-2xl border border-border bg-card px-4 py-3.5">
+        <View className="flex-row items-center gap-2 rounded-xl border border-border bg-card px-4 py-3.5">
           <Text className="font-mono text-sm font-bold text-muted-foreground">P.</Text>
           <TextInput
             value={page}
@@ -638,7 +638,7 @@ function PhotoMode({
           placeholder="이 페이지를 기억하고 싶은 이유를 적어보세요. (선택)"
           placeholderTextColor={colors.mutedForeground}
           textAlignVertical="top"
-          className="w-full rounded-2xl border border-border bg-card p-4 text-sm leading-relaxed text-foreground focus:border-ring"
+          className="w-full rounded-xl border border-border bg-card p-4 text-sm leading-relaxed text-foreground focus:border-ring"
           style={{ minHeight: 80 }}
         />
       </Field>
