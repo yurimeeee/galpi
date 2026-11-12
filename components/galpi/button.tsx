@@ -1,6 +1,9 @@
+import type { ComponentType } from 'react';
 import { ActivityIndicator, Pressable, Text } from 'react-native';
-import type { LucideIcon } from 'lucide-react-native';
 import { useThemeColors } from '../../lib/theme';
+
+/** Any lucide icon, or a custom mark (e.g. the Google logo) that accepts the same size/color props. */
+type ButtonIcon = ComponentType<{ size?: number; color?: string }>;
 
 type Variant = 'primary' | 'secondary' | 'pill';
 
@@ -31,7 +34,7 @@ export function Button({
   label: string;
   onPress?: () => void;
   variant?: Variant;
-  Icon?: LucideIcon;
+  Icon?: ButtonIcon;
   iconSize?: number;
   loading?: boolean;
   disabled?: boolean;

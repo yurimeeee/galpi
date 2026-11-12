@@ -1,18 +1,16 @@
 import { useMemo, useState } from 'react';
 import {
-  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   ScrollView,
   Text,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { TextField, PasswordField, CheckOption } from '../galpi/auth-field';
+import { Button } from '../galpi/button';
 import { ScreenHeader } from '../galpi/screen-header';
 import { getAuthErrorMessage } from '../../lib/auth';
-import { useThemeColors } from '../../lib/theme';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -34,7 +32,6 @@ export function SignUpScreen({
   const [agree, setAgree] = useState(false);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const colors = useThemeColors();
 
   const emailValid = useMemo(() => email.length === 0 || EMAIL_RE.test(email), [email]);
   const pwMatch = confirm.length === 0 || confirm === password;
@@ -138,17 +135,7 @@ export function SignUpScreen({
 
         {/* 완료 버튼 */}
         <View className="px-5 pb-9 pt-4">
-          <Pressable
-            onPress={handleComplete}
-            disabled={!canSubmit}
-            className={`web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-xl bg-primary py-4 ${!canSubmit ? 'opacity-40' : ''}`}
-            style={({ pressed }) => pressed && canSubmit && { transform: [{ scale: 0.98 }] }}
-          >
-            {submitting ? <ActivityIndicator size="small" color={colors.primaryForeground} /> : null}
-            <Text className="text-center text-md font-bold text-primary-foreground">
-              회원가입 완료
-            </Text>
-          </Pressable>
+          <Button label="회원가입 완료" onPress={handleComplete} disabled={!canSubmit} loading={submitting} />
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import {
-  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -14,7 +13,6 @@ import { GalpiHeaderLogo } from '../galpi/galpi-logo';
 import { TextField, PasswordField, CheckOption } from '../galpi/auth-field';
 import { Button } from '../galpi/button';
 import { getAuthErrorMessage } from '../../lib/auth';
-import { useThemeColors } from '../../lib/theme';
 
 export function LoginScreen({
   onLogin,
@@ -30,7 +28,6 @@ export function LoginScreen({
   const [remember, setRemember] = useState(true);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState<'email' | 'google' | null>(null);
-  const colors = useThemeColors();
 
   const canSubmit = email.trim() !== '' && password.length > 0 && submitting === null;
 
@@ -132,16 +129,15 @@ export function LoginScreen({
 
           {/* 소셜 로그인 */}
           <View className="gap-3">
-            <Pressable
+            <Button
+              label="Google로 시작하기"
+              variant="secondary"
+              Icon={GoogleMark}
+              iconSize={20}
               onPress={handleGoogleLogin}
-              disabled={submitting !== null}
-              className={`web:cursor-pointer w-full flex-row items-center justify-center gap-3 rounded-xl border border-input bg-card py-3.5 ${
-                submitting !== null ? 'opacity-60' : ''
-              }`}
-            >
-              {submitting === 'google' ? <ActivityIndicator size="small" color={colors.foreground} /> : <GoogleMark />}
-              <Text className="text-sm font-semibold text-foreground">Google로 시작하기</Text>
-            </Pressable>
+              disabled={submitting !== null && submitting !== 'google'}
+              loading={submitting === 'google'}
+            />
           </View>
 
           {/* 회원가입 링크 */}

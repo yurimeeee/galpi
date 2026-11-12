@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScanLine, CalendarHeart, BarChart3, ArrowRight } from 'lucide-react-native';
+import { Button } from '../galpi/button';
 import { GalpiHeaderLogo } from '../galpi/galpi-logo';
 import { useThemeColors } from '../../lib/theme';
 
@@ -49,7 +50,6 @@ export function OnboardingScreen({ onDone }: { onDone: () => void }) {
   const [index, setIndex] = useState(0);
   const isLast = index === SLIDES.length - 1;
   const slide = SLIDES[index];
-  const colors = useThemeColors();
 
   function next() {
     if (isLast) onDone();
@@ -96,16 +96,7 @@ export function OnboardingScreen({ onDone }: { onDone: () => void }) {
           ))}
         </View>
 
-        <Pressable
-          onPress={next}
-          className="web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-xl bg-primary py-4"
-          style={({ pressed }) => pressed && { transform: [{ scale: 0.98 }] }}
-        >
-          <Text className="text-md font-bold text-primary-foreground">
-            {isLast ? '갈피 시작하기' : '다음'}
-          </Text>
-          {!isLast ? <ArrowRight size={16} color={colors.galpiPaper} /> : null}
-        </Pressable>
+        <Button label={isLast ? '갈피 시작하기' : '다음'} Icon={isLast ? undefined : ArrowRight} onPress={next} />
       </View>
     </SafeAreaView>
   );
