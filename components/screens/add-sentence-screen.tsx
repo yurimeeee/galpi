@@ -28,6 +28,7 @@ import {
 import type { EntryType, Sentence } from '../../lib/data/sentences';
 import { useThemeColors } from '../../lib/theme';
 import { scanBookText } from '../../lib/ocr';
+import { Button } from '../galpi/button';
 import { ScreenHeader } from '../galpi/screen-header';
 import { TagInput } from '../galpi/tag-input';
 
@@ -193,23 +194,7 @@ export function AddSentenceScreen({
 
         {/* 저장 버튼 */}
         <View className="border-t border-border bg-card/80 px-5 py-4 web:backdrop-blur">
-          <Pressable
-            onPress={handleSave}
-            disabled={saving}
-            className={`web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-xl bg-primary py-4 ${
-              saving ? 'opacity-60' : ''
-            }`}
-            style={({ pressed }) => pressed && { transform: [{ scale: 0.98 }] }}
-          >
-            {saving ? (
-              <ActivityIndicator color={colors.primaryForeground} />
-            ) : (
-              <Check size={16} color={colors.primaryForeground} />
-            )}
-            <Text className="text-sm font-bold text-primary-foreground">
-              {saving ? '저장 중...' : '갈피 저장하기'}
-            </Text>
-          </Pressable>
+          <Button label={saving ? '저장 중...' : '갈피 저장하기'} Icon={Check} onPress={handleSave} loading={saving} />
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -638,8 +623,8 @@ function PhotoMode({
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <View className="gap-2">
-      <Text className="text-xs font-bold text-foreground">{label}</Text>
+    <View className="gap-1.5">
+      <Text className="text-sm font-semibold text-foreground">{label}</Text>
       {children}
     </View>
   );

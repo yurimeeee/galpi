@@ -27,6 +27,7 @@ import {
   RotateCcw,
   type LucideIcon,
 } from 'lucide-react-native';
+import { Button } from '../galpi/button';
 import { ScreenHeader } from '../galpi/screen-header';
 import { searchAladinBooks, type AladinBookResult } from '../../lib/aladin-books';
 import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
@@ -391,23 +392,12 @@ export function AddBookScreen({
           ) : null}
 
           <View className="border-t border-border bg-card/80 px-5 py-4 web:backdrop-blur">
-            <Pressable
+            <Button
+              label={manualSaving ? '추가하는 중...' : '책 추가하기'}
+              Icon={Check}
               onPress={handleAddManual}
-              disabled={manualSaving}
-              className={`web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-xl bg-primary py-4 ${
-                manualSaving ? 'opacity-60' : ''
-              }`}
-              style={({ pressed }) => pressed && { transform: [{ scale: 0.98 }] }}
-            >
-              {manualSaving ? (
-                <ActivityIndicator color={colors.primaryForeground} />
-              ) : (
-                <Check size={16} color={colors.primaryForeground} />
-              )}
-              <Text className="text-sm font-bold text-primary-foreground">
-                {manualSaving ? '추가하는 중...' : '책 추가하기'}
-              </Text>
-            </Pressable>
+              loading={manualSaving}
+            />
           </View>
         </KeyboardAvoidingView>
       )}
@@ -417,8 +407,8 @@ export function AddBookScreen({
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <View className="gap-2">
-      <Text className="text-xs font-bold text-foreground">{label}</Text>
+    <View className="gap-1.5">
+      <Text className="text-sm font-semibold text-foreground">{label}</Text>
       {children}
     </View>
   );
