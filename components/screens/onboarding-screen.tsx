@@ -59,7 +59,7 @@ export function OnboardingScreen({ onDone }: { onDone: () => void }) {
   return (
     <SafeAreaView edges={['top', 'bottom']} className="flex-1 min-h-0 bg-background">
       {/* 상단: 로고 + 건너뛰기 */}
-      <View className="flex-row items-center justify-between px-6 pt-6">
+      <View className="flex-row items-center justify-between px-5 pt-6">
         <GalpiHeaderLogo markSize={24} wordClassName="text-base text-foreground" />
         <Pressable onPress={onDone} className="web:cursor-pointer">
           <Text className="text-sm font-medium text-muted-foreground">건너뛰기</Text>
@@ -67,7 +67,7 @@ export function OnboardingScreen({ onDone }: { onDone: () => void }) {
       </View>
 
       {/* 일러스트 */}
-      <View className="flex-1 items-center justify-center px-6">
+      <View className="flex-1 items-center justify-center px-5">
         <View
           className={`aspect-square w-full max-w-[280px] items-center justify-center overflow-hidden rounded-[2.5rem] ${ACCENT_BG_CLASS[slide.accent]}`}
         >
@@ -76,7 +76,7 @@ export function OnboardingScreen({ onDone }: { onDone: () => void }) {
       </View>
 
       {/* 텍스트 */}
-      <View className="px-8">
+      <View className="px-5">
         <Text className="text-display font-black leading-tight tracking-tight text-foreground">
           {slide.title}
         </Text>
@@ -86,7 +86,7 @@ export function OnboardingScreen({ onDone }: { onDone: () => void }) {
       </View>
 
       {/* 인디케이터 + 버튼 */}
-      <View className="px-8 pb-9 pt-7">
+      <View className="px-5 pb-9 pt-7">
         <View className="mb-6 flex-row items-center gap-2">
           {SLIDES.map((s, i) => (
             <View

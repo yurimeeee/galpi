@@ -162,7 +162,7 @@ export function BookDetailScreen({
       <FlatList
         data={sentences}
         keyExtractor={(s) => s.id}
-        contentContainerClassName="px-6 pb-28"
+        contentContainerClassName="px-5 pb-28"
         ItemSeparatorComponent={() => <View className="h-4" />}
         renderItem={({ item }) => {
           const Icon = ENTRY_ICON[item.type];
@@ -547,7 +547,7 @@ export function BookDetailSkeleton({ onBack }: { onBack: () => void }) {
         </Pressable>
       </View>
 
-      <View className="px-6 pb-28">
+      <View className="px-5 pb-28">
         <View className="flex-row gap-5">
           <Skeleton className="h-40 w-28 shrink-0 rounded-xl" />
           <View className="min-w-0 flex-1 justify-center gap-2">

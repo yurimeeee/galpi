@@ -147,7 +147,7 @@ export function ReadingTimerScreen({
         </Pressable>
       </View>
 
-      <ScrollView className="flex-1 min-h-0" contentContainerClassName="px-6 pb-4">
+      <ScrollView className="flex-1 min-h-0" contentContainerClassName="px-5 pb-4">
         {/* 대상 책 선택 카드 */}
         <BookSelector book={book} onPress={() => setShowBookPicker(true)} />
 
@@ -221,7 +221,7 @@ export function ReadingTimerScreen({
 
       {/* 하단 컨트롤 바 */}
       <View
-        className="border-t border-border bg-card/90 px-6 pt-4 web:backdrop-blur"
+        className="border-t border-border bg-card/90 px-5 pt-4 web:backdrop-blur"
         style={{ paddingBottom: Math.max(insets.bottom, 16) }}
       >
         <View className="mb-3 flex-row items-center gap-3">

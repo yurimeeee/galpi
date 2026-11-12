@@ -267,7 +267,7 @@ export function StatsReportScreen({ books, sentences }: { books: Book[]; sentenc
 
   return (
     <SafeAreaView edges={['top']} className="relative flex-1 min-h-0 bg-background">
-      <View className="flex-row items-center justify-between px-6 pb-2 pt-1">
+      <View className="flex-row items-center justify-between px-5 pb-2 pt-1">
         <Text className="text-xl font-black tracking-tight text-foreground">독서 통계</Text>
         <Pressable
           onPress={() => setShareOpen(true)}
@@ -290,7 +290,7 @@ export function StatsReportScreen({ books, sentences }: { books: Book[]; sentenc
       </ScrollView>
 
       {period === 'month' ? (
-        <View className="absolute inset-x-0 bottom-0 items-center px-6 pb-6">
+        <View className="absolute inset-x-0 bottom-0 items-center px-5 pb-6">
           <Pressable
             onPress={() => setShareOpen(true)}
             className="web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-xl bg-primary py-4"
@@ -321,14 +321,14 @@ export function StatsReportSkeleton() {
   const colors = useThemeColors();
   return (
     <SafeAreaView edges={['top']} className="relative flex-1 min-h-0 bg-background">
-      <View className="flex-row items-center justify-between px-6 pb-2 pt-1">
+      <View className="flex-row items-center justify-between px-5 pb-2 pt-1">
         <Text className="text-xl font-black tracking-tight text-foreground">독서 통계</Text>
         <View className="items-center justify-center rounded-full h-9 w-9 bg-primary">
           <Share2 size={16} color={colors.primaryForeground} />
         </View>
       </View>
 
-      <View className="flex-1 px-6">
+      <View className="flex-1 px-5">
         <View className="mt-2 flex-row gap-1 rounded-xl bg-secondary p-1">
           {(['월간', '연간'] as const).map((label, i) => (
             <View key={label} className={`flex-1 rounded-xl py-2.5 ${i === 0 ? 'bg-card' : ''}`}>

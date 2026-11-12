@@ -78,7 +78,7 @@ export function SignUpScreen({
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} className="flex-1 min-h-0">
         {/* 폼 */}
         <ScrollView
-          className="flex-1 px-7 pt-6"
+          className="flex-1 px-5 pt-6"
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"
         >
@@ -146,7 +146,7 @@ export function SignUpScreen({
         </ScrollView>
 
         {/* 완료 버튼 */}
-        <View className="px-7 pb-9 pt-4">
+        <View className="px-5 pb-9 pt-4">
           <Pressable
             onPress={handleComplete}
             disabled={!canSubmit}

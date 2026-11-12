@@ -154,7 +154,7 @@ export function YearReviewScreen({
               <TopBookCard topBookOfYear={topBookOfYear} />
             </View>
 
-            <View style={{ width: cardWidth }} className="flex-1 items-center px-6 pt-6">
+            <View style={{ width: cardWidth }} className="flex-1 items-center px-5 pt-6">
               <SummaryCard
                 year={year}
                 displayName={displayName}

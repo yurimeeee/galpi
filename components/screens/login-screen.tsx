@@ -67,7 +67,7 @@ export function LoginScreen({
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} className="flex-1 min-h-0">
         <ScrollView
           className="flex-1"
-          contentContainerClassName="px-7 pb-8"
+          contentContainerClassName="px-5 pb-8"
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"
         >

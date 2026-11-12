@@ -160,7 +160,7 @@ export function MainLibraryScreen({
   if (reorderMode) {
     return (
       <SafeAreaView edges={['top']} className="flex-1 min-h-0 bg-background">
-        <View className="flex-1 px-6 pb-6">
+        <View className="flex-1 px-5 pb-6">
           <View className="flex-row items-center justify-between pt-1 pb-4">
             <Text className="text-lg font-bold tracking-tight text-foreground">서재 순서 편집</Text>
             <Pressable
@@ -193,7 +193,7 @@ export function MainLibraryScreen({
         data={searchOpen ? searchRows : visible.map((book): SearchRow => ({ kind: 'book', book }))}
         keyExtractor={(row) => (row.kind === 'header' ? row.key : row.kind === 'book' ? `book-${row.book.id}` : `sentence-${row.sentence.id}`)}
         numColumns={!searchOpen && viewMode === 'card' ? 4 : 1}
-        contentContainerClassName="px-6 pb-6"
+        contentContainerClassName="px-5 pb-6"
         ItemSeparatorComponent={!searchOpen && viewMode === 'card' ? undefined : () => <View className="h-4" />}
         renderItem={({ item: row }) => {
           if (row.kind === 'header') {
@@ -537,7 +537,7 @@ export function LibrarySkeleton() {
   const colors = useThemeColors();
   return (
     <SafeAreaView edges={['top']} className="flex-1 min-h-0 bg-background">
-      <View className="px-6 pb-6">
+      <View className="px-5 pb-6">
         <View className="flex-row items-center justify-between pt-1 pb-4">
           <GalpiHeaderLogo markSize={28} wordClassName="text-xl text-foreground" />
           <View className="items-center justify-center rounded-full h-9 w-9 bg-card">
