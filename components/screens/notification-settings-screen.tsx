@@ -69,10 +69,9 @@ export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
             <ActivityIndicator color={colors.foreground} />
           </View>
         ) : (
-          <View className="overflow-hidden rounded-xl border border-border bg-card">
-            <View
-              className={`flex-row items-center gap-3 px-4 py-4 ${enabled ? 'border-b border-border' : ''}`}
-            >
+          /* 알림 세 가지를 하나의 그룹으로 — 행 사이는 hairline (DESIGN_TASKS PG-10) */
+          <View className="overflow-hidden rounded-xl bg-card">
+            <View className="flex-row items-center gap-3 border-b border-border px-4 py-4">
               <View className="min-w-0 flex-1">
                 <Text className="text-sm font-bold text-foreground">매일 독서 알림</Text>
                 <Text className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
@@ -97,7 +96,7 @@ export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
             </View>
 
             {enabled ? (
-              <View className="gap-2 px-4 py-4">
+              <View className="gap-2 border-b border-border px-4 py-4">
                 <Text className="text-sm font-semibold text-foreground">알림 시간</Text>
                 <TimePickerField value={time} onChange={setDailyReminderTime} />
 
@@ -111,12 +110,15 @@ export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
                         setDailyReminderTime(suggestedTime!);
                         setSuggestionDismissed(true);
                       }}
+                      accessibilityRole="button"
+                      hitSlop={8}
                       className="web:cursor-pointer"
                     >
                       <Text className="text-xs font-black text-foreground">적용</Text>
                     </Pressable>
                     <Pressable
                       onPress={() => setSuggestionDismissed(true)}
+                      accessibilityRole="button"
                       accessibilityLabel="추천 닫기"
                       hitSlop={8}
                       className="web:cursor-pointer"
@@ -127,11 +129,75 @@ export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
                 ) : null}
               </View>
             ) : null}
+
+            {streakRiskLoading ? (
+              <View className="items-center border-b border-border py-4">
+                <ActivityIndicator color={colors.foreground} />
+              </View>
+            ) : (
+              <View className="flex-row items-center gap-3 border-b border-border px-4 py-4">
+                <View className="min-w-0 flex-1">
+                  <Text className="text-sm font-bold text-foreground">스트릭 위험 알림</Text>
+                  <Text className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
+                    오늘 기록이 없고 스트릭이 있을 때만, 밤 10시에 알려드려요.
+                  </Text>
+                </View>
+                <Pressable
+                  onPress={() => setStreakRiskReminderEnabled(!streakRiskEnabled)}
+                  disabled={!supported}
+                  accessibilityRole="switch"
+                  accessibilityState={{ checked: streakRiskEnabled }}
+                  accessibilityLabel="스트릭 위험 알림"
+                  className={`web:cursor-pointer relative h-6 w-11 justify-center rounded-full ${
+                    streakRiskEnabled ? 'bg-galpi-ink' : 'bg-border'
+                  } ${!supported ? 'opacity-50' : ''}`}
+                >
+                  <View
+                    className="absolute h-5 w-5 rounded-full bg-galpi-paper"
+                    style={{ left: streakRiskEnabled ? 22 : 2 }}
+                  />
+                </Pressable>
+              </View>
+            )}
+
+            {onThisDayLoading ? (
+              <View className="items-center py-4">
+                <ActivityIndicator color={colors.foreground} />
+              </View>
+            ) : (
+              <View className="flex-row items-center gap-3 px-4 py-4">
+                <View className="min-w-0 flex-1">
+                  <Text className="text-sm font-bold text-foreground">1년 전 오늘의 갈피</Text>
+                  <Text className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
+                    1년 전 오늘 남긴 갈피를 저녁 8시에 다시 보여드려요.
+                  </Text>
+                </View>
+                <Pressable
+                  onPress={() => setOnThisDayEnabled(!onThisDayEnabled)}
+                  disabled={!supported}
+                  accessibilityRole="switch"
+                  accessibilityState={{ checked: onThisDayEnabled }}
+                  accessibilityLabel="1년 전 오늘의 갈피"
+                  className={`web:cursor-pointer relative h-6 w-11 justify-center rounded-full ${
+                    onThisDayEnabled ? 'bg-galpi-ink' : 'bg-border'
+                  } ${!supported ? 'opacity-50' : ''}`}
+                >
+                  <View
+                    className="absolute h-5 w-5 rounded-full bg-galpi-paper"
+                    style={{ left: onThisDayEnabled ? 22 : 2 }}
+                  />
+                </Pressable>
+              </View>
+            )}
           </View>
         )}
 
-        {error ? (
-          <Text className="mt-3 text-xs text-destructive">{error}</Text>
+        {error || streakRiskError || onThisDayError ? (
+          <View className="mt-3 gap-1">
+            {error ? <Text className="text-xs text-destructive">{error}</Text> : null}
+            {streakRiskError ? <Text className="text-xs text-destructive">{streakRiskError}</Text> : null}
+            {onThisDayError ? <Text className="text-xs text-destructive">{onThisDayError}</Text> : null}
+          </View>
         ) : null}
 
         {/* 알림 미리보기 */}
@@ -145,83 +211,11 @@ export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
           </Text>
         </View>
 
-        {streakRiskLoading ? (
-          <View className="mt-6 items-center pt-4">
-            <ActivityIndicator color={colors.foreground} />
-          </View>
-        ) : (
-          <View className="mt-6 overflow-hidden rounded-xl border border-border bg-card">
-            <View className="flex-row items-center gap-3 px-4 py-4">
-              <View className="min-w-0 flex-1">
-                <Text className="text-sm font-bold text-foreground">스트릭 위험 알림</Text>
-                <Text className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
-                  오늘 기록이 없고 스트릭이 있을 때만, 밤 10시에 알려드려요.
-                </Text>
-              </View>
-              <Pressable
-                onPress={() => setStreakRiskReminderEnabled(!streakRiskEnabled)}
-                disabled={!supported}
-                accessibilityRole="switch"
-                accessibilityState={{ checked: streakRiskEnabled }}
-                accessibilityLabel="스트릭 위험 알림"
-                className={`web:cursor-pointer relative h-6 w-11 justify-center rounded-full ${
-                  streakRiskEnabled ? 'bg-galpi-ink' : 'bg-border'
-                } ${!supported ? 'opacity-50' : ''}`}
-              >
-                <View
-                  className="absolute h-5 w-5 rounded-full bg-galpi-paper"
-                  style={{ left: streakRiskEnabled ? 22 : 2 }}
-                />
-              </Pressable>
-            </View>
-          </View>
-        )}
-
-        {streakRiskError ? (
-          <Text className="mt-3 text-xs text-destructive">{streakRiskError}</Text>
-        ) : null}
-
         {streakRiskEnabled && currentStreak > 0 ? (
           <View className="mt-4 flex-row items-center gap-2 rounded-xl bg-secondary p-4">
             <Flame size={16} color={colors.foreground} />
             <Text className="text-sm font-semibold text-foreground">지금 스트릭: {currentStreak}일</Text>
           </View>
-        ) : null}
-
-        {onThisDayLoading ? (
-          <View className="mt-6 items-center pt-4">
-            <ActivityIndicator color={colors.foreground} />
-          </View>
-        ) : (
-          <View className="mt-6 overflow-hidden rounded-xl border border-border bg-card">
-            <View className="flex-row items-center gap-3 px-4 py-4">
-              <View className="min-w-0 flex-1">
-                <Text className="text-sm font-bold text-foreground">1년 전 오늘의 갈피</Text>
-                <Text className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
-                  1년 전 오늘 남긴 갈피를 저녁 8시에 다시 보여드려요.
-                </Text>
-              </View>
-              <Pressable
-                onPress={() => setOnThisDayEnabled(!onThisDayEnabled)}
-                disabled={!supported}
-                accessibilityRole="switch"
-                accessibilityState={{ checked: onThisDayEnabled }}
-                accessibilityLabel="1년 전 오늘의 갈피"
-                className={`web:cursor-pointer relative h-6 w-11 justify-center rounded-full ${
-                  onThisDayEnabled ? 'bg-galpi-ink' : 'bg-border'
-                } ${!supported ? 'opacity-50' : ''}`}
-              >
-                <View
-                  className="absolute h-5 w-5 rounded-full bg-galpi-paper"
-                  style={{ left: onThisDayEnabled ? 22 : 2 }}
-                />
-              </Pressable>
-            </View>
-          </View>
-        )}
-
-        {onThisDayError ? (
-          <Text className="mt-3 text-xs text-destructive">{onThisDayError}</Text>
         ) : null}
 
         {onThisDayEnabled ? (
