@@ -220,7 +220,7 @@ function BooksCard({ year, completedBooks }: { year: number; completedBooks: Boo
   return (
     <CardShell>
       <View className="items-center gap-1">
-        <Text className="text-center text-lg font-black text-galpi-paper">{year}년 완독한 책</Text>
+        <Text className="text-center text-lg font-bold text-galpi-paper">{year}년 완독한 책</Text>
         <Text className="text-center text-sm text-galpi-paper/60">{completedBooks.length}권</Text>
       </View>
       {completedBooks.length > 0 ? (
@@ -244,7 +244,7 @@ function WeekdayCard({ readDaysCount, weekdayCounts, topWeekdayIndex }: { readDa
     <CardShell>
       <View className="items-center gap-1">
         <CalendarDays size={24} color={colors.galpiBlue} />
-        <Text className="mt-2 text-center text-lg font-black text-galpi-paper">읽은 날 {readDaysCount}일</Text>
+        <Text className="mt-2 text-center text-lg font-bold text-galpi-paper">읽은 날 {readDaysCount}일</Text>
       </View>
       {topWeekdayIndex >= 0 ? (
         <>
@@ -269,7 +269,7 @@ function StreakCard({ year, bestStreak, heatmap }: { year: number; bestStreak: n
     <CardShell>
       <View className="items-center gap-1">
         <Flame size={24} color={colors.galpiYellow} />
-        <Text className="mt-2 text-center text-lg font-black text-galpi-paper">
+        <Text className="mt-2 text-center text-lg font-bold text-galpi-paper">
           최장 연속 독서 <Text className="text-galpi-yellow">{bestStreak}일</Text>
         </Text>
         <Text className="text-center text-sm text-galpi-paper/60">{year}년 독서 활동</Text>
@@ -304,7 +304,7 @@ function GenresCard({ topGenres }: { topGenres: string[] }) {
   return (
     <CardShell>
       <View className="items-center gap-1">
-        <Text className="text-center text-lg font-black text-galpi-paper">올해의 취향</Text>
+        <Text className="text-center text-lg font-bold text-galpi-paper">올해의 취향</Text>
       </View>
       {topGenres.length > 0 ? (
         <View className="flex-row flex-wrap justify-center gap-2">

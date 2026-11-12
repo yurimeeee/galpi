@@ -230,7 +230,7 @@ export function MyPageScreen({
 function SummaryChip({ value, label }: { value: string; label: string }) {
   return (
     <View className="flex-1 flex-row items-baseline gap-1.5 rounded-2xl bg-galpi-paper px-4 py-3">
-      <Text className="text-lg font-black text-galpi-ink">{value}</Text>
+      <Text className="text-lg font-bold text-galpi-ink">{value}</Text>
       <Text className="text-xs text-galpi-ink/60">{label}</Text>
     </View>
   );

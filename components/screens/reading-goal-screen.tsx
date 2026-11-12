@@ -91,7 +91,7 @@ export function ReadingGoalScreen({ onBack }: { onBack: () => void }) {
             <ChevronLeft size={20} color={colors.foreground} />
           </Pressable>
           <View>
-            <Text className="text-lg font-black tracking-tight text-foreground">독서 목표</Text>
+            <Text className="text-lg font-bold tracking-tight text-foreground">독서 목표</Text>
             <Text className="text-xs text-muted-foreground">꾸준함이 쌓여 습관이 됩니다</Text>
           </View>
         </View>

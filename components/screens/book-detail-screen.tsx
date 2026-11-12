@@ -387,7 +387,7 @@ export function BookDetailScreen({
 
             {/* 수집한 갈피 목록 */}
             <View className="mb-4 mt-8 flex-row items-baseline justify-between">
-              <Text className="text-lg font-black tracking-tight text-foreground">
+              <Text className="text-lg font-bold tracking-tight text-foreground">
                 수집한 갈피 목록
               </Text>
               <Text className="text-xs font-medium text-muted-foreground">

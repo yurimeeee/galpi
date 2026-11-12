@@ -118,7 +118,7 @@ export function SentenceCardModal({
             <Text className="text-2xs font-bold uppercase tracking-widest text-muted-foreground">
               Galpi Card
             </Text>
-            <Text className="mt-0.5 text-lg font-black tracking-tight text-foreground">갈피 카드 만들기</Text>
+            <Text className="mt-0.5 text-lg font-bold tracking-tight text-foreground">갈피 카드 만들기</Text>
           </View>
           <Pressable
             onPress={onClose}

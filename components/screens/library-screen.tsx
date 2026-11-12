@@ -162,7 +162,7 @@ export function MainLibraryScreen({
       <SafeAreaView edges={['top']} className="flex-1 min-h-0 bg-background">
         <View className="flex-1 px-6 pb-6">
           <View className="flex-row items-center justify-between pt-1 pb-4">
-            <Text className="text-lg font-black tracking-tight text-foreground">서재 순서 편집</Text>
+            <Text className="text-lg font-bold tracking-tight text-foreground">서재 순서 편집</Text>
             <Pressable
               onPress={() => setReorderMode(false)}
               accessibilityLabel="순서 편집 완료"
@@ -356,7 +356,7 @@ export function MainLibraryScreen({
 
               {/* 내 서재 */}
               <View className="flex-row items-center justify-between mb-3">
-                <Text className="text-lg font-black tracking-tight text-foreground">내 서재</Text>
+                <Text className="text-lg font-bold tracking-tight text-foreground">내 서재</Text>
                 <View className="flex-row items-center gap-3">
                   <View className="flex-row gap-0.5 rounded-full bg-secondary p-0.5">
                     <Pressable
@@ -554,7 +554,7 @@ export function LibrarySkeleton() {
         <Skeleton className="w-full h-40 mb-7 rounded-3xl" />
 
         <View className="flex-row items-center justify-between mb-3">
-          <Text className="text-lg font-black tracking-tight text-foreground">내 서재</Text>
+          <Text className="text-lg font-bold tracking-tight text-foreground">내 서재</Text>
         </View>
 
         <View className="flex-row gap-2 mb-5">

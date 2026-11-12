@@ -38,7 +38,7 @@ export function GoalEditModal({
       zIndex={30}
       header={
         <View className="mb-5 flex-row items-center justify-between">
-          <Text className="text-lg font-black text-foreground">독서 목표 설정</Text>
+          <Text className="text-lg font-bold text-foreground">독서 목표 설정</Text>
           <Pressable
             onPress={onClose}
             accessibilityLabel="닫기"

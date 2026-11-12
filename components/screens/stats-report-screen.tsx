@@ -1092,7 +1092,7 @@ function ReportPublishModal({
             <Text className="text-2xs font-bold uppercase tracking-widest text-muted-foreground">
               Reading Report
             </Text>
-            <Text className="mt-0.5 text-lg font-black tracking-tight text-foreground">독서 리포트 발행</Text>
+            <Text className="mt-0.5 text-lg font-bold tracking-tight text-foreground">독서 리포트 발행</Text>
           </View>
           <Pressable
             onPress={onClose}
