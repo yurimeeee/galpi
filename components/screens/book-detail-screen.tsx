@@ -135,16 +135,16 @@ export function BookDetailScreen({
         data={sentences}
         keyExtractor={(s) => s.id}
         contentContainerClassName="px-5 pb-28"
-        ItemSeparatorComponent={() => <View className="h-4" />}
         renderItem={({ item }) => {
           const Icon = ENTRY_ICON[item.type];
           return (
             <Pressable
               onPress={() => onEditSentence(item.id)}
+              accessibilityRole="button"
               accessibilityLabel="갈피 수정하기"
-              className="web:cursor-pointer relative overflow-hidden rounded-xl bg-card p-4"
+              className="web:cursor-pointer relative border-b border-border py-4 pl-1"
             >
-              <View className={`absolute left-0 top-0 h-full w-1.5 ${ACCENT_BG_CLASS[book.accent]}`} />
+              <View className={`absolute bottom-4 left-0 top-4 w-[3px] rounded-full ${ACCENT_BG_CLASS[book.accent]}`} />
               <View className="flex-row items-center justify-between pl-2">
                 <View className="rounded-md bg-galpi-ink px-2 py-0.5">
                   <Text className="tabular-nums text-2xs font-bold text-galpi-paper">
@@ -331,7 +331,7 @@ export function BookDetailScreen({
             ) : null}
 
             {/* 진행률 요약 */}
-            <View className="mt-5 flex-row items-center gap-3 rounded-xl bg-card p-4">
+            <View className="mt-5 flex-row items-center gap-3 border-y border-border py-3.5">
               <StatBit label="진행도" value={`${book.progress}%`} onPress={() => setProgressModalOpen(true)} />
               <View className="h-8 w-px bg-border" />
               <StatBit label="남긴 갈피" value={`${book.galpiCount}개`} />
@@ -340,9 +340,9 @@ export function BookDetailScreen({
             </View>
 
             {/* 수집한 갈피 목록 */}
-            <View className="mb-4 mt-8 flex-row items-baseline justify-between">
+            <View className="mb-1 mt-8 flex-row items-baseline justify-between">
               <Text className="text-lg font-bold tracking-tight text-foreground">
-                수집한 갈피 목록
+                수집한 갈피
               </Text>
               <Text className="text-xs font-medium text-muted-foreground">
                 총 {sentences.length}개
@@ -488,24 +488,26 @@ export function BookDetailSkeleton({ onBack }: { onBack: () => void }) {
 
       <View className="px-5 pb-28">
         <View className="flex-row gap-5">
-          <Skeleton className="h-40 w-28 shrink-0 rounded-xl" />
+          <Skeleton className="aspect-[2/3] w-28 shrink-0 rounded-lg" />
           <View className="min-w-0 flex-1 justify-center gap-2">
             <Skeleton className="h-5 w-4/5 rounded-md" />
             <Skeleton className="h-3.5 w-2/5 rounded-md" />
           </View>
         </View>
 
-        <View className="mt-5 h-20 rounded-xl bg-card" />
+        <View className="mt-5 h-16 border-y border-border" />
 
-        <View className="mb-4 mt-8">
+        <View className="mb-1 mt-8">
           <Skeleton className="h-5 w-40 rounded-md" />
         </View>
 
-        <View className="gap-4">
-          {[0, 1, 2].map((i) => (
-            <Skeleton key={i} className="h-32 w-full rounded-xl" />
-          ))}
-        </View>
+        {[0, 1, 2].map((i) => (
+          <View key={i} className="gap-2 border-b border-border py-4 pl-3">
+            <Skeleton className="h-4 w-16 rounded-sm" />
+            <Skeleton className="h-4 w-full rounded-md" />
+            <Skeleton className="h-4 w-3/4 rounded-md" />
+          </View>
+        ))}
       </View>
     </SafeAreaView>
   );
