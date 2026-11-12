@@ -45,7 +45,7 @@ export function TimePickerField({
         className="web:cursor-pointer flex-row items-center gap-2 rounded-xl border border-border bg-card px-4 py-3.5"
       >
         <Clock size={16} color={colors.foreground} />
-        <Text className="font-mono text-sm font-bold text-foreground">{value}</Text>
+        <Text className="tabular-nums text-sm font-bold text-foreground">{value}</Text>
       </Pressable>
 
       {open && Platform.OS === 'ios' ? (

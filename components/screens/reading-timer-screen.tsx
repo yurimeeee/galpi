@@ -158,7 +158,7 @@ export function ReadingTimerScreen({
             <Text className="text-xs font-bold text-galpi-ink">{isRest ? '잠시 휴식 시간' : '독서 몰입 시간'}</Text>
           </View>
           <View className="rounded-full bg-secondary px-3 py-1.5">
-            <Text className="font-mono text-xs font-bold tabular-nums text-foreground">
+            <Text className="tabular-nums text-xs font-bold text-foreground">
               {Math.min(sessionsDone + (isRest ? 0 : 1), TIMER_TOTAL_SESSIONS)} / {TIMER_TOTAL_SESSIONS} 세션
             </Text>
           </View>
@@ -184,7 +184,7 @@ export function ReadingTimerScreen({
           </View>
           <View className="items-center">
             <Text
-              className="font-mono text-6xl font-black leading-tight tracking-tight tabular-nums text-foreground"
+              className="tabular-nums text-6xl font-black leading-tight tracking-tight text-foreground"
             >
               {fmt(secondsLeft)}
             </Text>
@@ -388,7 +388,7 @@ function CustomStepper({ value, onChange }: { value: number; onChange: (v: numbe
       >
         <Text className="text-lg leading-none text-galpi-paper">−</Text>
       </Pressable>
-      <Text className="w-12 text-center font-mono text-sm font-bold text-galpi-paper">{value}분</Text>
+      <Text className="w-12 text-center tabular-nums text-sm font-bold text-galpi-paper">{value}분</Text>
       <Pressable
         onPress={() => onChange(Math.min(90, value + 5))}
         accessibilityLabel="시간 늘리기"

@@ -381,14 +381,14 @@ export function AddBookScreen({
 
               <Field label="전체 페이지">
                 <View className="flex-row items-center gap-2 rounded-xl border border-border bg-card px-4 py-3.5">
-                  <Text className="font-mono text-sm font-bold text-muted-foreground">P.</Text>
+                  <Text className="tabular-nums text-sm font-bold text-muted-foreground">P.</Text>
                   <TextInput
                     value={manualPages}
                     onChangeText={setManualPages}
                     keyboardType="numeric"
                     placeholder="320 (선택)"
                     placeholderTextColor={colors.mutedForeground}
-                    className="flex-1 font-mono text-sm text-foreground"
+                    className="flex-1 tabular-nums text-sm text-foreground"
                   />
                 </View>
               </Field>

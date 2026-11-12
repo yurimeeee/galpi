@@ -514,7 +514,7 @@ function SentenceResultCard({ sentence, book, query }: { sentence: Sentence; boo
           </Text>
         </View>
         <View className="ml-2 rounded-md bg-galpi-ink px-2 py-0.5">
-          <Text className="font-mono text-2xs font-bold text-galpi-paper">P. {sentence.page}</Text>
+          <Text className="tabular-nums text-2xs font-bold text-galpi-paper">P. {sentence.page}</Text>
         </View>
       </View>
 

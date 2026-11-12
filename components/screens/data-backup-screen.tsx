@@ -180,7 +180,7 @@ export function DataBackupScreen({
             textAlignVertical="top"
             autoCapitalize="none"
             autoCorrect={false}
-            className="w-full rounded-xl border border-border bg-background p-4 font-mono text-xs leading-relaxed text-foreground focus:border-ring"
+            className="w-full rounded-xl border border-border bg-background p-4 tabular-nums text-xs leading-relaxed text-foreground focus:border-ring"
             style={{ minHeight: 120 }}
           />
 

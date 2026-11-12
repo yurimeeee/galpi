@@ -271,14 +271,14 @@ function TextMode({
 
       <Field label="페이지">
         <View className="flex-row items-center gap-2 rounded-xl border border-border bg-card px-4 py-3.5">
-          <Text className="font-mono text-sm font-bold text-muted-foreground">P.</Text>
+          <Text className="tabular-nums text-sm font-bold text-muted-foreground">P.</Text>
           <TextInput
             value={page}
             onChangeText={setPage}
             keyboardType="numeric"
             placeholder="124"
             placeholderTextColor={colors.mutedForeground}
-            className="flex-1 font-mono text-sm text-foreground"
+            className="flex-1 tabular-nums text-sm text-foreground"
           />
         </View>
       </Field>
@@ -509,14 +509,14 @@ function ScanMode({
 
       <Field label="페이지">
         <View className="flex-row items-center gap-2 rounded-xl border border-border bg-card px-4 py-3.5">
-          <Text className="font-mono text-sm font-bold text-muted-foreground">P.</Text>
+          <Text className="tabular-nums text-sm font-bold text-muted-foreground">P.</Text>
           <TextInput
             value={page}
             onChangeText={setPage}
             keyboardType="numeric"
             placeholder="201"
             placeholderTextColor={colors.mutedForeground}
-            className="flex-1 font-mono text-sm text-foreground"
+            className="flex-1 tabular-nums text-sm text-foreground"
           />
         </View>
       </Field>
@@ -617,14 +617,14 @@ function PhotoMode({
 
       <Field label="페이지">
         <View className="flex-row items-center gap-2 rounded-xl border border-border bg-card px-4 py-3.5">
-          <Text className="font-mono text-sm font-bold text-muted-foreground">P.</Text>
+          <Text className="tabular-nums text-sm font-bold text-muted-foreground">P.</Text>
           <TextInput
             value={page}
             onChangeText={setPage}
             keyboardType="numeric"
             placeholder="46"
             placeholderTextColor={colors.mutedForeground}
-            className="flex-1 font-mono text-sm text-foreground"
+            className="flex-1 tabular-nums text-sm text-foreground"
           />
         </View>
       </Field>

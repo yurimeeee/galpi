@@ -175,7 +175,7 @@ export function BookDetailScreen({
               <View className={`absolute left-0 top-0 h-full w-1.5 ${ACCENT_BG_CLASS[book.accent]}`} />
               <View className="flex-row items-center justify-between pl-2">
                 <View className="rounded-md bg-galpi-ink px-2 py-0.5">
-                  <Text className="font-mono text-2xs font-bold text-galpi-paper">
+                  <Text className="tabular-nums text-2xs font-bold text-galpi-paper">
                     P. {item.page}
                   </Text>
                 </View>
@@ -504,7 +504,7 @@ function SharePickerRow({ sentence, onPress }: { sentence: Sentence; onPress: ()
       className="web:cursor-pointer flex-row items-center gap-3 rounded-xl border border-border bg-card p-3"
     >
       <View className="shrink-0 rounded-md bg-galpi-ink px-2 py-1">
-        <Text className="font-mono text-2xs font-bold text-galpi-paper">P.{sentence.page}</Text>
+        <Text className="tabular-nums text-2xs font-bold text-galpi-paper">P.{sentence.page}</Text>
       </View>
       <Text numberOfLines={2} className="min-w-0 flex-1 text-sm font-semibold leading-relaxed text-foreground">
         {sentence.quote}

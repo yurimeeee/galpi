@@ -15,7 +15,7 @@ export function ColorChips() {
         <Text className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
           테마 컬러칩
         </Text>
-        <Text className="font-mono text-2xs text-muted-foreground">
+        <Text className="tabular-nums text-2xs text-muted-foreground">
           5 colors
         </Text>
       </View>
@@ -26,7 +26,7 @@ export function ColorChips() {
             <Text numberOfLines={1} className="text-2xs font-medium leading-tight text-foreground">
               {chip.name}
             </Text>
-            <Text className="font-mono text-2xs leading-none text-muted-foreground">
+            <Text className="tabular-nums text-2xs leading-none text-muted-foreground">
               {chip.hex}
             </Text>
           </View>

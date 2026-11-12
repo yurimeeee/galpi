@@ -315,7 +315,7 @@ function SentenceCardBody({
           {book.title} <Text style={{ color: text, opacity: 0.5 }} className="font-normal">· {book.author}</Text>
         </Text>
         <View className="shrink-0 rounded-md px-2 py-0.5" style={{ backgroundColor: hexToRgba(text, 0.14) }}>
-          <Text style={{ color: text }} className="font-mono text-2xs font-bold">
+          <Text style={{ color: text }} className="tabular-nums text-2xs font-bold">
             P.{sentence.page}
           </Text>
         </View>

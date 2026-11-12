@@ -37,7 +37,7 @@ export function TimePickerField({
         }}
         placeholder="21:00"
         placeholderTextColor={colors.mutedForeground}
-        className="flex-1 font-mono text-sm font-bold text-foreground"
+        className="flex-1 tabular-nums text-sm font-bold text-foreground"
       />
     </View>
   );

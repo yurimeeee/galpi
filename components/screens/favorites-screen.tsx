@@ -96,7 +96,7 @@ function FavoriteSentenceCard({
         </View>
         <View className="ml-2 flex-row items-center gap-1.5">
           <View className="rounded-md bg-galpi-ink px-2 py-0.5">
-            <Text className="font-mono text-2xs font-bold text-galpi-paper">P. {sentence.page}</Text>
+            <Text className="tabular-nums text-2xs font-bold text-galpi-paper">P. {sentence.page}</Text>
           </View>
           <Pressable
             onPress={() => onToggleFavorite(sentence.id, false)}

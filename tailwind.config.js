@@ -64,7 +64,6 @@ module.exports = {
       },
       fontFamily: {
         sans: ['NotoSansKR_400Regular'],
-        mono: ['Courier'],
       },
       /**
        * Role-named sizes that fill the gaps in Tailwind's scale (see

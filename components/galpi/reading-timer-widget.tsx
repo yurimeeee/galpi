@@ -149,7 +149,7 @@ export function ReadingTimerWidget() {
               ) : null}
 
               <PhaseIcon size={12} color={colors.galpiPaper} opacity={0.8} />
-              <Text className="mt-0.5 font-mono text-sm font-black tabular-nums text-galpi-paper">
+              <Text className="mt-0.5 tabular-nums text-sm font-black text-galpi-paper">
                 {fmt(secondsLeft)}
               </Text>
               {!running ? (
