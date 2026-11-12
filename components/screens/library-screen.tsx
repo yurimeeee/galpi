@@ -302,46 +302,7 @@ export function MainLibraryScreen({
               />
 
               {/* 지금 읽는 중 — 대표 카드 */}
-              {featured ? (
-                <View accessibilityLabel="지금 읽는 중" className="mb-7">
-                  <Pressable
-                    onPress={() => onOpenBook(featured)}
-                    className={`web:cursor-pointer overflow-hidden rounded-2xl ${ACCENT_BG_CLASS[featured.accent]} p-5`}
-                    style={({ pressed }) => pressed && { transform: [{ scale: 0.99 }] }}
-                  >
-                    <View className="flex-row items-center justify-between">
-                      <View className="px-3 py-1 rounded-full bg-galpi-ink/10">
-                        <Text className="text-2xs font-bold text-galpi-ink">지금 읽는 중</Text>
-                      </View>
-                      <View className="flex-row items-center gap-1">
-                        <Bookmark size={12} color={colors.galpiInk} opacity={0.7} />
-                        <Text className="text-2xs font-semibold text-galpi-ink/70">{featured.galpiCount}개</Text>
-                      </View>
-                    </View>
-
-                    <Text className="mt-4 text-xl font-black leading-tight text-galpi-ink">{featured.title}</Text>
-                    <Text className="mt-0.5 text-xs font-medium text-galpi-ink/60">{featured.author}</Text>
-
-                    {featured.quote ? (
-                      <View className="flex-row gap-2 p-3 mt-4 rounded-xl bg-galpi-paper/60">
-                        <Quote size={14} color={colors.galpiInk} opacity={0.5} />
-                        <Text className="flex-1 text-xs leading-relaxed text-galpi-ink/80">{featured.quote}</Text>
-                      </View>
-                    ) : null}
-
-                    {/* 진행률 */}
-                    <View className="mt-4">
-                      <View className="mb-1.5 flex-row items-center justify-between">
-                        <Text className="text-2xs font-semibold text-galpi-ink/70">진행도</Text>
-                        <Text className="text-2xs font-semibold text-galpi-ink/70">{featured.progress}%</Text>
-                      </View>
-                      <View className="h-1.5 w-full overflow-hidden rounded-full bg-galpi-ink/15">
-                        <View className="h-full rounded-full bg-galpi-ink" style={{ width: `${featured.progress}%` }} />
-                      </View>
-                    </View>
-                  </Pressable>
-                </View>
-              ) : null}
+              {featured ? <FeaturedBookCard book={featured} onPress={() => onOpenBook(featured)} /> : null}
 
               {/* 내 서재 */}
               <View className="flex-row items-center justify-between mb-3">
@@ -350,26 +311,37 @@ export function MainLibraryScreen({
                   <View className="flex-row gap-0.5 rounded-full bg-secondary p-0.5" accessibilityRole="tablist">
                     <Pressable
                       onPress={() => setViewMode('list')}
+                      accessibilityRole="tab"
+                      accessibilityState={{ selected: viewMode === 'list' }}
                       accessibilityLabel="리스트로 보기"
-                      className={`web:cursor-pointer items-center justify-center rounded-full p-1.5 ${viewMode === 'list' ? 'bg-card' : ''}`}
+                      hitSlop={4}
+                      className={`web:cursor-pointer h-8 w-8 items-center justify-center rounded-full ${viewMode === 'list' ? 'bg-card' : ''}`}
                     >
                       <List size={14} color={viewMode === 'list' ? colors.foreground : colors.mutedForeground} />
                     </Pressable>
                     <Pressable
                       onPress={() => setViewMode('card')}
+                      accessibilityRole="tab"
+                      accessibilityState={{ selected: viewMode === 'card' }}
                       accessibilityLabel="카드로 보기"
-                      className={`web:cursor-pointer items-center justify-center rounded-full p-1.5 ${viewMode === 'card' ? 'bg-card' : ''}`}
+                      hitSlop={4}
+                      className={`web:cursor-pointer h-8 w-8 items-center justify-center rounded-full ${viewMode === 'card' ? 'bg-card' : ''}`}
                     >
-                      <Grid2x2 size={13} color={viewMode === 'card' ? colors.foreground : colors.mutedForeground} />
+                      <Grid2x2 size={14} color={viewMode === 'card' ? colors.foreground : colors.mutedForeground} />
                     </Pressable>
                   </View>
                   {books.length > 1 ? (
-                    <Pressable onPress={() => setReorderMode(true)} accessibilityLabel="서재 순서 편집" className="web:cursor-pointer flex-row items-center gap-0.5">
-                      <ArrowUpDown size={12} color={colors.mutedForeground} />
-                      {/* <Text className="text-xs font-medium text-muted-foreground">순서 편집</Text> */}
+                    <Pressable
+                      onPress={() => setReorderMode(true)}
+                      accessibilityRole="button"
+                      accessibilityLabel="서재 순서 편집"
+                      hitSlop={8}
+                      className="web:cursor-pointer h-8 w-8 items-center justify-center"
+                    >
+                      <ArrowUpDown size={14} color={colors.mutedForeground} />
                     </Pressable>
                   ) : null}
-                  <Pressable onPress={showAll} className="web:cursor-pointer flex-row items-center gap-0.5">
+                  <Pressable onPress={showAll} accessibilityRole="button" hitSlop={8} className="web:cursor-pointer flex-row items-center gap-0.5">
                     <Text className="text-xs font-medium text-muted-foreground">전체보기</Text>
                     <ChevronRight size={14} color={colors.mutedForeground} />
                   </Pressable>
@@ -397,6 +369,85 @@ export function MainLibraryScreen({
         }
       />
     </SafeAreaView>
+  );
+}
+
+/**
+ * Text/chip/track classes for content sitting on a book's accent surface.
+ * Spelled out per accent (not interpolated) so Tailwind can see every
+ * class; the `ink` spine needs paper-colored content.
+ */
+const ON_ACCENT = {
+  ink: {
+    fg: 'text-galpi-ink',
+    fg60: 'text-galpi-ink/60',
+    fg70: 'text-galpi-ink/70',
+    fg80: 'text-galpi-ink/80',
+    chip: 'bg-galpi-ink/10',
+    track: 'bg-galpi-ink/15',
+    fill: 'bg-galpi-ink',
+  },
+  paper: {
+    fg: 'text-galpi-paper',
+    fg60: 'text-galpi-paper/60',
+    fg70: 'text-galpi-paper/70',
+    fg80: 'text-galpi-paper/80',
+    chip: 'bg-galpi-paper/15',
+    track: 'bg-galpi-paper/20',
+    fill: 'bg-galpi-paper',
+  },
+} as const;
+
+/** The "지금 읽는 중" hero: cover on the left, title/author/quote and progress on the right, on the book's accent color. */
+function FeaturedBookCard({ book, onPress }: { book: Book; onPress: () => void }) {
+  const colors = useThemeColors();
+  const on = ON_ACCENT[book.accent === 'ink' ? 'paper' : 'ink'];
+  const iconColor = book.accent === 'ink' ? colors.galpiPaper : colors.galpiInk;
+
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={`지금 읽는 중: ${book.title}`}
+      className={`web:cursor-pointer mb-7 flex-row gap-4 overflow-hidden rounded-2xl ${ACCENT_BG_CLASS[book.accent]} p-4`}
+      style={({ pressed }) => pressed && { transform: [{ scale: 0.99 }] }}
+    >
+      <BookCover coverUrl={book.coverUrl} title={book.title} accent={book.accent} size="lg" />
+
+      <View className="min-w-0 flex-1">
+        <View className="flex-row items-center justify-between">
+          <View className={`rounded-full px-2.5 py-0.5 ${on.chip}`}>
+            <Text className={`text-2xs font-bold ${on.fg}`}>지금 읽는 중</Text>
+          </View>
+          <View className="flex-row items-center gap-1">
+            <Bookmark size={12} color={iconColor} opacity={0.7} />
+            <Text className={`text-2xs font-semibold ${on.fg70}`}>{book.galpiCount}개</Text>
+          </View>
+        </View>
+
+        <Text numberOfLines={2} className={`mt-2.5 text-lg font-black leading-tight ${on.fg}`}>
+          {book.title}
+        </Text>
+        <Text numberOfLines={1} className={`mt-0.5 text-xs font-medium ${on.fg60}`}>
+          {book.author}
+        </Text>
+        {book.quote ? (
+          <Text numberOfLines={2} className={`mt-2 text-xs leading-relaxed ${on.fg80}`}>
+            “{book.quote}”
+          </Text>
+        ) : null}
+
+        <View className="mt-auto pt-3">
+          <View className="mb-1.5 flex-row items-center justify-between">
+            <Text className={`text-2xs font-semibold ${on.fg70}`}>읽은 정도</Text>
+            <Text className={`text-2xs font-semibold ${on.fg70}`}>{book.progress}%</Text>
+          </View>
+          <View className={`h-1.5 w-full overflow-hidden rounded-full ${on.track}`}>
+            <View className={`h-full rounded-full ${on.fill}`} style={{ width: `${book.progress}%` }} />
+          </View>
+        </View>
+      </View>
+    </Pressable>
   );
 }
 
@@ -532,7 +583,8 @@ export function LibrarySkeleton() {
           <Skeleton className="mt-1.5 h-8 w-32 rounded-lg" />
         </View>
 
-        <Skeleton className="w-full h-40 mb-7 rounded-2xl" />
+        <Skeleton className="mb-3 h-10 w-full rounded-full" />
+        <Skeleton className="mb-7 h-48 w-full rounded-2xl" />
 
         <View className="flex-row items-center justify-between mb-3">
           <Text className="text-lg font-bold tracking-tight text-foreground">내 서재</Text>
@@ -544,10 +596,10 @@ export function LibrarySkeleton() {
           ))}
         </View>
 
-        <View className="gap-4">
+        <View className="gap-3">
           {[0, 1, 2, 3].map((i) => (
             <View key={i} className="flex-row items-stretch gap-4">
-              <Skeleton className="h-20 w-14 rounded-xl" />
+              <Skeleton className="aspect-[2/3] w-14 rounded-md" />
               <View className="justify-center flex-1 gap-2 pb-4 border-b border-border">
                 <Skeleton className="w-2/3 h-4 rounded-md" />
                 <Skeleton className="w-1/3 h-3 rounded-md" />

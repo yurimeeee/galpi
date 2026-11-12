@@ -1,11 +1,15 @@
 import { Pressable, Text, View } from 'react-native';
 import { Flame } from 'lucide-react-native';
 import { useThemeColors } from '../../lib/theme';
+import { useEffectiveScheme } from '../../lib/use-effective-scheme';
 
 /**
- * Habit nudge pinned atop the library tab — the closest thing to a home-
- * screen widget this managed-Expo app can offer without a native extension.
- * Surfaces today's goal progress and streak every time the app is opened.
+ * Habit nudge pinned atop the library tab — one tappable strip with the
+ * streak, today's minutes against the goal, and a "읽기 시작" pill that
+ * opens the timer. Kept to a single line so the shelf stays above the
+ * fold (DESIGN_TASKS PG-01). Fixed ink/paper/yellow so it reads as the
+ * same brand mark in both themes; a hairline keeps it visible on the
+ * dark background.
  */
 export function TodayProgressCard({
   currentStreak,
@@ -19,45 +23,37 @@ export function TodayProgressCard({
   onStartTimer: () => void;
 }) {
   const colors = useThemeColors();
-  const progressPct = dailyGoalMinutes > 0 ? Math.min(100, Math.round((todayMinutes / dailyGoalMinutes) * 100)) : 0;
+  const scheme = useEffectiveScheme();
   const goalMet = dailyGoalMinutes > 0 && todayMinutes >= dailyGoalMinutes;
+  const streakLabel = currentStreak > 0 ? `${currentStreak}일 연속 기록 중` : '오늘부터 스트릭 시작';
+  const todayLabel = goalMet
+    ? '오늘 목표 달성'
+    : dailyGoalMinutes > 0
+      ? `오늘 ${todayMinutes}분 / ${dailyGoalMinutes}분`
+      : `오늘 ${todayMinutes}분`;
 
   return (
-    <View className="mb-7 overflow-hidden rounded-2xl bg-galpi-ink p-5">
-      <View className="flex-row items-center justify-between">
-        <View className="flex-row items-center gap-2">
-          <Flame size={16} color={colors.galpiYellow} strokeWidth={2} />
-          <Text className="text-sm font-bold text-galpi-paper">
-            {currentStreak > 0 ? `${currentStreak}일 연속 기록 중` : '오늘부터 스트릭을 시작해 보세요'}
-          </Text>
-        </View>
+    <Pressable
+      onPress={onStartTimer}
+      accessibilityRole="button"
+      accessibilityLabel={`독서 타이머 시작. ${streakLabel}, ${todayLabel}`}
+      className={`mb-3 flex-row items-center gap-2.5 rounded-full bg-galpi-ink py-2 pl-4 pr-2 ${
+        scheme === 'dark' ? 'border border-galpi-paper/20' : ''
+      }`}
+      style={({ pressed }) => pressed && { opacity: 0.85 }}
+    >
+      <Flame size={16} color={colors.galpiYellow} strokeWidth={2} />
+      <View className="min-w-0 flex-1 flex-row items-baseline gap-2">
+        <Text numberOfLines={1} className="shrink text-sm font-bold text-galpi-paper">
+          {streakLabel}
+        </Text>
+        <Text numberOfLines={1} className="shrink text-xs font-medium text-galpi-paper/60">
+          {todayLabel}
+        </Text>
       </View>
-
-      <Text className="mt-3 text-md font-black leading-snug text-galpi-paper">
-        {goalMet ? '오늘 목표를 달성했어요' : `오늘 ${todayMinutes}분 읽었어요`}
-      </Text>
-
-      {dailyGoalMinutes > 0 ? (
-        <View className="mt-3">
-          <View className="mb-1.5 flex-row items-center justify-between">
-            <Text className="text-2xs font-semibold text-galpi-paper/60">
-              목표 {dailyGoalMinutes}분
-            </Text>
-            <Text className="text-2xs font-semibold text-galpi-paper/60">{progressPct}%</Text>
-          </View>
-          <View className="h-1.5 w-full overflow-hidden rounded-full bg-galpi-paper/15">
-            <View className="h-full rounded-full bg-galpi-yellow" style={{ width: `${progressPct}%` }} />
-          </View>
-        </View>
-      ) : null}
-
-      <Pressable
-        onPress={onStartTimer}
-        className="web:cursor-pointer mt-4 items-center rounded-full bg-galpi-yellow py-3"
-        style={({ pressed }) => pressed && { opacity: 0.85 }}
-      >
-        <Text className="text-sm font-black text-galpi-ink">지금 읽기 시작</Text>
-      </Pressable>
-    </View>
+      <View className="shrink-0 rounded-full bg-galpi-yellow px-3 py-1.5">
+        <Text className="text-xs font-black text-galpi-ink">읽기 시작</Text>
+      </View>
+    </Pressable>
   );
 }
