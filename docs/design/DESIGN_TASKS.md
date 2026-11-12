@@ -8,10 +8,10 @@
 
 | ID | 대상 | 파일 | 목표 | 완료 조건 | 의존 | 상태 |
 |---|---|---|---|---|---|---|
-| DS-01 | 타이포 토큰 | `tailwind.config.js` | `fontSize`에 `display / md / 2xs / micro` 추가(행간 포함). 기존 키 값 불변 | 새 클래스 4종 빌드 확인, 기존 화면 변화 없음 | — | 대기 |
-| DS-02 | 시맨틱 컬러 보정 | `global.css`, `lib/theme.ts` | `--color-muted-foreground` 라이트 `107 107 114`, `mutedForeground: '#6B6B72'`. 다크 유지 | 두 파일 값 일치, 대비 ≥ 4.5:1 | — | 대기 |
-| DS-03 | 그림자 상수 | `lib/theme.ts` | `SHADOW.floating`, `SHADOW.cover` 추가 | 상수 export, 타입 확인 | — | 대기 |
-| DS-04 | 반경 정리 | `tailwind.config.js` | `rounded-4xl` 제거(미사용 확인됨). 값 변경 없음 | grep `rounded-4xl` 0 | — | 대기 |
+| DS-01 | 타이포 토큰 | `tailwind.config.js` | `fontSize`에 `display / md / 2xs / micro` 추가(행간 포함). 기존 키 값 불변 | 새 클래스 4종 빌드 확인, 기존 화면 변화 없음 | — | 완료 `e10ae48` |
+| DS-02 | 시맨틱 컬러 보정 | `global.css`, `lib/theme.ts` | `--color-muted-foreground` 라이트 `107 107 114`, `mutedForeground: '#6B6B72'`. 다크 유지 | 두 파일 값 일치, 대비 ≥ 4.5:1 (측정 4.81:1) | — | 완료 `6b75400` |
+| DS-03 | 그림자 상수 | `lib/theme.ts` | `SHADOW.floating`, `SHADOW.cover` 추가 | 상수 export, 타입 확인 | — | 완료 `3fe0a61` |
+| DS-04 | 반경 정리 | `tailwind.config.js` | `rounded-4xl` 제거(미사용 확인됨). 값 변경 없음 | grep `rounded-4xl` 0 | — | 완료 `ed8a4dc` |
 
 ## Phase B. 공통 컴포넌트 (신규 5개)
 
