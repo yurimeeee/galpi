@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { Image, Pressable, Text, TextInput, View } from 'react-native';
+import { Text, TextInput, View } from 'react-native';
 import { Clock, Bookmark, BookCheck, Check, X } from 'lucide-react-native';
+import { BookCover } from './book-cover';
+import { Button } from './button';
+import { IconButton } from './icon-button';
 import { BottomSheet } from './bottom-sheet';
 import { type Book } from '../../lib/data/books';
-import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
-import { ACCENT_BG_CLASS, useThemeColors } from '../../lib/theme';
+import { useThemeColors } from '../../lib/theme';
 
 function formatMinutes(totalSeconds: number) {
   const m = Math.round(totalSeconds / 60);
@@ -37,8 +39,6 @@ export function SessionSummaryModal({
 }) {
   const [startPage, setStartPage] = useState('');
   const [endPage, setEndPage] = useState('');
-  const { showCover, onCoverError } = useCoverFallback(book.coverUrl);
-  const colors = useThemeColors();
 
   const pagesRead = Math.max(0, Number(endPage) - Number(startPage) || 0);
 
@@ -56,13 +56,7 @@ export function SessionSummaryModal({
               오늘의 몰입, 잘 마쳤어요
             </Text>
           </View>
-          <Pressable
-            onPress={onClose}
-            accessibilityLabel="닫기"
-            className="web:cursor-pointer h-8 w-8 items-center justify-center rounded-full bg-secondary"
-          >
-            <X size={16} color={colors.foreground} />
-          </Pressable>
+          <IconButton Icon={X} label="닫기" onPress={onClose} className="bg-secondary" />
         </View>
       }
     >
@@ -74,28 +68,8 @@ export function SessionSummaryModal({
       </View>
 
       {/* 대상 책 */}
-      <View className="mb-5 flex-row items-center gap-3 rounded-xl border border-border bg-card p-3">
-        <View
-          className={`relative h-14 w-10 shrink-0 items-end justify-center overflow-hidden rounded-lg ${
-            showCover ? 'bg-secondary' : ACCENT_BG_CLASS[book.accent]
-          } p-1.5`}
-        >
-          {showCover ? (
-            <Image
-              source={{ uri: book.coverUrl }}
-              className="absolute inset-0 h-full w-full"
-              resizeMode="cover"
-              onError={onCoverError}
-            />
-          ) : null}
-          <View className={showCover ? 'rounded-full bg-galpi-ink/50 p-0.5' : undefined}>
-            <Bookmark
-              size={14}
-              color={showCover || book.accent === 'ink' ? colors.galpiPaper : colors.galpiInk}
-              opacity={showCover ? 1 : book.accent === 'ink' ? 1 : 0.7}
-            />
-          </View>
-        </View>
+      <View className="mb-5 flex-row items-center gap-3 rounded-xl bg-card p-3">
+        <BookCover coverUrl={book.coverUrl} title={book.title} accent={book.accent} size="sm" />
         <View className="min-w-0 flex-1">
           <Text numberOfLines={1} className="text-sm font-bold text-foreground">
             {book.title}
@@ -108,7 +82,7 @@ export function SessionSummaryModal({
 
       {/* 읽은 페이지 입력 */}
       <View className="mb-6">
-        <Text className="mb-2 text-xs font-bold text-foreground">읽은 페이지 수</Text>
+        <Text className="mb-1.5 text-sm font-semibold text-foreground">읽은 페이지 수</Text>
         <View className="flex-row items-center gap-3">
           <PageInput value={startPage} onChange={setStartPage} prefix="p." />
           <Text className="text-sm font-medium text-muted-foreground">~</Text>
@@ -120,14 +94,7 @@ export function SessionSummaryModal({
       </View>
 
       {/* 저장 */}
-      <Pressable
-        onPress={onSave}
-        className="web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-xl bg-primary py-4"
-        style={({ pressed }) => pressed && { transform: [{ scale: 0.98 }] }}
-      >
-        <Check size={16} color={colors.primaryForeground} />
-        <Text className="text-sm font-bold text-primary-foreground">독서 기록에 반영하기</Text>
-      </Pressable>
+      <Button label="독서 기록에 반영하기" Icon={Check} onPress={onSave} />
     </BottomSheet>
   );
 }

@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Image, Platform, Pressable, Text, View } from 'react-native';
+import { Alert, Image, Platform, Pressable, Text, View } from 'react-native';
 import { Bookmark, Check, Download, Quote, Share2, X } from 'lucide-react-native';
+import { Button } from './button';
 import { BottomSheet } from './bottom-sheet';
 import { captureViewAsImage, MediaPermissionError, saveImageToDevice, shareImage, ShareUnavailableError } from '../../lib/share-image';
 import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
@@ -214,22 +215,25 @@ export function SentenceCardModal({
 
       {/* 액션 버튼 */}
       <View className="mt-5 flex-row gap-3">
-        <Pressable
-          onPress={handleSaveImage}
-          disabled={busy !== null}
-          className={`web:cursor-pointer flex-1 flex-row items-center justify-center gap-2 rounded-xl bg-primary py-3.5 ${busy ? 'opacity-60' : ''}`}
-        >
-          {busy === 'save' ? <ActivityIndicator color={themeColors.primaryForeground} /> : <Download size={16} color={themeColors.primaryForeground} />}
-          <Text className="text-sm font-bold text-primary-foreground">이미지 저장하기</Text>
-        </Pressable>
-        <Pressable
-          onPress={handleShare}
-          disabled={busy !== null}
-          className={`web:cursor-pointer flex-1 flex-row items-center justify-center gap-2 rounded-xl border border-border bg-card py-3.5 ${busy ? 'opacity-60' : ''}`}
-        >
-          {busy === 'share' ? <ActivityIndicator color={themeColors.foreground} /> : <Share2 size={16} color={themeColors.foreground} />}
-          <Text className="text-sm font-bold text-foreground">SNS 공유하기</Text>
-        </Pressable>
+        <View className="flex-1">
+          <Button
+            label="이미지 저장하기"
+            Icon={Download}
+            onPress={handleSaveImage}
+            loading={busy === 'save'}
+            disabled={busy !== null && busy !== 'save'}
+          />
+        </View>
+        <View className="flex-1">
+          <Button
+            label="SNS 공유하기"
+            variant="secondary"
+            Icon={Share2}
+            onPress={handleShare}
+            loading={busy === 'share'}
+            disabled={busy !== null && busy !== 'share'}
+          />
+        </View>
       </View>
     </BottomSheet>
   );
