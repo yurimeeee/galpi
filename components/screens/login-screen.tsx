@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 import { GalpiHeaderLogo } from '../galpi/galpi-logo';
 import { TextField, PasswordField, CheckOption } from '../galpi/auth-field';
+import { Button } from '../galpi/button';
 import { getAuthErrorMessage } from '../../lib/auth';
 import { useThemeColors } from '../../lib/theme';
 
@@ -113,17 +114,13 @@ export function LoginScreen({
               </Pressable>
             </View>
 
-            <Pressable
+            <Button
+              label="로그인"
               onPress={handleEmailLogin}
               disabled={!canSubmit}
-              className={`web:cursor-pointer mt-2 w-full flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-4 ${
-                !canSubmit ? 'opacity-60' : ''
-              }`}
-              style={({ pressed }) => pressed && canSubmit && { transform: [{ scale: 0.98 }] }}
-            >
-              {submitting === 'email' ? <ActivityIndicator size="small" color={colors.primaryForeground} /> : null}
-              <Text className="text-center text-[15px] font-bold text-primary-foreground">로그인</Text>
-            </Pressable>
+              loading={submitting === 'email'}
+              className="mt-2"
+            />
           </View>
 
           {/* 구분선 */}
