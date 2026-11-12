@@ -38,7 +38,7 @@ const LIGHT_COLORS: ThemeColorMap = {
   card: '#FFFFFF',
   secondary: '#ECECEF',
   muted: '#ECECEF',
-  mutedForeground: '#77777D',
+  mutedForeground: '#6B6B72',
   accent: '#D8DBE9',
   destructive: '#DC2626',
   border: '#E3E3E8',

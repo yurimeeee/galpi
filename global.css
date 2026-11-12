@@ -22,7 +22,8 @@
   --color-secondary: 236 236 239;
   --color-secondary-foreground: 32 32 32;
   --color-muted: 236 236 239;
-  --color-muted-foreground: 119 119 125;
+  /* #6B6B72 — 4.9:1 on --color-background so secondary text passes AA without opacity tricks. */
+  --color-muted-foreground: 107 107 114;
   --color-accent: 216 219 233;
   --color-accent-foreground: 32 32 32;
   --color-destructive: 220 38 38;
