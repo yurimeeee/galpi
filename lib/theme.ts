@@ -1,3 +1,4 @@
+import type { ViewStyle } from 'react-native';
 import { useEffectiveScheme } from './use-effective-scheme';
 
 /**
@@ -98,3 +99,30 @@ export const ACCENT_BG_CLASS: Record<Accent, string> = {
 
 /** Rotation order for auto-assigning a spine color to newly added books. */
 export const ACCENT_CYCLE: Accent[] = ['blue', 'green', 'yellow', 'ink'];
+
+/**
+ * The only two shadows the app uses (docs/design/DESIGN_SYSTEM.md §5).
+ * Static surfaces get none; spread these onto `style` instead of writing
+ * ad-hoc shadow objects per screen.
+ *   floating — things that hover over content: tab-bar add button, pill
+ *              FAB, reading-timer widget, bottom fixed CTA bar.
+ *   cover    — the hero book cover on detail/timer/share-card screens only.
+ * Shadow color stays fixed ink in both themes (a dark shadow is right on a
+ * dark surface too), matching the fixed-brand `galpiInk` above.
+ */
+export const SHADOW = {
+  floating: {
+    shadowColor: LIGHT_COLORS.galpiInk,
+    shadowOpacity: 0.18,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 6,
+  },
+  cover: {
+    shadowColor: LIGHT_COLORS.galpiInk,
+    shadowOpacity: 0.1,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 4,
+  },
+} as const satisfies Record<string, ViewStyle>;
