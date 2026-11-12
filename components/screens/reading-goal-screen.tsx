@@ -140,14 +140,14 @@ export function ReadingGoalScreen({ onBack }: { onBack: () => void }) {
                       d.done
                         ? 'bg-galpi-ink'
                         : d.isToday
-                          ? 'border-2 border-dashed border-galpi-ink/50'
-                          : 'bg-galpi-ink/10'
+                          ? 'border-2 border-dashed border-galpi-ink'
+                          : 'border border-galpi-ink/25 bg-galpi-ink/5'
                     }`}
                   >
                     {d.done ? (
                       <Check size={16} color={colors.galpiPaper} strokeWidth={3} />
                     ) : (
-                      <Flame size={14} color={colors.galpiInk} opacity={d.isToday ? 0.4 : 0.3} />
+                      <Flame size={14} color={colors.galpiInk} opacity={d.isToday ? 0.7 : 0.45} />
                     )}
                   </View>
                 </View>
@@ -156,9 +156,9 @@ export function ReadingGoalScreen({ onBack }: { onBack: () => void }) {
           </View>
 
           {/* 목표 진행 */}
-          <View className="mt-6">
-            <Text className="mb-3 pl-1 text-md font-black text-foreground">나의 목표 진행</Text>
-            <View className="gap-3">
+          <View className="mt-8">
+            <Text className="mb-3 text-lg font-bold tracking-tight text-foreground">나의 목표 진행</Text>
+            <View className="rounded-xl bg-card px-4">
               <GoalProgress
                 Icon={Clock}
                 accent="blue"
@@ -182,14 +182,15 @@ export function ReadingGoalScreen({ onBack }: { onBack: () => void }) {
                 current={yearDone}
                 target={goals.yearlyBooks}
                 unit="권"
+                last
               />
             </View>
           </View>
 
           {/* 이번 달 스트릭 달력 */}
-          <View className="mt-6 rounded-2xl border border-border bg-card p-5">
-            <View className="mb-4 flex-row items-center justify-between">
-              <Text className="text-md font-black text-foreground">
+          <View className="mt-8">
+            <View className="mb-3 flex-row items-center justify-between">
+              <Text className="text-lg font-bold tracking-tight text-foreground">
                 {year}년 {month + 1}월 기록
               </Text>
               <View className="flex-row items-center gap-1">
@@ -228,8 +229,8 @@ export function ReadingGoalScreen({ onBack }: { onBack: () => void }) {
           </View>
 
           {/* 마일스톤 배지 */}
-          <View className="mt-6">
-            <Text className="mb-3 pl-1 text-md font-black text-foreground">스트릭 배지</Text>
+          <View className="mt-8">
+            <Text className="mb-3 text-lg font-bold tracking-tight text-foreground">스트릭 배지</Text>
             <View className="flex-row flex-wrap gap-3">
               {STREAK_BADGES.map((m) => {
                 const unlocked = bestStreak >= m.threshold;
@@ -292,6 +293,7 @@ export function ReadingGoalScreen({ onBack }: { onBack: () => void }) {
   );
 }
 
+/** One row of the goals group — rows share a card and are divided by hairlines (DESIGN_TASKS PG-05). */
 function GoalProgress({
   Icon,
   accent,
@@ -299,6 +301,7 @@ function GoalProgress({
   current,
   target,
   unit,
+  last = false,
 }: {
   Icon: LucideIcon;
   accent: Accent;
@@ -306,15 +309,16 @@ function GoalProgress({
   current: number;
   target: number;
   unit: string;
+  last?: boolean;
 }) {
   const pct = target > 0 ? Math.min(100, Math.round((current / target) * 100)) : 0;
   const complete = current >= target;
   const colors = useThemeColors();
 
   return (
-    <View className="rounded-xl border border-border bg-card p-4">
+    <View className={`py-4 ${last ? '' : 'border-b border-border'}`}>
       <View className="flex-row items-center gap-3">
-        <View className={`h-10 w-10 items-center justify-center rounded-xl ${ACCENT_BG_CLASS[accent]}`}>
+        <View className={`h-10 w-10 items-center justify-center rounded-lg ${ACCENT_BG_CLASS[accent]}`}>
           <Icon size={20} color={colors.galpiInk} strokeWidth={1.9} />
         </View>
         <View className="min-w-0 flex-1">
