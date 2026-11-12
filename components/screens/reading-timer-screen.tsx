@@ -6,13 +6,13 @@ import {
   Play,
   Pause,
   RotateCcw,
-  ChevronRight,
   BookOpen,
   Coffee,
   X,
 } from 'lucide-react-native';
 import { BookCover } from '../galpi/book-cover';
 import { BottomSheet } from '../galpi/bottom-sheet';
+import { Chip } from '../galpi/chip';
 import { ScreenHeader } from '../galpi/screen-header';
 import { SessionSummaryModal } from '../galpi/session-summary-modal';
 import { type Book } from '../../lib/data/books';
@@ -191,28 +191,24 @@ export function ReadingTimerScreen({
           </View>
         </View>
 
-        {/* 프리셋 칩 */}
-        <View className="mb-2 mt-4 gap-2">
-          {TIMER_PRESETS.map((p) => {
-            const selected = presetKey === p.key;
-            return (
-              <Pressable
+        {/* 프리셋: 선택 상태는 공통 Chip 규격(잉크 필) */}
+        <View className={`mb-2 mt-4 ${running ? 'opacity-40' : ''}`}>
+          <View className="flex-row flex-wrap gap-2">
+            {TIMER_PRESETS.map((p) => (
+              <Chip
                 key={p.key}
-                onPress={() => setPresetKeyOnStore(p.key)}
-                disabled={running}
-                className={`web:cursor-pointer flex-row items-center justify-between rounded-xl border px-4 py-3 ${
-                  running ? 'opacity-40' : ''
-                } ${selected ? 'border-galpi-ink bg-galpi-ink' : 'border-border bg-card'}`}
-              >
-                <Text className={`text-sm font-bold ${selected ? 'text-galpi-paper' : 'text-foreground'}`}>{p.label}</Text>
-                {p.key === 'custom' && selected ? (
-                  <CustomStepper value={customFocus} onChange={setCustomFocusOnStore} />
-                ) : (
-                  <ChevronRight size={16} color={selected ? colors.galpiPaper : colors.mutedForeground} opacity={selected ? 0.7 : 1} />
-                )}
-              </Pressable>
-            );
-          })}
+                label={p.label}
+                selected={presetKey === p.key}
+                onPress={running ? undefined : () => setPresetKeyOnStore(p.key)}
+              />
+            ))}
+          </View>
+          {presetKey === 'custom' ? (
+            <View className="mt-3 flex-row items-center justify-between rounded-xl bg-card px-4 py-3">
+              <Text className="text-sm font-bold text-foreground">집중 시간</Text>
+              <CustomStepper value={customFocus} onChange={setCustomFocusOnStore} />
+            </View>
+          ) : null}
         </View>
       </ScrollView>
 
