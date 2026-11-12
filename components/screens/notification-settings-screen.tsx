@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronLeft, Flame, Info, X } from 'lucide-react-native';
+import { Flame, Info, X } from 'lucide-react-native';
+import { ScreenHeader } from '../galpi/screen-header';
 import { TimePickerField } from '../galpi/time-picker-field';
 import { useReadingReminder } from '../../lib/use-reading-reminder';
 import { useOnThisDayReminder } from '../../lib/use-on-this-day-reminder';
@@ -49,16 +50,7 @@ export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
 
   return (
     <SafeAreaView edges={['top', 'bottom']} className="flex-1 min-h-0 bg-background">
-      <View className="flex-row items-center gap-3 px-5 pb-3 pt-2">
-        <Pressable
-          onPress={onBack}
-          accessibilityLabel="뒤로 가기"
-          className="web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-card"
-        >
-          <ChevronLeft size={20} color={colors.foreground} />
-        </Pressable>
-        <Text className="text-base font-black text-foreground">알림 설정</Text>
-      </View>
+      <ScreenHeader title="알림 설정" onBack={onBack} />
 
       <ScrollView className="flex-1 px-5 pt-4" contentContainerClassName="pb-10">
         {!supported ? (
