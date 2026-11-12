@@ -31,10 +31,11 @@ import {
 import { Skeleton } from '../galpi/skeleton';
 import { BottomSheet } from '../galpi/bottom-sheet';
 import { BookCover } from '../galpi/book-cover';
+import { Button } from '../galpi/button';
 import { IconButton } from '../galpi/icon-button';
 import { GalpiHeaderLogo } from '../galpi/galpi-logo';
 import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
-import { useThemeColors, ACCENT_BG_CLASS, SHADOW } from '../../lib/theme';
+import { useThemeColors, ACCENT_BG_CLASS } from '../../lib/theme';
 import { parseDotDate, dateKey, pad2 } from '../../lib/date-utils';
 import { getTopBookOfYear } from '../../lib/reading-goals';
 import { useAppStore } from '../../lib/store';
@@ -256,7 +257,6 @@ export function StatsReportScreen({ books, sentences }: { books: Book[]; sentenc
   const [period, setPeriod] = useState<Period>('month');
   const [shareOpen, setShareOpen] = useState(false);
   const [cursor, setCursor] = useState(() => new Date());
-  const colors = useThemeColors();
 
   const bookById = useMemo(() => new Map(books.map((b) => [b.id, b])), [books]);
 
@@ -274,7 +274,7 @@ export function StatsReportScreen({ books, sentences }: { books: Book[]; sentenc
         <IconButton Icon={Share2} label="리포트 발행" onPress={() => setShareOpen(true)} variant="primary" />
       </View>
 
-      <ScrollView className="flex-1" contentContainerClassName={`px-5 ${period === 'month' ? 'pb-28' : 'pb-6'}`}>
+      <ScrollView className="flex-1" contentContainerClassName="px-5 pb-8">
         {/* 기간 선택 */}
         <PeriodToggle period={period} onChange={setPeriod} />
 
@@ -283,20 +283,15 @@ export function StatsReportScreen({ books, sentences }: { books: Book[]; sentenc
         ) : (
           <YearlyView cursor={cursor} onPrev={() => shiftYear(-1)} onNext={() => shiftYear(1)} books={books} sentences={sentences} />
         )}
-      </ScrollView>
 
-      {period === 'month' ? (
-        <View className="absolute inset-x-0 bottom-0 items-center px-5 pb-6">
-          <Pressable
-            onPress={() => setShareOpen(true)}
-            className="web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-xl bg-primary py-4"
-            style={({ pressed }) => [SHADOW.floating, pressed && { transform: [{ scale: 0.98 }] }]}
-          >
-            <Sparkles size={15} color={colors.primaryForeground} />
-            <Text className="text-sm font-bold text-primary-foreground">이달의 독서 리포트 발행하기</Text>
-          </Pressable>
-        </View>
-      ) : null}
+        {/* 리포트 발행: 플로팅 대신 콘텐츠 끝에 — 헤더 공유 버튼과 함께 두 번째 진입점 */}
+        <Button
+          label={period === 'month' ? '이달의 독서 리포트 발행하기' : '올해의 독서 리포트 발행하기'}
+          Icon={Sparkles}
+          onPress={() => setShareOpen(true)}
+          className="mt-8"
+        />
+      </ScrollView>
 
       {shareOpen ? (
         <ReportPublishModal onClose={() => setShareOpen(false)} period={period} cursor={cursor} books={books} sentences={sentences} />
@@ -518,7 +513,7 @@ function MonthlyView({
       </View>
 
       {/* 달력 */}
-      <View className="mt-5 rounded-2xl bg-card p-4">
+      <View className="mt-6 border-y border-border py-3">
         <View className="mb-2 flex-row">
           {WEEKDAY_LABELS.map((d) => (
             <Text key={d} className="w-[14.28%] text-center text-2xs font-semibold text-muted-foreground">
@@ -552,8 +547,8 @@ function MonthlyView({
       </View>
 
       {/* 이달 요일별 독서 패턴 */}
-      <View className="mt-5 rounded-2xl bg-card p-5">
-        <Text className="mb-4 text-sm font-black text-foreground">주로 읽는 요일</Text>
+      <View className="mt-8">
+        <Text className="mb-4 text-lg font-bold tracking-tight text-foreground">주로 읽는 요일</Text>
         {topWeekdayIndex >= 0 ? (
           <>
             <DistributionBars labels={WEEKDAY_LABELS} counts={weekdayCounts} topIndex={topWeekdayIndex} />
@@ -568,8 +563,8 @@ function MonthlyView({
       </View>
 
       {/* 이달 시간대별 기록 패턴 */}
-      <View className="mt-5 rounded-2xl bg-card p-5">
-        <Text className="mb-4 text-sm font-black text-foreground">주로 기록하는 시간대</Text>
+      <View className="mt-8">
+        <Text className="mb-4 text-lg font-bold tracking-tight text-foreground">주로 기록하는 시간대</Text>
         {hasHourData && topHourIndex >= 0 ? (
           <>
             <DistributionBars labels={HOUR_BUCKET_LABELS} counts={hourBucketCounts} topIndex={topHourIndex} />
@@ -586,8 +581,8 @@ function MonthlyView({
       </View>
 
       {/* 이달의 취향 */}
-      <View className="mt-5 rounded-2xl bg-card p-5">
-        <Text className="mb-2 text-sm font-black text-foreground">이달의 취향</Text>
+      <View className="mt-8">
+        <Text className="mb-2 text-lg font-bold tracking-tight text-foreground">이달의 취향</Text>
         {hasGenreData ? (
           <Text className="text-xs leading-relaxed text-muted-foreground">
             이달엔 주로 <Text className="font-bold text-foreground">{topReadGenre}</Text> 책을 읽었어요.
@@ -606,9 +601,9 @@ function MonthlyView({
       </View>
 
       {/* 이달 갈피를 남긴 책 */}
-      <View className="mt-6">
+      <View className="mt-8">
         <View className="mb-3 flex-row items-baseline justify-between">
-          <Text className="text-base font-black tracking-tight text-foreground">이달 갈피를 남긴 책</Text>
+          <Text className="text-lg font-bold tracking-tight text-foreground">이달 갈피를 남긴 책</Text>
           <Text className="text-xs font-medium text-muted-foreground">{booksThisMonth.length}권</Text>
         </View>
         {booksThisMonth.length === 0 ? (
@@ -783,9 +778,9 @@ function YearlyView({
       </View>
 
       {/* 활동 히트맵 */}
-      <View className="mt-6 rounded-2xl bg-card p-5">
+      <View className="mt-8">
         <View className="mb-4 flex-row items-center justify-between">
-          <Text className="text-sm font-black text-foreground">연간 독서 활동</Text>
+          <Text className="text-lg font-bold tracking-tight text-foreground">연간 독서 활동</Text>
           <View className="flex-row items-center gap-1">
             <Text className="text-2xs text-muted-foreground">적음</Text>
             {INTENSITY_CLASS.map((c, i) => (
@@ -818,8 +813,8 @@ function YearlyView({
       </View>
 
       {/* 요일별 독서 패턴 */}
-      <View className="mt-5 rounded-2xl bg-card p-5">
-        <Text className="mb-4 text-sm font-black text-foreground">주로 읽는 요일</Text>
+      <View className="mt-8">
+        <Text className="mb-4 text-lg font-bold tracking-tight text-foreground">주로 읽는 요일</Text>
         {topWeekdayIndex >= 0 ? (
           <>
             <DistributionBars labels={WEEKDAY_LABELS} counts={weekdayCounts} topIndex={topWeekdayIndex} />
@@ -834,8 +829,8 @@ function YearlyView({
       </View>
 
       {/* 시간대별 기록 패턴 */}
-      <View className="mt-5 rounded-2xl bg-card p-5">
-        <Text className="mb-4 text-sm font-black text-foreground">주로 기록하는 시간대</Text>
+      <View className="mt-8">
+        <Text className="mb-4 text-lg font-bold tracking-tight text-foreground">주로 기록하는 시간대</Text>
         {hasHourData && topHourIndex >= 0 ? (
           <>
             <DistributionBars labels={HOUR_BUCKET_LABELS} counts={hourBucketCounts} topIndex={topHourIndex} />
