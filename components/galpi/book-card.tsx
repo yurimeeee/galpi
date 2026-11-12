@@ -1,8 +1,8 @@
-import { View, Text, Image } from 'react-native';
+import { View, Text } from 'react-native';
 import { Bookmark, Star } from 'lucide-react-native';
 import { type Book, STATUS_LABEL } from '../../lib/data/books';
-import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
-import { ACCENT_BG_CLASS, useThemeColors } from '../../lib/theme';
+import { BookCover } from './book-cover';
+import { useThemeColors } from '../../lib/theme';
 
 function Rating({ value }: { value: number }) {
   const colors = useThemeColors();
@@ -23,33 +23,11 @@ function Rating({ value }: { value: number }) {
 
 export function BookCard({ book }: { book: Book }) {
   const isWish = book.status === 'wish';
-  const { showCover, onCoverError } = useCoverFallback(book.coverUrl);
   const colors = useThemeColors();
 
   return (
     <View className="flex-row items-stretch gap-4">
-      {/* 표지 이미지 또는 책등(spine) 형태의 색 블록 */}
-      <View className={`relative w-14 shrink-0 overflow-hidden rounded-xl ${showCover ? 'bg-secondary' : ACCENT_BG_CLASS[book.accent]}`}>
-        {showCover ? (
-          <Image
-            source={{ uri: book.coverUrl }}
-            className="absolute inset-0 h-full w-full"
-            resizeMode="cover"
-            onError={onCoverError}
-          />
-        ) : (
-          <View className="absolute left-2 top-0 bottom-0 w-px bg-galpi-ink/10" />
-        )}
-        <View className="flex-1 items-end justify-end p-2">
-          <View className={showCover ? 'rounded-full bg-galpi-ink/50 p-1' : undefined}>
-            <Bookmark
-              size={14}
-              color={showCover || book.accent === 'ink' ? colors.galpiPaper : colors.galpiInk}
-              opacity={showCover ? 1 : book.accent === 'ink' ? 1 : 0.7}
-            />
-          </View>
-        </View>
-      </View>
+      <BookCover coverUrl={book.coverUrl} title={book.title} accent={book.accent} size="md" />
 
       <View className="min-w-0 flex-1 justify-center border-b border-border pb-4">
         <View className="flex-row items-start justify-between gap-3">

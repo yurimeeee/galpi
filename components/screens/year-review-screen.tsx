@@ -1,11 +1,11 @@
 import { useMemo, useRef, useState, type ReactNode } from 'react';
-import { ActivityIndicator, Alert, Image, Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BookCheck, Bookmark, CalendarDays, ChevronLeft, ChevronRight, Clock, Download, Flame, Quote, Share2, Sparkles, X } from 'lucide-react-native';
 import { IconButton } from '../galpi/icon-button';
 import { captureViewAsImage, saveImageToDevice, shareImage, MediaPermissionError, ShareUnavailableError } from '../../lib/share-image';
-import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
-import { ACCENT_BG_CLASS, useThemeColors } from '../../lib/theme';
+import { BookCover } from '../galpi/book-cover';
+import { useThemeColors } from '../../lib/theme';
 import { activeReadingDays, getTopBookOfYear, yearBestStreak, yearlyReadingMinutes } from '../../lib/reading-goals';
 import {
   DistributionBars,
@@ -351,17 +351,7 @@ function TopBookCard({ topBookOfYear }: { topBookOfYear: { book: Book; sentence:
 }
 
 function WrapBookCover({ book }: { book: Book }) {
-  const { showCover, onCoverError } = useCoverFallback(book.coverUrl);
-  const colors = useThemeColors();
-  return (
-    <View className={`h-16 w-11 items-center justify-center overflow-hidden rounded-md ${showCover ? 'bg-galpi-paper/10' : ACCENT_BG_CLASS[book.accent]}`}>
-      {showCover ? (
-        <Image source={{ uri: book.coverUrl }} className="h-full w-full" resizeMode="cover" onError={onCoverError} />
-      ) : (
-        <Bookmark size={14} color={book.accent === 'ink' ? colors.galpiPaper : colors.galpiInk} />
-      )}
-    </View>
-  );
+  return <BookCover coverUrl={book.coverUrl} title={book.title} accent={book.accent} size="sm" />;
 }
 
 function SummaryCard({

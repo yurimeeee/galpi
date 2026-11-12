@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Image, Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Circle } from 'react-native-svg';
 import {
@@ -9,14 +9,13 @@ import {
   ChevronRight,
   BookOpen,
   Coffee,
-  Bookmark,
   X,
 } from 'lucide-react-native';
+import { BookCover } from '../galpi/book-cover';
 import { BottomSheet } from '../galpi/bottom-sheet';
 import { ScreenHeader } from '../galpi/screen-header';
 import { SessionSummaryModal } from '../galpi/session-summary-modal';
 import { type Book } from '../../lib/data/books';
-import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
 import { useNow } from '../../lib/hooks/use-now';
 import { logReadingMinutes } from '../../lib/data-service';
 import { auth } from '../../lib/firebase';
@@ -28,7 +27,7 @@ import {
   timerFocusSecondsTotal,
   useReadingTimerStore,
 } from '../../lib/reading-timer-store';
-import { ACCENT_BG_CLASS, useThemeColors } from '../../lib/theme';
+import { useThemeColors } from '../../lib/theme';
 
 function fmt(seconds: number) {
   const m = Math.floor(seconds / 60);
@@ -289,32 +288,9 @@ export function ReadingTimerScreen({
 
 /* ---------- 대상 책 선택 카드 ---------- */
 function BookSelector({ book, onPress }: { book: Book; onPress: () => void }) {
-  const { showCover, onCoverError } = useCoverFallback(book.coverUrl);
-  const colors = useThemeColors();
-
   return (
     <View className="mt-2 flex-row items-center gap-3 rounded-xl border border-border bg-card p-3">
-      <View
-        className={`relative h-16 w-12 shrink-0 items-center justify-end overflow-hidden rounded-lg ${
-          showCover ? 'bg-secondary' : ACCENT_BG_CLASS[book.accent]
-        } p-2`}
-      >
-        {showCover ? (
-          <Image
-            source={{ uri: book.coverUrl }}
-            className="absolute inset-0 h-full w-full"
-            resizeMode="cover"
-            onError={onCoverError}
-          />
-        ) : null}
-        <View className={showCover ? 'rounded-full bg-galpi-ink/50 p-1' : undefined}>
-          <Bookmark
-            size={14}
-            color={showCover || book.accent === 'ink' ? colors.galpiPaper : colors.galpiInk}
-            opacity={showCover ? 1 : book.accent === 'ink' ? 1 : 0.7}
-          />
-        </View>
-      </View>
+      <BookCover coverUrl={book.coverUrl} title={book.title} accent={book.accent} size="sm" />
       <View className="min-w-0 flex-1">
         <Text className="text-2xs font-bold uppercase tracking-widest text-muted-foreground">읽을 책 선택</Text>
         <Text numberOfLines={1} className="mt-0.5 text-sm font-bold text-foreground">
@@ -333,35 +309,12 @@ function BookSelector({ book, onPress }: { book: Book; onPress: () => void }) {
 
 /* ---------- 책 선택 시트의 각 행 ---------- */
 function BookPickerRow({ book, onPress }: { book: Book; onPress: () => void }) {
-  const { showCover, onCoverError } = useCoverFallback(book.coverUrl);
-  const colors = useThemeColors();
-
   return (
     <Pressable
       onPress={onPress}
       className="web:cursor-pointer flex-row items-center gap-3 rounded-xl border border-border bg-card p-3"
     >
-      <View
-        className={`relative h-12 w-9 shrink-0 items-center justify-end overflow-hidden rounded-md ${
-          showCover ? 'bg-secondary' : ACCENT_BG_CLASS[book.accent]
-        } p-1`}
-      >
-        {showCover ? (
-          <Image
-            source={{ uri: book.coverUrl }}
-            className="absolute inset-0 h-full w-full"
-            resizeMode="cover"
-            onError={onCoverError}
-          />
-        ) : null}
-        <View className={showCover ? 'rounded-full bg-galpi-ink/50 p-0.5' : undefined}>
-          <Bookmark
-            size={12}
-            color={showCover || book.accent === 'ink' ? colors.galpiPaper : colors.galpiInk}
-            opacity={showCover ? 1 : book.accent === 'ink' ? 1 : 0.7}
-          />
-        </View>
-      </View>
+      <BookCover coverUrl={book.coverUrl} title={book.title} accent={book.accent} size="sm" />
       <View className="min-w-0 flex-1">
         <Text numberOfLines={1} className="text-sm font-bold text-foreground">
           {book.title}

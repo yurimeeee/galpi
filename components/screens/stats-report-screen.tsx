@@ -30,6 +30,7 @@ import {
 } from 'lucide-react-native';
 import { Skeleton } from '../galpi/skeleton';
 import { BottomSheet } from '../galpi/bottom-sheet';
+import { BookCover } from '../galpi/book-cover';
 import { IconButton } from '../galpi/icon-button';
 import { GalpiHeaderLogo } from '../galpi/galpi-logo';
 import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
@@ -630,27 +631,11 @@ function MonthlyView({
 
 /* ---------- 이달 갈피를 남긴 책 목록의 각 행 ---------- */
 function BookThisMonthRow({ book, count }: { book: Book; count: number }) {
-  const { showCover, onCoverError } = useCoverFallback(book.coverUrl);
   const colors = useThemeColors();
 
   return (
     <View className="flex-row items-center gap-3 rounded-xl bg-card p-3">
-      <View
-        className={`relative h-12 w-9 shrink-0 items-center justify-center overflow-hidden rounded-md ${
-          showCover ? 'bg-secondary' : ACCENT_BG_CLASS[book.accent]
-        }`}
-      >
-        {showCover ? (
-          <Image
-            source={{ uri: book.coverUrl }}
-            className="absolute inset-0 h-full w-full"
-            resizeMode="cover"
-            onError={onCoverError}
-          />
-        ) : (
-          <Bookmark size={14} color={book.accent === 'ink' ? colors.galpiPaper : colors.galpiInk} />
-        )}
-      </View>
+      <BookCover coverUrl={book.coverUrl} title={book.title} accent={book.accent} size="sm" />
       <View className="min-w-0 flex-1">
         <Text numberOfLines={1} className="text-sm font-bold text-foreground">{book.title}</Text>
         <Text numberOfLines={1} className="text-xs text-muted-foreground">{book.author}</Text>

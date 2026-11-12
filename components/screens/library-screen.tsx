@@ -1,16 +1,16 @@
 import { useMemo, useRef, useState } from 'react';
-import { FlatList, Image, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { FlatList, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowUpDown, Bookmark, Check, Search, ChevronRight, Quote, Star, Tags, List, Grid2x2 } from 'lucide-react-native';
 import { GalpiHeaderLogo } from '../galpi/galpi-logo';
 import { BookCard } from '../galpi/book-card';
+import { BookCover } from '../galpi/book-cover';
 import { ColorChips } from '../galpi/color-chips';
 import { IconButton } from '../galpi/icon-button';
 import { ReorderBookList } from '../galpi/reorder-book-list';
 import { Skeleton } from '../galpi/skeleton';
 import { StatusFilter, type FilterKey } from '../galpi/status-filter';
 import { TodayProgressCard } from '../galpi/today-progress-card';
-import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
 import { type Book } from '../../lib/data/books';
 import { type Sentence } from '../../lib/data/sentences';
 import { parseDotDate } from '../../lib/date-utils';
@@ -418,26 +418,18 @@ function FilterChipRow<T extends string | number>({ options, active, onChange }:
 
 /** Cover-only grid tile for the 카드 view — same book, denser layout than BookCard's list row. */
 function BookCoverTile({ book }: { book: Book }) {
-  const { showCover, onCoverError } = useCoverFallback(book.coverUrl);
   const colors = useThemeColors();
 
   return (
     <View>
-      <View className={`relative aspect-[3/4] overflow-hidden rounded-xl ${showCover ? 'bg-secondary' : ACCENT_BG_CLASS[book.accent]}`}>
-        {showCover ? (
-          <Image source={{ uri: book.coverUrl }} className="absolute inset-0 h-full w-full" resizeMode="cover" onError={onCoverError} />
-        ) : (
-          <View className="flex-1 items-center justify-center">
-            <Bookmark size={20} color={book.accent === 'ink' ? colors.galpiPaper : colors.galpiInk} opacity={0.7} />
-          </View>
-        )}
+      <BookCover coverUrl={book.coverUrl} title={book.title} accent={book.accent} size="fill">
         {book.status !== 'wish' ? (
           <View className="absolute left-1.5 top-1.5 flex-row items-center gap-0.5 rounded-full bg-galpi-ink/60 px-1.5 py-0.5">
             <Bookmark size={9} color={colors.galpiPaper} />
             <Text className="text-2xs font-bold text-galpi-paper">{book.galpiCount}</Text>
           </View>
         ) : null}
-      </View>
+      </BookCover>
       <Text numberOfLines={1} className="mt-1.5 text-xs font-bold text-foreground">
         {book.title}
       </Text>

@@ -4,7 +4,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   ChevronLeft,
   Share2,
-  Bookmark,
   Star,
   Plus,
   Timer,
@@ -17,6 +16,7 @@ import {
   Quote,
   type LucideIcon,
 } from 'lucide-react-native';
+import { BookCover } from '../galpi/book-cover';
 import { IconButton } from '../galpi/icon-button';
 import { Skeleton } from '../galpi/skeleton';
 import { BottomSheet } from '../galpi/bottom-sheet';
@@ -25,7 +25,6 @@ import { EditReviewModal } from '../galpi/edit-review-modal';
 import { SentenceCardModal } from '../galpi/sentence-card-modal';
 import { type Book, type ReadingStatus, STATUS_LABEL } from '../../lib/data/books';
 import { ENTRY_LABEL, type EntryType, type Sentence } from '../../lib/data/sentences';
-import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
 import { ACCENT_BG_CLASS, SHADOW, useThemeColors } from '../../lib/theme';
 
 const ENTRY_ICON: Record<EntryType, LucideIcon> = {
@@ -62,13 +61,11 @@ export function BookDetailScreen({
   onToggleSentenceFavorite: (sentenceId: string, favorite: boolean) => void;
 }) {
   const colors = useThemeColors();
-  const inkText = book.accent === 'ink' ? colors.galpiPaper : colors.galpiInk;
   const [progressModalOpen, setProgressModalOpen] = useState(false);
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [sharePickerOpen, setSharePickerOpen] = useState(false);
   const [shareSentence, setShareSentence] = useState<Sentence | null>(null);
-  const { showCover, onCoverError } = useCoverFallback(book.coverUrl);
 
   /** Favorites first so the picker surfaces the book's best lines up top, stable order otherwise (sentences arrive newest-first). */
   const shareCandidates = useMemo(
@@ -226,26 +223,13 @@ export function BookDetailScreen({
             {/* 히어로 */}
             <View className="flex-row gap-5">
               {/* 표지 */}
-              <View
-                className={`h-40 w-28 shrink-0 overflow-hidden rounded-xl ${showCover ? 'bg-secondary' : `justify-between ${ACCENT_BG_CLASS[book.accent]} p-3`}`}
+              <BookCover
+                coverUrl={book.coverUrl}
+                title={book.title}
+                accent={book.accent}
+                size="lg"
                 style={SHADOW.cover}
-              >
-                {showCover ? (
-                  <Image
-                    source={{ uri: book.coverUrl }}
-                    className="h-full w-full"
-                    resizeMode="cover"
-                    onError={onCoverError}
-                  />
-                ) : (
-                  <>
-                    <Bookmark size={16} color={inkText} opacity={0.7} />
-                    <Text className="text-2xs font-black leading-tight" style={{ color: inkText }}>
-                      {book.title}
-                    </Text>
-                  </>
-                )}
-              </View>
+              />
 
               {/* 정보 */}
               <View className="min-w-0 flex-1 justify-center">

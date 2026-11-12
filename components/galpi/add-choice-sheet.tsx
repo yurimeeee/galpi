@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { FlatList, Image, Pressable, Text, View } from 'react-native';
+import { FlatList, Pressable, Text, View } from 'react-native';
 import { Bookmark, ChevronLeft, Plus, Timer, X } from 'lucide-react-native';
 import { BottomSheet } from './bottom-sheet';
 import { type Book } from '../../lib/data/books';
-import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
-import { ACCENT_BG_CLASS, useThemeColors } from '../../lib/theme';
+import { BookCover } from './book-cover';
+import { useThemeColors } from '../../lib/theme';
 
 type Step = 'choice' | 'pick-book';
 
@@ -138,27 +138,12 @@ export function AddChoiceSheet({
 }
 
 function BookPickRow({ book, onPress }: { book: Book; onPress: () => void }) {
-  const { showCover, onCoverError } = useCoverFallback(book.coverUrl);
-
   return (
     <Pressable
       onPress={onPress}
       className="web:cursor-pointer flex-row items-center gap-3 rounded-xl border border-border bg-card p-3"
     >
-      <View
-        className={`h-12 w-9 shrink-0 overflow-hidden rounded-md ${
-          showCover ? 'bg-secondary' : ACCENT_BG_CLASS[book.accent]
-        }`}
-      >
-        {showCover ? (
-          <Image
-            source={{ uri: book.coverUrl }}
-            className="h-full w-full"
-            resizeMode="cover"
-            onError={onCoverError}
-          />
-        ) : null}
-      </View>
+      <BookCover coverUrl={book.coverUrl} title={book.title} accent={book.accent} size="sm" />
       <View className="min-w-0 flex-1">
         <Text numberOfLines={1} className="text-sm font-bold text-foreground">
           {book.title}

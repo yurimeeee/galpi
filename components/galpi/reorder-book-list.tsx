@@ -1,4 +1,4 @@
-import { Image, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   runOnJS,
@@ -9,8 +9,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import { GripVertical } from 'lucide-react-native';
 import { type Book } from '../../lib/data/books';
-import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
-import { ACCENT_BG_CLASS, useThemeColors } from '../../lib/theme';
+import { BookCover } from './book-cover';
+import { useThemeColors } from '../../lib/theme';
 
 const ROW_HEIGHT = 76;
 
@@ -144,12 +144,5 @@ function DraggableRow({
 }
 
 function RowCover({ book }: { book: Book }) {
-  const { showCover, onCoverError } = useCoverFallback(book.coverUrl);
-  return (
-    <View className={`h-14 w-10 shrink-0 overflow-hidden rounded-lg ${showCover ? 'bg-secondary' : ACCENT_BG_CLASS[book.accent]}`}>
-      {showCover ? (
-        <Image source={{ uri: book.coverUrl }} className="h-full w-full" resizeMode="cover" onError={onCoverError} />
-      ) : null}
-    </View>
-  );
+  return <BookCover coverUrl={book.coverUrl} title={book.title} accent={book.accent} size="sm" />;
 }
