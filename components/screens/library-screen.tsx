@@ -528,7 +528,7 @@ function SentenceResultCard({ sentence, book, query }: { sentence: Sentence; boo
         />
       ) : null}
 
-      <Text className="mt-2 text-2xs font-medium text-muted-foreground/70">{sentence.date}</Text>
+      <Text className="mt-2 text-2xs font-medium text-muted-foreground">{sentence.date}</Text>
     </View>
   );
 }

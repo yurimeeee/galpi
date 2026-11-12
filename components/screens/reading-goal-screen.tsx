@@ -222,7 +222,7 @@ export function ReadingGoalScreen({ onBack }: { onBack: () => void }) {
                     >
                       <Text
                         className={`text-2xs font-bold ${
-                          cell.done ? 'text-galpi-ink' : 'text-muted-foreground/50'
+                          cell.done ? 'text-galpi-ink' : 'text-muted-foreground'
                         }`}
                       >
                         {cell.day}
@@ -267,7 +267,7 @@ export function ReadingGoalScreen({ onBack }: { onBack: () => void }) {
                       </Text>
                       <Text
                         className={`mt-0.5 text-2xs ${
-                          unlocked ? 'text-galpi-ink/60' : 'text-muted-foreground/70'
+                          unlocked ? 'text-galpi-ink/60' : 'text-muted-foreground'
                         }`}
                       >
                         {m.threshold}일 연속 독서

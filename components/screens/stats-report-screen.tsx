@@ -553,7 +553,7 @@ function MonthlyView({
             return (
               <View key={day} className="aspect-square w-[14.28%] p-[3px]">
                 <View className={`flex-1 items-center justify-center rounded-lg ${read ? 'bg-galpi-ink' : ''}`}>
-                  <Text className={`text-2xs font-bold ${read ? 'text-galpi-paper' : 'text-muted-foreground/50'}`}>
+                  <Text className={`text-2xs font-bold ${read ? 'text-galpi-paper' : 'text-muted-foreground'}`}>
                     {day}
                   </Text>
                 </View>
@@ -701,7 +701,7 @@ function CalendarCoverCell({ day, book, read }: { day: number; book: Book | unde
             <Bookmark size={14} color={accent === 'ink' ? colors.galpiPaper : colors.galpiInk} />
           )
         ) : (
-          <Text className="text-2xs font-bold text-muted-foreground/40">{day}</Text>
+          <Text className="text-2xs font-bold text-muted-foreground">{day}</Text>
         )}
       </View>
     </View>
@@ -970,7 +970,7 @@ function MetricCard({
 function DeltaBadge({ delta }: { delta: number }) {
   const colors = useThemeColors();
   if (delta === 0) {
-    return <Text className="shrink-0 text-2xs font-bold text-muted-foreground/60">-</Text>;
+    return <Text className="shrink-0 text-2xs font-bold text-muted-foreground">-</Text>;
   }
   if (delta > 0) {
     return (

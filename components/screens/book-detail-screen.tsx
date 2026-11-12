@@ -233,7 +233,7 @@ export function BookDetailScreen({
                 </Text>
               ) : null}
 
-              <Text className="mt-2 pl-2 text-2xs font-medium text-muted-foreground/70">
+              <Text className="mt-2 pl-2 text-2xs font-medium text-muted-foreground">
                 {item.date}
               </Text>
             </Pressable>
