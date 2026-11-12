@@ -1,6 +1,7 @@
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronLeft, Check, Smartphone, Sun, Moon, type LucideIcon } from 'lucide-react-native';
+import { Check, Smartphone, Sun, Moon, type LucideIcon } from 'lucide-react-native';
+import { ScreenHeader } from '../galpi/screen-header';
 import { useThemeColors } from '../../lib/theme';
 import { useThemeStore, type ThemeMode } from '../../lib/theme-store';
 
@@ -17,16 +18,7 @@ export function ThemeSettingsScreen({ onBack }: { onBack: () => void }) {
 
   return (
     <SafeAreaView edges={['top', 'bottom']} className="flex-1 min-h-0 bg-background">
-      <View className="flex-row items-center gap-3 px-5 pb-3 pt-2">
-        <Pressable
-          onPress={onBack}
-          accessibilityLabel="뒤로 가기"
-          className="web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-card"
-        >
-          <ChevronLeft size={20} color={colors.foreground} />
-        </Pressable>
-        <Text className="text-base font-black text-foreground">테마</Text>
-      </View>
+      <ScreenHeader title="테마" onBack={onBack} />
 
       <ScrollView className="flex-1 px-5 pt-4" contentContainerClassName="pb-10">
         <Text className="mb-3 pl-1 text-sm leading-relaxed text-muted-foreground">

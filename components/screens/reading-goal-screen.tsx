@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
-  ChevronLeft,
   Flame,
   Pencil,
   Clock,
@@ -16,6 +15,7 @@ import {
   type LucideIcon,
 } from 'lucide-react-native';
 import { GoalEditModal } from '../galpi/goal-edit-modal';
+import { ScreenHeader } from '../galpi/screen-header';
 import { dateKey } from '../../lib/date-utils';
 import { useReadingGoals } from '../../lib/use-reading-goals';
 import { BADGES } from '../../lib/badges';
@@ -81,28 +81,21 @@ export function ReadingGoalScreen({ onBack }: { onBack: () => void }) {
 
   return (
     <SafeAreaView edges={['top']} className="relative flex-1 min-h-0 bg-background">
-      <View className="flex-row items-center justify-between px-5 pb-2 pt-2">
-        <View className="flex-row items-center gap-3">
+      <ScreenHeader
+        title="독서 목표"
+        subtitle="꾸준함이 쌓여 습관이 됩니다"
+        onBack={onBack}
+        right={
           <Pressable
-            onPress={onBack}
-            accessibilityLabel="뒤로 가기"
-            className="web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-card"
+            onPress={() => setEditOpen(true)}
+            accessibilityRole="button"
+            className="web:cursor-pointer flex-row items-center gap-1.5 rounded-full bg-secondary px-3.5 py-2"
           >
-            <ChevronLeft size={20} color={colors.foreground} />
+            <Pencil size={14} color={colors.foreground} />
+            <Text className="text-xs font-bold text-foreground">목표 수정</Text>
           </Pressable>
-          <View>
-            <Text className="text-lg font-bold tracking-tight text-foreground">독서 목표</Text>
-            <Text className="text-xs text-muted-foreground">꾸준함이 쌓여 습관이 됩니다</Text>
-          </View>
-        </View>
-        <Pressable
-          onPress={() => setEditOpen(true)}
-          className="web:cursor-pointer flex-row items-center gap-1.5 rounded-full bg-secondary px-3.5 py-2"
-        >
-          <Pencil size={14} color={colors.foreground} />
-          <Text className="text-xs font-bold text-foreground">목표 수정</Text>
-        </Pressable>
-      </View>
+        }
+      />
 
       {loading ? (
         <View className="flex-1 items-center justify-center">

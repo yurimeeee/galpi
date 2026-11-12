@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronLeft, Link2, Mail } from 'lucide-react-native';
+import { Link2, Mail } from 'lucide-react-native';
+import { ScreenHeader } from '../galpi/screen-header';
 import {
   getAuthErrorMessage,
   linkedProviderIds,
@@ -74,16 +75,7 @@ export function LinkedAccountsScreen({ onBack }: { onBack: () => void }) {
 
   return (
     <SafeAreaView edges={['top', 'bottom']} className="flex-1 min-h-0 bg-background">
-      <View className="flex-row items-center gap-3 px-5 pb-3 pt-2">
-        <Pressable
-          onPress={onBack}
-          accessibilityLabel="뒤로 가기"
-          className="web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-card"
-        >
-          <ChevronLeft size={20} color={colors.foreground} />
-        </Pressable>
-        <Text className="text-base font-black text-foreground">소셜 계정 연동</Text>
-      </View>
+      <ScreenHeader title="소셜 계정 연동" onBack={onBack} />
 
       <View className="gap-3 px-5 pt-3">
         <Text className="mb-1 text-sm leading-relaxed text-muted-foreground">

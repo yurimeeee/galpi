@@ -3,7 +3,6 @@ import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Circle } from 'react-native-svg';
 import {
-  ChevronLeft,
   Play,
   Pause,
   RotateCcw,
@@ -14,6 +13,7 @@ import {
   X,
 } from 'lucide-react-native';
 import { BottomSheet } from '../galpi/bottom-sheet';
+import { ScreenHeader } from '../galpi/screen-header';
 import { SessionSummaryModal } from '../galpi/session-summary-modal';
 import { type Book } from '../../lib/data/books';
 import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
@@ -130,22 +130,20 @@ export function ReadingTimerScreen({
   return (
     <SafeAreaView edges={['top']} className="relative flex-1 min-h-0 bg-background">
       {/* 헤더 */}
-      <View className="flex-row items-center justify-between px-4 pb-1 pt-2">
-        <Pressable
-          onPress={onBack}
-          accessibilityLabel="뒤로 가기"
-          className="web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-secondary"
-        >
-          <ChevronLeft size={18} color={colors.foreground} />
-        </Pressable>
-        <Text className="text-sm font-bold text-foreground">독서 타이머</Text>
-        <Pressable
-          onPress={handleEndSession}
-          className="web:cursor-pointer rounded-full px-3 py-1.5"
-        >
-          <Text className="text-xs font-bold text-muted-foreground">독서 종료</Text>
-        </Pressable>
-      </View>
+      <ScreenHeader
+        title="독서 타이머"
+        onBack={onBack}
+        right={
+          <Pressable
+            onPress={handleEndSession}
+            accessibilityRole="button"
+            hitSlop={8}
+            className="web:cursor-pointer rounded-full px-3 py-1.5"
+          >
+            <Text className="text-xs font-bold text-muted-foreground">독서 종료</Text>
+          </Pressable>
+        }
+      />
 
       <ScrollView className="flex-1 min-h-0" contentContainerClassName="px-5 pb-4">
         {/* 대상 책 선택 카드 */}

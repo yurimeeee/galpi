@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, Image, Pressable, Text, View } from 'react-native';
+import { Alert, FlatList, Image, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   ChevronLeft,
@@ -17,6 +17,7 @@ import {
   Quote,
   type LucideIcon,
 } from 'lucide-react-native';
+import { IconButton } from '../galpi/icon-button';
 import { Skeleton } from '../galpi/skeleton';
 import { BottomSheet } from '../galpi/bottom-sheet';
 import { EditProgressModal } from '../galpi/edit-progress-modal';
@@ -117,45 +118,19 @@ export function BookDetailScreen({
   return (
     <SafeAreaView edges={['top', 'bottom']} className="flex-1 min-h-0 bg-background">
       {/* 상단 바 */}
-      <View className="flex-row items-center justify-between px-5 pb-2 pt-2">
-        <Pressable
-          onPress={onBack}
-          accessibilityLabel="뒤로 가기"
-          className="web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-card"
-        >
-          <ChevronLeft size={20} color={colors.foreground} />
-        </Pressable>
+      <View className="min-h-11 flex-row items-center justify-between px-5 pb-3 pt-1">
+        <IconButton Icon={ChevronLeft} label="뒤로 가기" onPress={onBack} iconSize={20} />
         <View className="flex-row items-center gap-2">
-          <Pressable
-            onPress={onStartTimer}
-            accessibilityLabel="독서 타이머"
-            className="web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-card"
-          >
-            <Timer size={16} color={colors.foreground} />
-          </Pressable>
-          <Pressable
-            onPress={handleSharePress}
-            accessibilityLabel="갈피 카드로 공유"
-            className="web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-card"
-          >
-            <Share2 size={16} color={colors.foreground} />
-          </Pressable>
+          <IconButton Icon={Timer} label="독서 타이머" onPress={onStartTimer} />
+          <IconButton Icon={Share2} label="갈피 카드로 공유" onPress={handleSharePress} />
           <View className="mx-1 h-4 w-px bg-border" />
-          <Pressable
+          <IconButton
+            Icon={Trash2}
+            label="책 삭제"
             onPress={handleDelete}
-            disabled={deleting}
-            accessibilityLabel="책 삭제"
-            hitSlop={4}
-            className={`web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-card ${
-              deleting ? 'opacity-60' : ''
-            }`}
-          >
-            {deleting ? (
-              <ActivityIndicator size="small" color={colors.destructive} />
-            ) : (
-              <Trash2 size={16} color={colors.destructive} />
-            )}
-          </Pressable>
+            loading={deleting}
+            iconColor={colors.destructive}
+          />
         </View>
       </View>
 
@@ -521,17 +496,10 @@ function StatBit({ label, value, onPress }: { label: string; value: string; onPr
 }
 
 export function BookDetailSkeleton({ onBack }: { onBack: () => void }) {
-  const colors = useThemeColors();
   return (
     <SafeAreaView edges={['top', 'bottom']} className="flex-1 min-h-0 bg-background">
-      <View className="flex-row items-center justify-between px-5 pb-2 pt-2">
-        <Pressable
-          onPress={onBack}
-          accessibilityLabel="뒤로 가기"
-          className="web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-card"
-        >
-          <ChevronLeft size={20} color={colors.foreground} />
-        </Pressable>
+      <View className="min-h-11 flex-row items-center justify-between px-5 pb-3 pt-1">
+        <IconButton Icon={ChevronLeft} label="뒤로 가기" onPress={onBack} iconSize={20} />
       </View>
 
       <View className="px-5 pb-28">

@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
 import { FlatList, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Bookmark, ChevronLeft, Tags } from 'lucide-react-native';
+import { Bookmark, Tags } from 'lucide-react-native';
+import { ScreenHeader } from '../galpi/screen-header';
 import { type Book } from '../../lib/data/books';
 import { allTags, sentencesByTag, type Sentence, type TagCount } from '../../lib/data/sentences';
 import { useThemeColors } from '../../lib/theme';
@@ -32,19 +33,15 @@ export function CollectionsScreen({
     const tagged = sentencesByTag(sentences, selectedTag).filter((s) => booksById.has(s.bookId));
     return (
       <SafeAreaView edges={['top', 'bottom']} className="flex-1 min-h-0 bg-background">
-        <View className="flex-row items-center gap-3 px-5 pb-3 pt-2">
-          <Pressable
-            onPress={() => setSelectedTag(null)}
-            accessibilityLabel="태그 목록으로"
-            className="web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-card"
-          >
-            <ChevronLeft size={20} color={colors.foreground} />
-          </Pressable>
-          <Text className="text-base font-black text-foreground">#{selectedTag}</Text>
-          <View className="rounded-full bg-secondary px-2 py-0.5">
-            <Text className="text-2xs font-semibold text-muted-foreground">{tagged.length}</Text>
-          </View>
-        </View>
+        <ScreenHeader
+          title={`#${selectedTag}`}
+          onBack={() => setSelectedTag(null)}
+          right={
+            <View className="rounded-full bg-secondary px-2 py-0.5">
+              <Text className="text-2xs font-semibold text-muted-foreground">{tagged.length}</Text>
+            </View>
+          }
+        />
 
         <FlatList
           data={tagged}
@@ -65,19 +62,13 @@ export function CollectionsScreen({
 
   return (
     <SafeAreaView edges={['top', 'bottom']} className="flex-1 min-h-0 bg-background">
-      <View className="flex-row items-center gap-3 px-5 pb-3 pt-2">
-        <Pressable
-          onPress={onBack}
-          accessibilityLabel="뒤로 가기"
-          className="web:cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-card"
-        >
-          <ChevronLeft size={20} color={colors.foreground} />
-        </Pressable>
-        <Text className="text-base font-black text-foreground">모음집</Text>
-        <View className="rounded-full bg-secondary px-2 py-0.5">
-          <Text className="text-2xs font-semibold text-muted-foreground">{tags.length}</Text>
-        </View>
-      </View>
+      <ScreenHeader title="모음집" onBack={onBack}
+        right={
+          <View className="rounded-full bg-secondary px-2 py-0.5">
+            <Text className="text-2xs font-semibold text-muted-foreground">{tags.length}</Text>
+          </View>
+        }
+      />
 
       <FlatList
         data={tags}

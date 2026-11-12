@@ -9,8 +9,8 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronLeft } from 'lucide-react-native';
 import { TextField, PasswordField, CheckOption } from '../galpi/auth-field';
+import { ScreenHeader } from '../galpi/screen-header';
 import { getAuthErrorMessage } from '../../lib/auth';
 import { useThemeColors } from '../../lib/theme';
 
@@ -64,16 +64,7 @@ export function SignUpScreen({
   return (
     <SafeAreaView edges={['top', 'bottom']} className="flex-1 min-h-0 bg-background">
       {/* 헤더 */}
-      <View className="flex-row items-center gap-2 px-4 pt-6">
-        <Pressable
-          onPress={onBack}
-          accessibilityLabel="뒤로 가기"
-          className="web:cursor-pointer h-10 w-10 items-center justify-center rounded-full"
-        >
-          <ChevronLeft size={20} color={colors.foreground} />
-        </Pressable>
-        <Text className="text-base font-bold text-foreground">회원가입</Text>
-      </View>
+      <ScreenHeader title="회원가입" onBack={onBack} />
 
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} className="flex-1 min-h-0">
         {/* 폼 */}
