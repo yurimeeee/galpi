@@ -141,7 +141,8 @@ export function MyPageScreen({
           {/* 독서 목표 & 스트릭 진입 */}
           <Pressable
             onPress={onOpenGoals}
-            className="web:cursor-pointer mt-3 flex-row items-center gap-3 rounded-2xl bg-galpi-yellow px-5 py-4"
+            accessibilityRole="button"
+            className="web:cursor-pointer mt-3 flex-row items-center gap-3 rounded-2xl bg-galpi-yellow px-5 py-3.5"
           >
             <View className="h-11 w-11 items-center justify-center rounded-full bg-galpi-ink/10">
               <Flame size={24} color={colors.galpiInk} strokeWidth={1.9} />
@@ -243,7 +244,7 @@ function SettingsGroup({ title, rows }: { title: string; rows: Row[] }) {
   return (
     <View>
       <Text className="mb-2 pl-2 text-xs font-bold text-muted-foreground">{title}</Text>
-      <View className="overflow-hidden rounded-xl border border-border bg-card">
+      <View className="overflow-hidden rounded-xl bg-card">
         {rows.map((row, i) => {
           const content = (
             <>
