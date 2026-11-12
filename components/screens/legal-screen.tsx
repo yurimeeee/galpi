@@ -37,7 +37,7 @@ export function LegalScreen({
             <View key={section.heading} className="gap-2">
               <Text className="text-sm font-bold text-foreground">{section.heading}</Text>
               {section.paragraphs.map((paragraph, i) => (
-                <Text key={i} className="text-[13px] leading-relaxed text-muted-foreground">
+                <Text key={i} className="text-sm leading-relaxed text-muted-foreground">
                   {paragraph}
                 </Text>
               ))}

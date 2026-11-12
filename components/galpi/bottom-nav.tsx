@@ -110,7 +110,7 @@ function NavButton({
             strokeWidth={active ? 2.4 : 1.8}
           />
           <Text
-            className={`text-[11px] font-medium ${active ? 'text-foreground' : 'text-muted-foreground'}`}
+            className={`text-2xs font-medium ${active ? 'text-foreground' : 'text-muted-foreground'}`}
           >
             {label}
           </Text>

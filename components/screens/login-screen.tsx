@@ -78,7 +78,7 @@ export function LoginScreen({
               markSize={44}
               wordClassName="text-2xl text-foreground"
             />
-            <Text className="mt-3 text-[13px] text-muted-foreground">
+            <Text className="mt-3 text-sm text-muted-foreground">
               책 속 문장을 갈피에 담다
             </Text>
           </View>
@@ -108,7 +108,7 @@ export function LoginScreen({
                 이메일 저장
               </CheckOption>
               <Pressable className="web:cursor-pointer">
-                <Text className="text-[13px] font-medium text-muted-foreground">
+                <Text className="text-sm font-medium text-muted-foreground">
                   비밀번호 재설정
                 </Text>
               </Pressable>
@@ -146,9 +146,9 @@ export function LoginScreen({
 
           {/* 회원가입 링크 */}
           <View className="mt-8 flex-row items-center justify-center">
-            <Text className="text-[13px] text-muted-foreground">아직 계정이 없으신가요? </Text>
+            <Text className="text-sm text-muted-foreground">아직 계정이 없으신가요? </Text>
             <Pressable onPress={onSignUp} className="web:cursor-pointer">
-              <Text className="text-[13px] font-bold text-foreground">회원가입</Text>
+              <Text className="text-sm font-bold text-foreground">회원가입</Text>
             </Pressable>
           </View>
         </ScrollView>

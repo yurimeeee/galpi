@@ -94,7 +94,7 @@ export function DeleteAccountModal({
           <View className="mt-0.5 h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-destructive/10">
             <AlertTriangle size={16} color={colors.destructive} />
           </View>
-          <Text className="flex-1 text-[13px] leading-relaxed text-destructive">
+          <Text className="flex-1 text-sm leading-relaxed text-destructive">
             탈퇴하면 등록한 모든 책, 갈피(문장), 사진, 독서 기록이 영구적으로 삭제되며 되돌릴 수 없어요.
           </Text>
         </View>

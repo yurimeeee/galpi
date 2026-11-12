@@ -49,7 +49,7 @@ export function SessionSummaryModal({
       header={
         <View className="flex-row items-center justify-between">
           <View>
-            <Text className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+            <Text className="text-2xs font-bold uppercase tracking-widest text-muted-foreground">
               독서 세션 완료
             </Text>
             <Text className="mt-1 text-xl font-black tracking-tight text-foreground">
@@ -146,7 +146,7 @@ function SummaryStat({
     <View className="flex-1 items-center gap-1.5 rounded-2xl bg-secondary py-4">
       <Icon size={16} color={colors.mutedForeground} />
       <Text className="text-base font-black text-foreground">{value}</Text>
-      <Text className="text-[10px] font-medium text-muted-foreground">{label}</Text>
+      <Text className="text-2xs font-medium text-muted-foreground">{label}</Text>
     </View>
   );
 }

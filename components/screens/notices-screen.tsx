@@ -34,8 +34,8 @@ export function NoticesScreen({ onBack }: { onBack: () => void }) {
                   </View>
                   <Text className="flex-1 text-sm font-bold text-foreground">{notice.title}</Text>
                 </View>
-                <Text className="text-[11px] font-medium text-muted-foreground">{notice.date}</Text>
-                <Text className="text-[13px] leading-relaxed text-muted-foreground">{notice.body}</Text>
+                <Text className="text-2xs font-medium text-muted-foreground">{notice.date}</Text>
+                <Text className="text-sm leading-relaxed text-muted-foreground">{notice.body}</Text>
               </View>
             ))}
           </View>

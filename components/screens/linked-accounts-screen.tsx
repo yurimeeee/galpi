@@ -86,7 +86,7 @@ export function LinkedAccountsScreen({ onBack }: { onBack: () => void }) {
       </View>
 
       <View className="gap-3 px-5 pt-3">
-        <Text className="mb-1 text-[13px] leading-relaxed text-muted-foreground">
+        <Text className="mb-1 text-sm leading-relaxed text-muted-foreground">
           연동된 계정으로 갈피에 로그인할 수 있어요. 로그인 수단이 하나뿐일 때는 연동을 해제할 수 없어요.
         </Text>
 
@@ -156,7 +156,7 @@ export function LinkedAccountsScreen({ onBack }: { onBack: () => void }) {
 function StatusPill({ linked }: { linked: boolean }) {
   return (
     <View className={`rounded-full px-3 py-1.5 ${linked ? 'bg-galpi-green' : 'bg-secondary'}`}>
-      <Text className={`text-[11px] font-bold ${linked ? 'text-galpi-ink' : 'text-muted-foreground'}`}>
+      <Text className={`text-2xs font-bold ${linked ? 'text-galpi-ink' : 'text-muted-foreground'}`}>
         {linked ? '연동됨' : '미설정'}
       </Text>
     </View>

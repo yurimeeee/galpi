@@ -327,7 +327,7 @@ function TopBookCard({ topBookOfYear }: { topBookOfYear: { book: Book; sentence:
     <CardShell>
       <View className="items-center gap-1">
         <Quote size={22} color={colors.galpiPaper} opacity={0.6} />
-        <Text className="mt-1 text-center text-[11px] font-bold uppercase tracking-widest text-galpi-paper/50">
+        <Text className="mt-1 text-center text-2xs font-bold uppercase tracking-widest text-galpi-paper/50">
           올해 가장 많이 담은 책
         </Text>
       </View>
@@ -432,7 +432,7 @@ function SummaryCard({
           <View className="flex-row flex-wrap gap-1.5">
             {topGenres.map((genre, i) => (
               <View key={genre} className={`rounded-full px-2.5 py-1 ${i === 0 ? 'bg-galpi-yellow' : 'bg-secondary'}`}>
-                <Text className="text-[11px] font-bold text-galpi-ink">#{genre}</Text>
+                <Text className="text-2xs font-bold text-galpi-ink">#{genre}</Text>
               </View>
             ))}
           </View>
@@ -440,14 +440,14 @@ function SummaryCard({
 
         {topBookOfYear ? (
           <View className="rounded-2xl bg-galpi-ink p-3.5">
-            <Text numberOfLines={2} className="text-[13px] font-bold leading-relaxed text-galpi-paper">
+            <Text numberOfLines={2} className="text-sm font-bold leading-relaxed text-galpi-paper">
               "{topBookOfYear.sentence.quote}"
             </Text>
-            <Text className="mt-1 text-[11px] text-galpi-paper/50">{topBookOfYear.book.title}</Text>
+            <Text className="mt-1 text-2xs text-galpi-paper/50">{topBookOfYear.book.title}</Text>
           </View>
         ) : null}
 
-        <Text className="text-center text-[10px] text-muted-foreground">책 속에서 나만의 갈피를 찾다 · 갈피</Text>
+        <Text className="text-center text-2xs text-muted-foreground">책 속에서 나만의 갈피를 찾다 · 갈피</Text>
       </View>
 
       <View className="flex-row gap-3">
@@ -479,9 +479,9 @@ function SummaryStat({ Icon, value, unit, label }: { Icon: typeof BookCheck; val
       <Icon size={13} color={colors.mutedForeground} />
       <View className="flex-row items-baseline gap-0.5">
         <Text className="text-sm font-black text-foreground">{value}</Text>
-        <Text className="text-[9px] font-bold text-muted-foreground">{unit}</Text>
+        <Text className="text-micro font-bold text-muted-foreground">{unit}</Text>
       </View>
-      <Text className="text-[9px] font-medium text-muted-foreground">{label}</Text>
+      <Text className="text-micro font-medium text-muted-foreground">{label}</Text>
     </View>
   );
 }

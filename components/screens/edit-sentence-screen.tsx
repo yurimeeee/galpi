@@ -152,7 +152,7 @@ export function EditSentenceScreen({
                 placeholder="마음에 담고 싶은 문장을 적어주세요."
                 placeholderTextColor={colors.mutedForeground}
                 textAlignVertical="top"
-                className="w-full rounded-2xl border border-border bg-card p-4 text-[15px] leading-relaxed text-foreground focus:border-ring"
+                className="w-full rounded-2xl border border-border bg-card p-4 text-md leading-relaxed text-foreground focus:border-ring"
                 style={{ minHeight: 120 }}
               />
             </Field>

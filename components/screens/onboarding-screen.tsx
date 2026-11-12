@@ -60,9 +60,9 @@ export function OnboardingScreen({ onDone }: { onDone: () => void }) {
     <SafeAreaView edges={['top', 'bottom']} className="flex-1 min-h-0 bg-background">
       {/* 상단: 로고 + 건너뛰기 */}
       <View className="flex-row items-center justify-between px-6 pt-6">
-        <GalpiHeaderLogo markSize={24} wordClassName="text-[17px] text-foreground" />
+        <GalpiHeaderLogo markSize={24} wordClassName="text-base text-foreground" />
         <Pressable onPress={onDone} className="web:cursor-pointer">
-          <Text className="text-[13px] font-medium text-muted-foreground">건너뛰기</Text>
+          <Text className="text-sm font-medium text-muted-foreground">건너뛰기</Text>
         </Pressable>
       </View>
 
@@ -77,7 +77,7 @@ export function OnboardingScreen({ onDone }: { onDone: () => void }) {
 
       {/* 텍스트 */}
       <View className="px-8">
-        <Text className="text-[26px] font-black leading-tight tracking-tight text-foreground">
+        <Text className="text-display font-black leading-tight tracking-tight text-foreground">
           {slide.title}
         </Text>
         <Text className="mt-3 text-sm leading-relaxed text-muted-foreground">
@@ -101,7 +101,7 @@ export function OnboardingScreen({ onDone }: { onDone: () => void }) {
           className="web:cursor-pointer w-full flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-4"
           style={({ pressed }) => pressed && { transform: [{ scale: 0.98 }] }}
         >
-          <Text className="text-[15px] font-bold text-primary-foreground">
+          <Text className="text-md font-bold text-primary-foreground">
             {isLast ? '갈피 시작하기' : '다음'}
           </Text>
           {!isLast ? <ArrowRight size={16} color={colors.galpiPaper} /> : null}

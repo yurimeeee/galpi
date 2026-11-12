@@ -116,15 +116,15 @@ export function ReadingGoalScreen({ onBack }: { onBack: () => void }) {
               <View>
                 <View className="flex-row items-center gap-2">
                   <Flame size={18} color={colors.galpiInk} strokeWidth={2.2} />
-                  <Text className="text-[13px] font-bold text-galpi-ink/70">연속 독서</Text>
+                  <Text className="text-sm font-bold text-galpi-ink/70">연속 독서</Text>
                 </View>
                 <View className="mt-2 flex-row items-end gap-1.5">
-                  <Text className="text-[52px] font-black leading-none tracking-tight text-galpi-ink">
+                  <Text className="text-5xl font-black leading-none tracking-tight text-galpi-ink">
                     {currentStreak}
                   </Text>
                   <Text className="pb-1.5 text-lg font-bold text-galpi-ink">일째</Text>
                 </View>
-                <Text className="mt-2 text-[13px] font-medium text-galpi-ink/70">
+                <Text className="mt-2 text-sm font-medium text-galpi-ink/70">
                   최고 기록 {bestStreak}일 · 오늘도 이어가 볼까요?
                 </Text>
               </View>
@@ -138,7 +138,7 @@ export function ReadingGoalScreen({ onBack }: { onBack: () => void }) {
               {week.map((d) => (
                 <View key={d.day} className="flex-1 items-center gap-1.5">
                   <Text
-                    className={`text-[11px] font-bold ${d.isToday ? 'text-galpi-ink' : 'text-galpi-ink/50'}`}
+                    className={`text-2xs font-bold ${d.isToday ? 'text-galpi-ink' : 'text-galpi-ink/50'}`}
                   >
                     {d.day}
                   </Text>
@@ -164,7 +164,7 @@ export function ReadingGoalScreen({ onBack }: { onBack: () => void }) {
 
           {/* 목표 진행 */}
           <View className="mt-6">
-            <Text className="mb-3 pl-1 text-[15px] font-black text-foreground">나의 목표 진행</Text>
+            <Text className="mb-3 pl-1 text-md font-black text-foreground">나의 목표 진행</Text>
             <View className="gap-3">
               <GoalProgress
                 Icon={Clock}
@@ -196,17 +196,17 @@ export function ReadingGoalScreen({ onBack }: { onBack: () => void }) {
           {/* 이번 달 스트릭 달력 */}
           <View className="mt-6 rounded-3xl border border-border bg-card p-5">
             <View className="mb-4 flex-row items-center justify-between">
-              <Text className="text-[15px] font-black text-foreground">
+              <Text className="text-md font-black text-foreground">
                 {year}년 {month + 1}월 기록
               </Text>
               <View className="flex-row items-center gap-1">
                 <View className="h-2.5 w-2.5 rounded-[3px] bg-galpi-green" />
-                <Text className="text-[11px] text-muted-foreground">읽은 날</Text>
+                <Text className="text-2xs text-muted-foreground">읽은 날</Text>
               </View>
             </View>
             <View className="flex-row flex-wrap">
               {WEEKDAY_LABELS.map((d) => (
-                <Text key={d} className="w-[14.28%] pb-1 text-center text-[10px] font-bold text-muted-foreground">
+                <Text key={d} className="w-[14.28%] pb-1 text-center text-2xs font-bold text-muted-foreground">
                   {d}
                 </Text>
               ))}
@@ -221,7 +221,7 @@ export function ReadingGoalScreen({ onBack }: { onBack: () => void }) {
                       }`}
                     >
                       <Text
-                        className={`text-[10px] font-bold ${
+                        className={`text-2xs font-bold ${
                           cell.done ? 'text-galpi-ink' : 'text-muted-foreground/50'
                         }`}
                       >
@@ -236,7 +236,7 @@ export function ReadingGoalScreen({ onBack }: { onBack: () => void }) {
 
           {/* 마일스톤 배지 */}
           <View className="mt-6">
-            <Text className="mb-3 pl-1 text-[15px] font-black text-foreground">스트릭 배지</Text>
+            <Text className="mb-3 pl-1 text-md font-black text-foreground">스트릭 배지</Text>
             <View className="flex-row flex-wrap gap-3">
               {STREAK_BADGES.map((m) => {
                 const unlocked = bestStreak >= m.threshold;
@@ -261,12 +261,12 @@ export function ReadingGoalScreen({ onBack }: { onBack: () => void }) {
                     </View>
                     <View className="items-center">
                       <Text
-                        className={`text-[13px] font-black ${unlocked ? 'text-galpi-ink' : 'text-muted-foreground'}`}
+                        className={`text-sm font-black ${unlocked ? 'text-galpi-ink' : 'text-muted-foreground'}`}
                       >
                         {m.title}
                       </Text>
                       <Text
-                        className={`mt-0.5 text-[11px] ${
+                        className={`mt-0.5 text-2xs ${
                           unlocked ? 'text-galpi-ink/60' : 'text-muted-foreground/70'
                         }`}
                       >
@@ -335,7 +335,7 @@ function GoalProgress({
             {unit}
           </Text>
         </View>
-        <Text className={`text-[15px] font-black tabular-nums ${complete ? 'text-foreground' : 'text-muted-foreground'}`}>
+        <Text className={`text-md font-black tabular-nums ${complete ? 'text-foreground' : 'text-muted-foreground'}`}>
           {pct}%
         </Text>
       </View>

@@ -261,7 +261,7 @@ export function AddBookScreen({
 
             {status === 'error' ? (
               <View className="items-center pt-16">
-                <Text className="text-[13px] text-destructive">{errorMessage}</Text>
+                <Text className="text-xs text-destructive">{errorMessage}</Text>
               </View>
             ) : null}
 
@@ -468,12 +468,12 @@ function ResultRow({
           {result.author || '저자 미상'}
         </Text>
         {result.publisher ? (
-          <Text numberOfLines={1} className="mt-0.5 text-[11px] text-muted-foreground">
+          <Text numberOfLines={1} className="mt-0.5 text-2xs text-muted-foreground">
             {result.publisher}
           </Text>
         ) : null}
         {result.genre ? (
-          <Text numberOfLines={1} className="mt-0.5 text-[11px] text-muted-foreground">
+          <Text numberOfLines={1} className="mt-0.5 text-2xs text-muted-foreground">
             {result.genre.split('>').pop()}
           </Text>
         ) : null}

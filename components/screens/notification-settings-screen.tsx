@@ -58,7 +58,7 @@ export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
             <View className="mt-0.5 h-8 w-8 items-center justify-center rounded-xl bg-secondary">
               <Info size={16} color={colors.foreground} />
             </View>
-            <Text className="flex-1 text-[13px] leading-relaxed text-muted-foreground">
+            <Text className="flex-1 text-sm leading-relaxed text-muted-foreground">
               독서 알림은 모바일 앱에서만 사용할 수 있어요.
             </Text>
           </View>
@@ -98,7 +98,7 @@ export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
 
             {enabled ? (
               <View className="gap-2 px-4 py-4">
-                <Text className="text-[13px] font-semibold text-foreground">알림 시간</Text>
+                <Text className="text-sm font-semibold text-foreground">알림 시간</Text>
                 <TimePickerField value={time} onChange={setDailyReminderTime} />
 
                 {showTimeSuggestion ? (
@@ -137,10 +137,10 @@ export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
         {/* 알림 미리보기 */}
         <View className="mt-6 gap-2 rounded-2xl bg-galpi-yellow p-4">
           <Text className="text-xs font-bold text-galpi-ink/70">알림 미리보기</Text>
-          <Text className="text-[15px] font-black text-galpi-ink">
+          <Text className="text-md font-black text-galpi-ink">
             📚 오늘 독서 목표를 달성해 보세요!
           </Text>
-          <Text className="text-[13px] leading-relaxed text-galpi-ink/80">
+          <Text className="text-sm leading-relaxed text-galpi-ink/80">
             잠시 책장을 넘기며 나만의 갈피를 남겨볼까요?
           </Text>
         </View>
@@ -184,7 +184,7 @@ export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
         {streakRiskEnabled && currentStreak > 0 ? (
           <View className="mt-4 flex-row items-center gap-2 rounded-2xl bg-secondary p-4">
             <Flame size={16} color={colors.foreground} />
-            <Text className="text-[13px] font-semibold text-foreground">지금 스트릭: {currentStreak}일</Text>
+            <Text className="text-sm font-semibold text-foreground">지금 스트릭: {currentStreak}일</Text>
           </View>
         ) : null}
 
@@ -229,7 +229,7 @@ export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
             <Text className="text-xs font-bold text-muted-foreground">오늘의 미리보기</Text>
             {onThisDayMatch ? (
               <>
-                <Text className="text-[15px] font-bold leading-relaxed text-foreground">
+                <Text className="text-md font-bold leading-relaxed text-foreground">
                   "{onThisDayMatch.quote}"
                 </Text>
                 {onThisDayBook ? (
@@ -239,7 +239,7 @@ export function NotificationSettingsScreen({ onBack }: { onBack: () => void }) {
                 ) : null}
               </>
             ) : (
-              <Text className="text-[13px] leading-relaxed text-muted-foreground">
+              <Text className="text-sm leading-relaxed text-muted-foreground">
                 1년 전 오늘 남긴 갈피가 아직 없어요.
               </Text>
             )}

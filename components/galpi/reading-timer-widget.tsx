@@ -149,7 +149,7 @@ export function ReadingTimerWidget() {
               ) : null}
 
               <PhaseIcon size={12} color={colors.galpiPaper} opacity={0.8} />
-              <Text className="mt-0.5 font-mono text-[13px] font-black tabular-nums text-galpi-paper">
+              <Text className="mt-0.5 font-mono text-sm font-black tabular-nums text-galpi-paper">
                 {fmt(secondsLeft)}
               </Text>
               {!running ? (
@@ -157,7 +157,7 @@ export function ReadingTimerWidget() {
               ) : null}
               {completed ? (
                 <View className="absolute inset-0 items-center justify-center bg-galpi-ink/80">
-                  <Text className="text-[10px] font-black text-galpi-paper">완료!</Text>
+                  <Text className="text-2xs font-black text-galpi-paper">완료!</Text>
                 </View>
               ) : null}
             </View>

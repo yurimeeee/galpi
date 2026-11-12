@@ -15,7 +15,7 @@ export function ColorChips() {
         <Text className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
           테마 컬러칩
         </Text>
-        <Text className="font-mono text-[10px] text-muted-foreground/60">
+        <Text className="font-mono text-2xs text-muted-foreground/60">
           5 colors
         </Text>
       </View>
@@ -23,10 +23,10 @@ export function ColorChips() {
         {CHIPS.map((chip) => (
           <View key={chip.name} className="flex-1 gap-1.5">
             <View className={`h-14 rounded-xl ${chip.className}`} />
-            <Text numberOfLines={1} className="text-[9px] font-medium leading-tight text-foreground">
+            <Text numberOfLines={1} className="text-2xs font-medium leading-tight text-foreground">
               {chip.name}
             </Text>
-            <Text className="font-mono text-[9px] leading-none text-muted-foreground/70">
+            <Text className="font-mono text-2xs leading-none text-muted-foreground/70">
               {chip.hex}
             </Text>
           </View>

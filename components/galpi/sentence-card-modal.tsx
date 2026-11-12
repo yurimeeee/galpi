@@ -115,7 +115,7 @@ export function SentenceCardModal({
       header={
         <View className="mb-4 flex-row items-center justify-between">
           <View>
-            <Text className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+            <Text className="text-2xs font-bold uppercase tracking-widest text-muted-foreground">
               Galpi Card
             </Text>
             <Text className="mt-0.5 text-lg font-black tracking-tight text-foreground">갈피 카드 만들기</Text>
@@ -166,7 +166,7 @@ export function SentenceCardModal({
               >
                 {active ? <Check size={16} color={text} /> : null}
               </View>
-              <Text className={`text-[11px] font-bold ${active ? 'text-foreground' : 'text-muted-foreground'}`}>
+              <Text className={`text-2xs font-bold ${active ? 'text-foreground' : 'text-muted-foreground'}`}>
                 {THEME_LABEL[key]}
               </Text>
             </Pressable>
@@ -277,7 +277,7 @@ function SentenceCardBody({
           style={{ backgroundColor: hexToRgba(text, 0.12) }}
         >
           <MarkIcon size={11} color={text} opacity={0.8} />
-          <Text style={{ color: text, opacity: 0.8 }} className="text-[10px] font-bold">
+          <Text style={{ color: text, opacity: 0.8 }} className="text-2xs font-bold">
             {sentence.date}
           </Text>
         </View>
@@ -315,7 +315,7 @@ function SentenceCardBody({
           {book.title} <Text style={{ color: text, opacity: 0.5 }} className="font-normal">· {book.author}</Text>
         </Text>
         <View className="shrink-0 rounded-md px-2 py-0.5" style={{ backgroundColor: hexToRgba(text, 0.14) }}>
-          <Text style={{ color: text }} className="font-mono text-[10px] font-bold">
+          <Text style={{ color: text }} className="font-mono text-2xs font-bold">
             P.{sentence.page}
           </Text>
         </View>

@@ -105,10 +105,10 @@ export function MyPageScreen({
                 )}
               </View>
               <View className="min-w-0 flex-1">
-                <Text numberOfLines={1} className="text-[17px] font-bold text-galpi-ink">
+                <Text numberOfLines={1} className="text-base font-bold text-galpi-ink">
                   {displayName}
                 </Text>
-                <Text numberOfLines={1} className="text-[13px] text-galpi-ink/60">
+                <Text numberOfLines={1} className="text-sm text-galpi-ink/60">
                   {email}
                 </Text>
               </View>
@@ -146,7 +146,7 @@ export function MyPageScreen({
               <Flame size={24} color={colors.galpiInk} strokeWidth={1.9} />
             </View>
             <View className="min-w-0 flex-1">
-              <Text className="text-[15px] font-black text-galpi-ink">
+              <Text className="text-md font-black text-galpi-ink">
                 {currentStreak > 0 ? `${currentStreak}일 연속 독서 중` : '독서 목표를 세워보세요'}
               </Text>
               <Text className="text-xs text-galpi-ink/60">목표와 스트릭을 확인해 보세요</Text>
@@ -201,11 +201,11 @@ export function MyPageScreen({
         {/* 계정 액션 */}
         <View className="mt-8 flex-row items-center justify-center gap-6">
           <Pressable onPress={onLogout} className="web:cursor-pointer">
-            <Text className="text-[13px] font-medium text-muted-foreground">로그아웃</Text>
+            <Text className="text-sm font-medium text-muted-foreground">로그아웃</Text>
           </Pressable>
           <View className="h-3 w-px bg-border" />
           <Pressable onPress={() => setActiveModal('delete')} className="web:cursor-pointer">
-            <Text className="text-[13px] font-medium text-destructive">회원탈퇴</Text>
+            <Text className="text-sm font-medium text-destructive">회원탈퇴</Text>
           </Pressable>
         </View>
       </ScrollView>
@@ -241,7 +241,7 @@ function SettingsGroup({ title, rows }: { title: string; rows: Row[] }) {
 
   return (
     <View>
-      <Text className="mb-2 pl-2 text-[13px] font-bold text-muted-foreground">{title}</Text>
+      <Text className="mb-2 pl-2 text-xs font-bold text-muted-foreground">{title}</Text>
       <View className="overflow-hidden rounded-2xl border border-border bg-card">
         {rows.map((row, i) => {
           const content = (
@@ -251,7 +251,7 @@ function SettingsGroup({ title, rows }: { title: string; rows: Row[] }) {
               </View>
               <Text className="flex-1 text-sm font-medium text-foreground">{row.label}</Text>
 
-              {row.value ? <Text className="text-[13px] text-muted-foreground">{row.value}</Text> : null}
+              {row.value ? <Text className="text-xs text-muted-foreground">{row.value}</Text> : null}
               {row.onPress ? <ChevronRight size={16} color={colors.mutedForeground} /> : null}
             </>
           );

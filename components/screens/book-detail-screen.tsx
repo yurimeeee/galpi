@@ -175,14 +175,14 @@ export function BookDetailScreen({
               <View className={`absolute left-0 top-0 h-full w-1.5 ${ACCENT_BG_CLASS[book.accent]}`} />
               <View className="flex-row items-center justify-between pl-2">
                 <View className="rounded-md bg-galpi-ink px-2 py-0.5">
-                  <Text className="font-mono text-[11px] font-bold text-galpi-paper">
+                  <Text className="font-mono text-2xs font-bold text-galpi-paper">
                     P. {item.page}
                   </Text>
                 </View>
                 <View className="flex-row items-center gap-1.5">
                   <View className="flex-row items-center gap-1 rounded-full bg-secondary px-2 py-1">
                     <Icon size={12} color={colors.mutedForeground} />
-                    <Text className="text-[10px] font-semibold text-muted-foreground">
+                    <Text className="text-2xs font-semibold text-muted-foreground">
                       {ENTRY_LABEL[item.type]}
                     </Text>
                   </View>
@@ -223,7 +223,7 @@ export function BookDetailScreen({
                 )
               ) : null}
 
-              <Text className="mt-3 pl-2 text-[15px] font-semibold leading-relaxed text-foreground">
+              <Text className="mt-3 pl-2 text-md font-semibold leading-relaxed text-foreground">
                 “{item.quote}”
               </Text>
 
@@ -233,7 +233,7 @@ export function BookDetailScreen({
                 </Text>
               ) : null}
 
-              <Text className="mt-2 pl-2 text-[10px] font-medium text-muted-foreground/70">
+              <Text className="mt-2 pl-2 text-2xs font-medium text-muted-foreground/70">
                 {item.date}
               </Text>
             </Pressable>
@@ -270,7 +270,7 @@ export function BookDetailScreen({
                 ) : (
                   <>
                     <Bookmark size={16} color={inkText} opacity={0.7} />
-                    <Text className="text-[11px] font-black leading-tight" style={{ color: inkText }}>
+                    <Text className="text-2xs font-black leading-tight" style={{ color: inkText }}>
                       {book.title}
                     </Text>
                   </>
@@ -341,7 +341,7 @@ export function BookDetailScreen({
             {book.status === 'done' ? (
               <View className="mt-4">
                 <View className="mb-1.5 flex-row items-center justify-between">
-                  <Text className="text-[13px] font-semibold text-foreground">총평</Text>
+                  <Text className="text-sm font-semibold text-foreground">총평</Text>
                   {book.review ? (
                     <Pressable
                       onPress={() => setReviewModalOpen(true)}
@@ -504,7 +504,7 @@ function SharePickerRow({ sentence, onPress }: { sentence: Sentence; onPress: ()
       className="web:cursor-pointer flex-row items-center gap-3 rounded-2xl border border-border bg-card p-3"
     >
       <View className="shrink-0 rounded-md bg-galpi-ink px-2 py-1">
-        <Text className="font-mono text-[10px] font-bold text-galpi-paper">P.{sentence.page}</Text>
+        <Text className="font-mono text-2xs font-bold text-galpi-paper">P.{sentence.page}</Text>
       </View>
       <Text numberOfLines={2} className="min-w-0 flex-1 text-sm font-semibold leading-relaxed text-foreground">
         {sentence.quote}
@@ -520,7 +520,7 @@ function StatBit({ label, value, onPress }: { label: string; value: string; onPr
   const content = (
     <>
       <Text className="text-base font-black text-foreground">{value}</Text>
-      <Text className="mt-0.5 text-[10px] font-medium text-muted-foreground">{label}</Text>
+      <Text className="mt-0.5 text-2xs font-medium text-muted-foreground">{label}</Text>
     </>
   );
   if (!onPress) {

@@ -184,7 +184,7 @@ export function ReadingTimerScreen({
           </View>
           <View className="items-center">
             <Text
-              className="font-mono text-6xl font-black leading-[1.2] tracking-tight tabular-nums text-foreground"
+              className="font-mono text-6xl font-black leading-tight tracking-tight tabular-nums text-foreground"
             >
               {fmt(secondsLeft)}
             </Text>
@@ -318,7 +318,7 @@ function BookSelector({ book, onPress }: { book: Book; onPress: () => void }) {
         </View>
       </View>
       <View className="min-w-0 flex-1">
-        <Text className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">읽을 책 선택</Text>
+        <Text className="text-2xs font-bold uppercase tracking-widest text-muted-foreground">읽을 책 선택</Text>
         <Text numberOfLines={1} className="mt-0.5 text-sm font-bold text-foreground">
           {book.title}
         </Text>

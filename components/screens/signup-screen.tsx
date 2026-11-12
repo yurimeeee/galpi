@@ -72,7 +72,7 @@ export function SignUpScreen({
         >
           <ChevronLeft size={20} color={colors.foreground} />
         </Pressable>
-        <Text className="text-[17px] font-bold text-foreground">회원가입</Text>
+        <Text className="text-base font-bold text-foreground">회원가입</Text>
       </View>
 
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} className="flex-1 min-h-0">
@@ -154,7 +154,7 @@ export function SignUpScreen({
             style={({ pressed }) => pressed && canSubmit && { transform: [{ scale: 0.98 }] }}
           >
             {submitting ? <ActivityIndicator size="small" color={colors.primaryForeground} /> : null}
-            <Text className="text-center text-[15px] font-bold text-primary-foreground">
+            <Text className="text-center text-md font-bold text-primary-foreground">
               회원가입 완료
             </Text>
           </Pressable>

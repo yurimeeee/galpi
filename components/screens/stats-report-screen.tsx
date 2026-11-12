@@ -488,7 +488,7 @@ function MonthlyView({
             className={`web:cursor-pointer flex-row items-center gap-1 rounded-full px-3 py-1.5 ${view === 'date' ? 'bg-card' : ''}`}
           >
             <CalendarDays size={14} color={view === 'date' ? colors.foreground : colors.mutedForeground} />
-            <Text className={`text-[11px] font-bold ${view === 'date' ? 'text-foreground' : 'text-muted-foreground'}`}>날짜</Text>
+            <Text className={`text-2xs font-bold ${view === 'date' ? 'text-foreground' : 'text-muted-foreground'}`}>날짜</Text>
           </Pressable>
           <Pressable
             onPress={() => setView('cover')}
@@ -496,7 +496,7 @@ function MonthlyView({
             className={`web:cursor-pointer flex-row items-center gap-1 rounded-full px-3 py-1.5 ${view === 'cover' ? 'bg-card' : ''}`}
           >
             <Grid2x2 size={14} color={view === 'cover' ? colors.foreground : colors.mutedForeground} />
-            <Text className={`text-[11px] font-bold ${view === 'cover' ? 'text-foreground' : 'text-muted-foreground'}`}>표지</Text>
+            <Text className={`text-2xs font-bold ${view === 'cover' ? 'text-foreground' : 'text-muted-foreground'}`}>표지</Text>
           </Pressable>
         </View>
       </View>
@@ -533,7 +533,7 @@ function MonthlyView({
       <View className="mt-5 rounded-3xl bg-card p-4">
         <View className="mb-2 flex-row">
           {WEEKDAY_LABELS.map((d) => (
-            <Text key={d} className="w-[14.28%] text-center text-[10px] font-semibold text-muted-foreground">
+            <Text key={d} className="w-[14.28%] text-center text-2xs font-semibold text-muted-foreground">
               {d}
             </Text>
           ))}
@@ -553,7 +553,7 @@ function MonthlyView({
             return (
               <View key={day} className="aspect-square w-[14.28%] p-[3px]">
                 <View className={`flex-1 items-center justify-center rounded-lg ${read ? 'bg-galpi-ink' : ''}`}>
-                  <Text className={`text-[11px] font-bold ${read ? 'text-galpi-paper' : 'text-muted-foreground/50'}`}>
+                  <Text className={`text-2xs font-bold ${read ? 'text-galpi-paper' : 'text-muted-foreground/50'}`}>
                     {day}
                   </Text>
                 </View>
@@ -670,7 +670,7 @@ function BookThisMonthRow({ book, count }: { book: Book; count: number }) {
       </View>
       <View className="shrink-0 flex-row items-center gap-1 rounded-full bg-secondary px-2.5 py-1">
         <Bookmark size={11} color={colors.mutedForeground} />
-        <Text className="text-[11px] font-bold text-foreground">{count}개</Text>
+        <Text className="text-2xs font-bold text-foreground">{count}개</Text>
       </View>
     </View>
   );
@@ -701,7 +701,7 @@ function CalendarCoverCell({ day, book, read }: { day: number; book: Book | unde
             <Bookmark size={14} color={accent === 'ink' ? colors.galpiPaper : colors.galpiInk} />
           )
         ) : (
-          <Text className="text-[10px] font-bold text-muted-foreground/40">{day}</Text>
+          <Text className="text-2xs font-bold text-muted-foreground/40">{day}</Text>
         )}
       </View>
     </View>
@@ -815,11 +815,11 @@ function YearlyView({
         <View className="mb-4 flex-row items-center justify-between">
           <Text className="text-sm font-black text-foreground">연간 독서 활동</Text>
           <View className="flex-row items-center gap-1">
-            <Text className="text-[10px] text-muted-foreground">적음</Text>
+            <Text className="text-2xs text-muted-foreground">적음</Text>
             {INTENSITY_CLASS.map((c, i) => (
               <View key={i} className={`h-2.5 w-2.5 rounded-[3px] ${c}`} />
             ))}
-            <Text className="text-[10px] text-muted-foreground">많음</Text>
+            <Text className="text-2xs text-muted-foreground">많음</Text>
           </View>
         </View>
 
@@ -883,7 +883,7 @@ function YearlyView({
       <View className="mt-5 rounded-3xl bg-galpi-ink p-5">
         <View className="flex-row items-center gap-1.5">
           <Quote size={12} color={colors.galpiPaper} opacity={0.6} />
-          <Text className="text-[11px] font-bold text-galpi-paper/60">올해 가장 많이 담은 책</Text>
+          <Text className="text-2xs font-bold text-galpi-paper/60">올해 가장 많이 담은 책</Text>
         </View>
         {topBook && topQuote ? (
           <>
@@ -917,7 +917,7 @@ export function DistributionBars({ labels, counts, topIndex }: { labels: string[
                 style={{ height: Math.max(4, (counts[i] / max) * 44) }}
               />
             </View>
-            <Text className={`text-[10px] font-bold ${isTop ? 'text-foreground' : 'text-muted-foreground'}`}>{label}</Text>
+            <Text className={`text-2xs font-bold ${isTop ? 'text-foreground' : 'text-muted-foreground'}`}>{label}</Text>
           </View>
         );
       })}
@@ -949,10 +949,10 @@ function MetricCard({
       </View>
       <View className="mt-3 flex-row items-baseline gap-0.5">
         <Text className="text-xl font-black text-foreground">{value}</Text>
-        <Text className="text-[11px] font-semibold text-muted-foreground">{unit}</Text>
+        <Text className="text-2xs font-semibold text-muted-foreground">{unit}</Text>
       </View>
       <View className="mt-0.5 flex-row items-center justify-between gap-1">
-        <Text className="shrink text-[11px] font-medium text-muted-foreground" numberOfLines={1}>
+        <Text className="shrink text-2xs font-medium text-muted-foreground" numberOfLines={1}>
           {label}
         </Text>
         {delta !== undefined ? <DeltaBadge delta={delta} /> : null}
@@ -970,20 +970,20 @@ function MetricCard({
 function DeltaBadge({ delta }: { delta: number }) {
   const colors = useThemeColors();
   if (delta === 0) {
-    return <Text className="shrink-0 text-[10px] font-bold text-muted-foreground/60">-</Text>;
+    return <Text className="shrink-0 text-2xs font-bold text-muted-foreground/60">-</Text>;
   }
   if (delta > 0) {
     return (
       <View className="shrink-0 flex-row items-center gap-0.5 rounded-full bg-galpi-green py-0.5 pl-1 pr-1.5">
         <ArrowUp size={8} color={colors.galpiInk} strokeWidth={3} />
-        <Text className="text-[10px] font-bold text-galpi-ink">{delta}</Text>
+        <Text className="text-2xs font-bold text-galpi-ink">{delta}</Text>
       </View>
     );
   }
   return (
     <View className="shrink-0 flex-row items-center gap-0.5">
       <ArrowDown size={8} color={colors.mutedForeground} strokeWidth={3} />
-      <Text className="text-[10px] font-bold text-muted-foreground">{Math.abs(delta)}</Text>
+      <Text className="text-2xs font-bold text-muted-foreground">{Math.abs(delta)}</Text>
     </View>
   );
 }
@@ -1089,7 +1089,7 @@ function ReportPublishModal({
       header={
         <View className="mb-4 flex-row items-center justify-between">
           <View>
-            <Text className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+            <Text className="text-2xs font-bold uppercase tracking-widest text-muted-foreground">
               Reading Report
             </Text>
             <Text className="mt-0.5 text-lg font-black tracking-tight text-foreground">독서 리포트 발행</Text>
@@ -1416,9 +1416,9 @@ function ReportMetricCard({ Icon, value, unit, label }: { Icon: LucideIcon; valu
       <Icon size={12} color={colors.mutedForeground} />
       <View className="flex-row items-baseline gap-0.5">
         <Text className="text-sm font-black text-foreground">{value}</Text>
-        <Text className="text-[8px] font-bold text-muted-foreground">{unit}</Text>
+        <Text className="text-micro font-bold text-muted-foreground">{unit}</Text>
       </View>
-      <Text className="text-[8px] font-medium text-muted-foreground">{label}</Text>
+      <Text className="text-micro font-medium text-muted-foreground">{label}</Text>
     </View>
   );
 }

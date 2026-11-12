@@ -264,7 +264,7 @@ function TextMode({
           placeholder="마음에 담고 싶은 문장을 적어주세요."
           placeholderTextColor={colors.mutedForeground}
           textAlignVertical="top"
-          className="w-full rounded-2xl border border-border bg-card p-4 text-[15px] leading-relaxed text-foreground focus:border-ring"
+          className="w-full rounded-2xl border border-border bg-card p-4 text-md leading-relaxed text-foreground focus:border-ring"
           style={{ minHeight: 120 }}
         />
       </Field>
@@ -429,7 +429,7 @@ function ScanMode({
           >
             <View className="absolute -top-6 left-0 flex-row items-center gap-1">
               <ScanLine size={12} color={colors.galpiYellow} />
-              <Text className="text-[11px] font-bold" style={{ color: colors.galpiYellow }}>
+              <Text className="text-2xs font-bold" style={{ color: colors.galpiYellow }}>
                 문장을 프레임 안에 맞춰주세요
               </Text>
             </View>
@@ -464,7 +464,7 @@ function ScanMode({
             className="web:cursor-pointer absolute right-3 top-3 flex-row items-center gap-1 rounded-full bg-galpi-ink/70 px-3 py-1.5"
           >
             <RotateCcw size={12} color={colors.galpiPaper} />
-            <Text className="text-[11px] font-bold text-galpi-paper">다시 촬영</Text>
+            <Text className="text-2xs font-bold text-galpi-paper">다시 촬영</Text>
           </Pressable>
         ) : null}
       </View>
@@ -586,7 +586,7 @@ function PhotoMode({
               className="web:cursor-pointer absolute right-3 top-3 flex-row items-center gap-1 rounded-full bg-galpi-ink/70 px-3 py-1.5"
             >
               <RotateCcw size={12} color={colors.galpiPaper} />
-              <Text className="text-[11px] font-bold text-galpi-paper">다시 선택</Text>
+              <Text className="text-2xs font-bold text-galpi-paper">다시 선택</Text>
             </Pressable>
           </View>
         ) : (

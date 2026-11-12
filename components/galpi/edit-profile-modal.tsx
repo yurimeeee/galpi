@@ -146,7 +146,7 @@ export function EditProfileModal({
 
       {/* 닉네임 */}
       <View className="mt-6">
-        <Text className="mb-1.5 text-[13px] font-semibold text-foreground">닉네임</Text>
+        <Text className="mb-1.5 text-sm font-semibold text-foreground">닉네임</Text>
         <TextInput
           value={name}
           onChangeText={setName}

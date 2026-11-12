@@ -90,7 +90,7 @@ export function EditProgressModal({
     >
       <View className="flex-row gap-3">
         <View className="flex-1">
-          <Text className="mb-1.5 text-[13px] font-semibold text-foreground">총 페이지</Text>
+          <Text className="mb-1.5 text-sm font-semibold text-foreground">총 페이지</Text>
           <TextInput
             value={totalPages}
             onChangeText={setTotalPages}
@@ -101,7 +101,7 @@ export function EditProgressModal({
           />
         </View>
         <View className="flex-1">
-          <Text className="mb-1.5 text-[13px] font-semibold text-foreground">현재 페이지</Text>
+          <Text className="mb-1.5 text-sm font-semibold text-foreground">현재 페이지</Text>
           <TextInput
             value={currentPage}
             onChangeText={setCurrentPage}
@@ -115,7 +115,7 @@ export function EditProgressModal({
 
       <View className="mt-5">
         <View className="mb-2 flex-row items-center justify-between">
-          <Text className="text-[13px] font-semibold text-foreground">진행도</Text>
+          <Text className="text-sm font-semibold text-foreground">진행도</Text>
           <Text className="text-sm font-black text-foreground">{previewProgress}%</Text>
         </View>
 
@@ -148,7 +148,7 @@ export function EditProgressModal({
           </View>
         )}
 
-        <Text className="mt-2 text-center text-[11px] text-muted-foreground">
+        <Text className="mt-2 text-center text-2xs text-muted-foreground">
           {hasValidTotal ? '밀어서 진행도를 조절할 수 있어요' : '총 페이지를 입력하면 밀어서 조절할 수 있어요'}
         </Text>
       </View>

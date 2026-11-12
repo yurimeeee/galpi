@@ -54,7 +54,7 @@ export function BookCard({ book }: { book: Book }) {
       <View className="min-w-0 flex-1 justify-center border-b border-border pb-4">
         <View className="flex-row items-start justify-between gap-3">
           <View className="min-w-0 flex-1">
-            <Text numberOfLines={1} className="text-[15px] font-bold leading-tight text-foreground">
+            <Text numberOfLines={1} className="text-md font-bold leading-tight text-foreground">
               {book.title}
             </Text>
             <Text numberOfLines={1} className="mt-0.5 text-xs text-muted-foreground">
@@ -62,7 +62,7 @@ export function BookCard({ book }: { book: Book }) {
             </Text>
           </View>
           <View className="shrink-0 rounded-full bg-secondary px-2.5 py-1">
-            <Text className="text-[10px] font-medium text-muted-foreground">
+            <Text className="text-2xs font-medium text-muted-foreground">
               {STATUS_LABEL[book.status]}
             </Text>
           </View>

@@ -29,7 +29,7 @@ export function ThemeSettingsScreen({ onBack }: { onBack: () => void }) {
       </View>
 
       <ScrollView className="flex-1 px-5 pt-4" contentContainerClassName="pb-10">
-        <Text className="mb-3 pl-1 text-[13px] leading-relaxed text-muted-foreground">
+        <Text className="mb-3 pl-1 text-sm leading-relaxed text-muted-foreground">
           갈피 화면의 밝기를 선택해 주세요.
         </Text>
 

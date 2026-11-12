@@ -147,7 +147,7 @@ export function DataBackupScreen({
             <View className="mt-0.5">
               <Info size={13} color={colors.mutedForeground} />
             </View>
-            <Text className="flex-1 text-[11px] leading-relaxed text-muted-foreground">
+            <Text className="flex-1 text-2xs leading-relaxed text-muted-foreground">
               복구하면 백업 안의 책과 갈피가 새로 추가돼요. 이미 등록된 책·갈피와 겹치는 항목은 자동으로 건너뛰어서,
               같은 백업을 여러 번 복구해도 중복 생성되지 않아요.
             </Text>
@@ -166,7 +166,7 @@ export function DataBackupScreen({
 
           <View className="flex-row items-center gap-2">
             <View className="h-px flex-1 bg-border" />
-            <Text className="text-[10px] font-semibold text-muted-foreground">또는 직접 붙여넣기</Text>
+            <Text className="text-2xs font-semibold text-muted-foreground">또는 직접 붙여넣기</Text>
             <View className="h-px flex-1 bg-border" />
           </View>
 

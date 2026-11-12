@@ -39,7 +39,7 @@ export function FavoritesScreen({
         </Pressable>
         <Text className="text-base font-black text-foreground">즐겨찾는 갈피</Text>
         <View className="rounded-full bg-secondary px-2 py-0.5">
-          <Text className="text-[11px] font-semibold text-muted-foreground">{favorites.length}</Text>
+          <Text className="text-2xs font-semibold text-muted-foreground">{favorites.length}</Text>
         </View>
       </View>
 
@@ -96,7 +96,7 @@ function FavoriteSentenceCard({
         </View>
         <View className="ml-2 flex-row items-center gap-1.5">
           <View className="rounded-md bg-galpi-ink px-2 py-0.5">
-            <Text className="font-mono text-[10px] font-bold text-galpi-paper">P. {sentence.page}</Text>
+            <Text className="font-mono text-2xs font-bold text-galpi-paper">P. {sentence.page}</Text>
           </View>
           <Pressable
             onPress={() => onToggleFavorite(sentence.id, false)}
@@ -117,7 +117,7 @@ function FavoriteSentenceCard({
         </Text>
       ) : null}
 
-      <Text className="mt-2 text-[10px] font-medium text-muted-foreground/70">{sentence.date}</Text>
+      <Text className="mt-2 text-2xs font-medium text-muted-foreground/70">{sentence.date}</Text>
     </Pressable>
   );
 }

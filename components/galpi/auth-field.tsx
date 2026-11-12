@@ -22,7 +22,7 @@ export function TextField({
   const colors = useThemeColors();
   return (
     <View>
-      <Text className="mb-1.5 text-[13px] font-semibold text-foreground">{label}</Text>
+      <Text className="mb-1.5 text-sm font-semibold text-foreground">{label}</Text>
       <TextInput
         value={value}
         onChangeText={onChange}
@@ -46,7 +46,7 @@ export function PasswordField({
   const colors = useThemeColors();
   return (
     <View>
-      <Text className="mb-1.5 text-[13px] font-semibold text-foreground">{label}</Text>
+      <Text className="mb-1.5 text-sm font-semibold text-foreground">{label}</Text>
       <View className="relative justify-center">
         <TextInput
           value={value}
@@ -102,7 +102,7 @@ export function CheckOption({
           </Svg>
         ) : null}
       </View>
-      <Text className="flex-1 text-[13px] text-muted-foreground">{children}</Text>
+      <Text className="flex-1 text-sm text-muted-foreground">{children}</Text>
     </Pressable>
   );
 }

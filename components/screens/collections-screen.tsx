@@ -42,7 +42,7 @@ export function CollectionsScreen({
           </Pressable>
           <Text className="text-base font-black text-foreground">#{selectedTag}</Text>
           <View className="rounded-full bg-secondary px-2 py-0.5">
-            <Text className="text-[11px] font-semibold text-muted-foreground">{tagged.length}</Text>
+            <Text className="text-2xs font-semibold text-muted-foreground">{tagged.length}</Text>
           </View>
         </View>
 
@@ -75,7 +75,7 @@ export function CollectionsScreen({
         </Pressable>
         <Text className="text-base font-black text-foreground">모음집</Text>
         <View className="rounded-full bg-secondary px-2 py-0.5">
-          <Text className="text-[11px] font-semibold text-muted-foreground">{tags.length}</Text>
+          <Text className="text-2xs font-semibold text-muted-foreground">{tags.length}</Text>
         </View>
       </View>
 
@@ -111,7 +111,7 @@ function TagRow({ tag, onOpen }: { tag: TagCount; onOpen: () => void }) {
       </View>
       <Text className="min-w-0 flex-1 text-sm font-bold text-foreground">#{tag.tag}</Text>
       <View className="shrink-0 rounded-full bg-secondary px-2.5 py-1">
-        <Text className="text-[11px] font-bold text-foreground">{tag.count}개</Text>
+        <Text className="text-2xs font-bold text-foreground">{tag.count}개</Text>
       </View>
     </Pressable>
   );
@@ -141,7 +141,7 @@ function TaggedSentenceCard({
           </Text>
         </View>
         <View className="ml-2 rounded-md bg-galpi-ink px-2 py-0.5">
-          <Text className="font-mono text-[10px] font-bold text-galpi-paper">P. {sentence.page}</Text>
+          <Text className="font-mono text-2xs font-bold text-galpi-paper">P. {sentence.page}</Text>
         </View>
       </View>
 
@@ -153,7 +153,7 @@ function TaggedSentenceCard({
         </Text>
       ) : null}
 
-      <Text className="mt-2 text-[10px] font-medium text-muted-foreground/70">{sentence.date}</Text>
+      <Text className="mt-2 text-2xs font-medium text-muted-foreground/70">{sentence.date}</Text>
     </Pressable>
   );
 }

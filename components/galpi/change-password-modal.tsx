@@ -61,7 +61,7 @@ export function ChangePasswordModal({ onClose }: { onClose: () => void }) {
           <View className="mt-0.5 h-8 w-8 items-center justify-center rounded-xl bg-secondary">
             <Info size={16} color={colors.foreground} />
           </View>
-          <Text className="flex-1 text-[13px] leading-relaxed text-muted-foreground">
+          <Text className="flex-1 text-sm leading-relaxed text-muted-foreground">
             소셜 로그인 계정은 해당 플랫폼에서 비밀번호를 관리합니다.
           </Text>
         </View>

@@ -37,7 +37,7 @@ export function BadgeGrid({ badges }: { badges: BadgeProgress[] }) {
         if (items.length === 0) return null;
         return (
           <View key={category}>
-            <Text className="mb-2.5 pl-1 text-[13px] font-bold text-muted-foreground">
+            <Text className="mb-2.5 pl-1 text-xs font-bold text-muted-foreground">
               {CATEGORY_LABEL[category]}
             </Text>
             <View className="flex-row flex-wrap">
@@ -85,7 +85,7 @@ function BadgeTile({ badge }: { badge: BadgeProgress }) {
       </View>
       <Text
         numberOfLines={1}
-        className={`text-center text-[10px] font-bold ${badge.achieved ? 'text-foreground' : 'text-muted-foreground'}`}
+        className={`text-center text-2xs font-bold ${badge.achieved ? 'text-foreground' : 'text-muted-foreground'}`}
       >
         {badge.title}
       </Text>

@@ -132,7 +132,7 @@ function Stepper({
         >
           <Text className="text-lg font-bold text-foreground">−</Text>
         </Pressable>
-        <Text className="w-16 text-center text-[15px] font-black tabular-nums text-foreground">
+        <Text className="w-16 text-center text-md font-black tabular-nums text-foreground">
           {value}
           <Text className="ml-0.5 text-xs font-medium text-muted-foreground">{unit}</Text>
         </Text>

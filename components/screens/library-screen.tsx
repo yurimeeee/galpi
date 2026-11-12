@@ -297,10 +297,10 @@ export function MainLibraryScreen({
               {/* 에디토리얼 인사말 */}
               <View className="mb-6">
                 <Text className="text-xs font-medium text-muted-foreground">오늘도 한 문장, 갈피에 담다</Text>
-                <Text className="mt-1 text-[26px] font-black leading-[1.25] tracking-tight text-foreground">지금까지 모은 문장</Text>
+                <Text className="mt-1 text-display font-black tracking-tight text-foreground">지금까지 모은 문장</Text>
                 <View className="mt-1.5 flex-row">
                   <View className="rounded-lg bg-galpi-yellow px-2 py-0.5">
-                    <Text className="text-[26px] font-black leading-[1.25] tracking-tight text-galpi-ink">{totalGalpi}개의 갈피</Text>
+                    <Text className="text-display font-black tracking-tight text-galpi-ink">{totalGalpi}개의 갈피</Text>
                   </View>
                 </View>
               </View>
@@ -322,11 +322,11 @@ export function MainLibraryScreen({
                   >
                     <View className="flex-row items-center justify-between">
                       <View className="px-3 py-1 rounded-full bg-galpi-ink/10">
-                        <Text className="text-[11px] font-bold text-galpi-ink">지금 읽는 중</Text>
+                        <Text className="text-2xs font-bold text-galpi-ink">지금 읽는 중</Text>
                       </View>
                       <View className="flex-row items-center gap-1">
                         <Bookmark size={12} color={colors.galpiInk} opacity={0.7} />
-                        <Text className="text-[11px] font-semibold text-galpi-ink/70">{featured.galpiCount}개</Text>
+                        <Text className="text-2xs font-semibold text-galpi-ink/70">{featured.galpiCount}개</Text>
                       </View>
                     </View>
 
@@ -343,8 +343,8 @@ export function MainLibraryScreen({
                     {/* 진행률 */}
                     <View className="mt-4">
                       <View className="mb-1.5 flex-row items-center justify-between">
-                        <Text className="text-[11px] font-semibold text-galpi-ink/70">진행도</Text>
-                        <Text className="text-[11px] font-semibold text-galpi-ink/70">{featured.progress}%</Text>
+                        <Text className="text-2xs font-semibold text-galpi-ink/70">진행도</Text>
+                        <Text className="text-2xs font-semibold text-galpi-ink/70">{featured.progress}%</Text>
                       </View>
                       <View className="h-1.5 w-full overflow-hidden rounded-full bg-galpi-ink/15">
                         <View className="h-full rounded-full bg-galpi-ink" style={{ width: `${featured.progress}%` }} />
@@ -451,14 +451,14 @@ function BookCoverTile({ book }: { book: Book }) {
         {book.status !== 'wish' ? (
           <View className="absolute left-1.5 top-1.5 flex-row items-center gap-0.5 rounded-full bg-galpi-ink/60 px-1.5 py-0.5">
             <Bookmark size={9} color={colors.galpiPaper} />
-            <Text className="text-[9px] font-bold text-galpi-paper">{book.galpiCount}</Text>
+            <Text className="text-2xs font-bold text-galpi-paper">{book.galpiCount}</Text>
           </View>
         ) : null}
       </View>
       <Text numberOfLines={1} className="mt-1.5 text-xs font-bold text-foreground">
         {book.title}
       </Text>
-      <Text numberOfLines={1} className="text-[10px] text-muted-foreground">
+      <Text numberOfLines={1} className="text-2xs text-muted-foreground">
         {book.author}
       </Text>
     </View>
@@ -514,7 +514,7 @@ function SentenceResultCard({ sentence, book, query }: { sentence: Sentence; boo
           </Text>
         </View>
         <View className="ml-2 rounded-md bg-galpi-ink px-2 py-0.5">
-          <Text className="font-mono text-[10px] font-bold text-galpi-paper">P. {sentence.page}</Text>
+          <Text className="font-mono text-2xs font-bold text-galpi-paper">P. {sentence.page}</Text>
         </View>
       </View>
 
@@ -528,7 +528,7 @@ function SentenceResultCard({ sentence, book, query }: { sentence: Sentence; boo
         />
       ) : null}
 
-      <Text className="mt-2 text-[10px] font-medium text-muted-foreground/70">{sentence.date}</Text>
+      <Text className="mt-2 text-2xs font-medium text-muted-foreground/70">{sentence.date}</Text>
     </View>
   );
 }
@@ -547,7 +547,7 @@ export function LibrarySkeleton() {
 
         <View className="mb-6">
           <Text className="text-xs font-medium text-muted-foreground">오늘도 한 문장, 갈피에 담다</Text>
-          <Text className="mt-1 text-[26px] font-black leading-[1.25] tracking-tight text-foreground">지금까지 모은 문장</Text>
+          <Text className="mt-1 text-display font-black tracking-tight text-foreground">지금까지 모은 문장</Text>
           <Skeleton className="mt-1.5 h-8 w-32 rounded-lg" />
         </View>
 
