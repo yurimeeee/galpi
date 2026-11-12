@@ -27,16 +27,16 @@
 
 | ID | 대상 | 파일 | 목표 | 완료 조건 | 의존 | 상태 |
 |---|---|---|---|---|---|---|
-| GX-01 | 임의 텍스트 크기 치환 | `components/**`, `app/**` | `text-[26px]→display`, `[15px]→md`, `[13px]→sm|xs`(역할별), `[11px]/[10px]→2xs`, `[9px]~[6.5px]→micro` | grep `text-\[` 0 | DS-01 | 대기 |
-| GX-02 | 섹션 제목 웨이트 | `components/screens/*` | `text-lg font-black` → `text-lg font-bold` (5곳) | 화면 제목(`xl`)은 black 유지 | — | 대기 |
-| GX-03 | 반경 역할 재배치 | `components/**` | 카드·입력·CTA `2xl→xl`, 히어로 `3xl→2xl`, 시트 `rounded-t-3xl` 유지 | §4 표와 일치, 시각 회귀 확인 | — | 대기 |
-| GX-04 | opacity 텍스트 위계 제거 | `components/**` | `text-muted-foreground/50|70` → `text-muted-foreground`(파스텔·잉크 표면 제외) | grep 결과 0(예외 주석 표기) | DS-02 | 대기 |
-| GX-05 | 거터 통일 | 화면 루트 컨테이너 | `px-6 / px-7 / px-8` → `px-5` | 탭 3개 + 스택 화면 좌측 정렬선 일치 | — | 대기 |
-| GX-06 | 그림자 인라인 → 상수 | `bottom-nav`, `book-detail`, `stats-report`, `reading-timer-widget`, `sentence-card-modal`, `session-summary-modal` | `SHADOW.*` 사용 | 인라인 `shadowColor` 0 | DS-03 | 대기 |
-| GX-07 | `font-mono` 폐지 | `components/**`, `tailwind.config.js` | 페이지 번호 `tabular-nums font-semibold`, `fontFamily.mono` 제거 | grep `font-mono` 0 | — | 대기 |
-| GX-08 | 아이콘 버튼 교체 | 22곳 | 36px 원형 Pressable → `IconButton` | hitSlop·role 자동 적용 | CP-02 | 대기 |
-| GX-09 | 헤더 교체 | 스택 화면 14곳 | 자체 헤더 → `ScreenHeader` | 제목 크기·위치 통일 | CP-05 | 대기 |
-| GX-10 | 표지 교체 | 6곳 | `BookCover`로 교체, 정사각·4:3 제거 | 모든 표지 2:3 | CP-01 | 대기 |
+| GX-01 | 임의 텍스트 크기 치환 | `components/**`, `app/**` | `text-[26px]→display`, `[15px]→md`, `[13px]→sm|xs`(역할별), `[11px]/[10px]→2xs`, `[9px]~[6.5px]→micro` | grep `text-\[` 0 | DS-01 | 완료 `31466a0` (ReportCardBody 공유 카드는 PG-11로 이월) |
+| GX-02 | 섹션 제목 웨이트 | `components/screens/*` | `text-lg font-black` → `text-lg font-bold` (5곳) | 화면 제목(`xl`)은 black 유지 | — | 완료 `306b0ed` |
+| GX-03 | 반경 역할 재배치 | `components/**` | 카드·입력·CTA `2xl→xl`, 히어로 `3xl→2xl`, 시트 `rounded-t-3xl` 유지 | §4 표와 일치, 시각 회귀 확인 | — | 완료 `fa532e1` |
+| GX-04 | opacity 텍스트 위계 제거 | `components/**` | `text-muted-foreground/50|70` → `text-muted-foreground`(파스텔·잉크 표면 제외) | grep 결과 0(예외 주석 표기) | DS-02 | 완료 `283f8e5` |
+| GX-05 | 거터 통일 | 화면 루트 컨테이너 | `px-6 / px-7 / px-8` → `px-5` | 탭 3개 + 스택 화면 좌측 정렬선 일치 | — | 완료 `ad75ccf` (year-review 스토리 슬라이드 px-8는 의도적 인셋으로 유지) |
+| GX-06 | 그림자 인라인 → 상수 | `bottom-nav`, `book-detail`, `stats-report`, `reading-timer-widget`, `sentence-card-modal`, `session-summary-modal` | `SHADOW.*` 사용 | 인라인 `shadowColor` 0 | DS-03 | 완료 `b23400b` (web-frame 베젤 그림자는 RS-01, 슬라이더 썸 2px 그림자는 유지) |
+| GX-07 | `font-mono` 폐지 | `components/**`, `tailwind.config.js` | 페이지 번호 `tabular-nums font-semibold`, `fontFamily.mono` 제거 | grep `font-mono` 0 | — | 완료 `27f41ad` |
+| GX-08 | 아이콘 버튼 교체 | 22곳 | 36px 원형 Pressable → `IconButton` | hitSlop·role 자동 적용 | CP-02 | 완료 `682a09f` |
+| GX-09 | 헤더 교체 | 스택 화면 14곳 | 자체 헤더 → `ScreenHeader` | 제목 크기·위치 통일 | CP-05 | 완료 `5035227` (15개 화면 적용) |
+| GX-10 | 표지 교체 | 6곳 | `BookCover`로 교체, 정사각·4:3 제거 | 모든 표지 2:3 | CP-01 | 완료 `32db502` (달력 셀·타이머 버블·공유 카드는 제외) |
 
 ## Phase D. 화면별 (카드 다이어트·위계) — 토큰/컴포넌트 완료 후
 
