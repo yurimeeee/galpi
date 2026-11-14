@@ -12,18 +12,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffectiveScheme } from '../lib/use-effective-scheme';
-import {
-  useFonts,
-  NotoSansKR_100Thin,
-  NotoSansKR_200ExtraLight,
-  NotoSansKR_300Light,
-  NotoSansKR_400Regular,
-  NotoSansKR_500Medium,
-  NotoSansKR_600SemiBold,
-  NotoSansKR_700Bold,
-  NotoSansKR_800ExtraBold,
-  NotoSansKR_900Black,
-} from '@expo-google-fonts/noto-sans-kr';
+import { useFonts } from 'expo-font';
+import { FONTS } from '../lib/fonts';
 import { WebFrame } from '../components/layout/web-frame';
 import { ReadingTimerWidget } from '../components/galpi/reading-timer-widget';
 import { UndoSnackbar } from '../components/galpi/undo-snackbar';
@@ -53,17 +43,10 @@ export default function RootLayout() {
   // screen is mounted — see lib/use-reading-timer-auto-advance.ts.
   useReadingTimerAutoAdvance();
 
-  const [fontsLoaded] = useFonts({
-    NotoSansKR_100Thin,
-    NotoSansKR_200ExtraLight,
-    NotoSansKR_300Light,
-    NotoSansKR_400Regular,
-    NotoSansKR_500Medium,
-    NotoSansKR_600SemiBold,
-    NotoSansKR_700Bold,
-    NotoSansKR_800ExtraBold,
-    NotoSansKR_900Black,
-  });
+  // Native loads the five Noto Sans KR weights from the bundle; on web FONTS is
+  // empty (lib/fonts.web.ts) so this resolves immediately and the Google Fonts
+  // stylesheet in app/+html.tsx swaps the face in once it arrives.
+  const [fontsLoaded] = useFonts(FONTS);
 
   const ready = fontsLoaded && authResolved;
 

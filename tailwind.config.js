@@ -1,22 +1,35 @@
 const plugin = require('tailwindcss/plugin');
 
+// NativeWind compiles this config once per platform and tells us which via
+// NATIVEWIND_OS (undefined = web, e.g. the Tailwind CLI / IntelliSense).
+const isWeb = process.env.NATIVEWIND_OS === undefined || process.env.NATIVEWIND_OS === 'web';
+
+/** Only the weights actually used by `font-*` classes (see lib/fonts.ts). */
+const WEIGHTS = {
+  normal: ['400', 'NotoSansKR_400Regular'],
+  medium: ['500', 'NotoSansKR_500Medium'],
+  semibold: ['600', 'NotoSansKR_600SemiBold'],
+  bold: ['700', 'NotoSansKR_700Bold'],
+  black: ['900', 'NotoSansKR_900Black'],
+};
+
+const WEB_FONT_FAMILY = "'Noto Sans KR', sans-serif";
+
 /**
- * Noto Sans KR is loaded as separate static-weight font families (no variable
- * font / synthetic bolding on native), so the `font-*` weight utilities are
- * redefined to select the matching family instead of emitting `font-weight`.
+ * Native loads Noto Sans KR as separate static-weight font families (no
+ * variable font / synthetic bolding), so the `font-*` weight utilities select
+ * the matching family instead of emitting `font-weight`. On web the same
+ * utilities emit one family + `font-weight`, served by the Google Fonts
+ * stylesheet in app/+html.tsx.
  */
 const fontWeightFamily = plugin(({ addUtilities }) => {
-  addUtilities({
-    '.font-thin': { fontFamily: 'NotoSansKR_100Thin' },
-    '.font-extralight': { fontFamily: 'NotoSansKR_200ExtraLight' },
-    '.font-light': { fontFamily: 'NotoSansKR_300Light' },
-    '.font-normal': { fontFamily: 'NotoSansKR_400Regular' },
-    '.font-medium': { fontFamily: 'NotoSansKR_500Medium' },
-    '.font-semibold': { fontFamily: 'NotoSansKR_600SemiBold' },
-    '.font-bold': { fontFamily: 'NotoSansKR_700Bold' },
-    '.font-extrabold': { fontFamily: 'NotoSansKR_800ExtraBold' },
-    '.font-black': { fontFamily: 'NotoSansKR_900Black' },
-  });
+  const utilities = {};
+  for (const [name, [weight, family]] of Object.entries(WEIGHTS)) {
+    utilities[`.font-${name}`] = isWeb
+      ? { fontFamily: WEB_FONT_FAMILY, fontWeight: weight }
+      : { fontFamily: family };
+  }
+  addUtilities(utilities);
 });
 
 /** @type {import('tailwindcss').Config} */
@@ -63,7 +76,7 @@ module.exports = {
         ring: 'rgb(var(--color-ring) / <alpha-value>)',
       },
       fontFamily: {
-        sans: ['NotoSansKR_400Regular'],
+        sans: isWeb ? [WEB_FONT_FAMILY] : ['NotoSansKR_400Regular'],
       },
       /**
        * Role-named sizes that fill the gaps in Tailwind's scale (see

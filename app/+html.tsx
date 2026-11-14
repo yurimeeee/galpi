@@ -26,6 +26,18 @@ export default function Root({ children }: PropsWithChildren) {
         <meta name="theme-color" media="(prefers-color-scheme: dark)" content={DARK_BACKGROUND} />
         <meta name="color-scheme" content="light dark" />
 
+        {/*
+          Noto Sans KR from Google Fonts: woff2 + unicode-range subsets, so a
+          page downloads only the glyph ranges it renders instead of the 30MB
+          of TTFs the native bundle carries. Weights match tailwind.config.js.
+        */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;900&display=swap"
+        />
+
         {/* Keeps the root ScrollView behaviour of native: body doesn't scroll, screens do. */}
         <ScrollViewStyleReset />
 
