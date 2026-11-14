@@ -1,14 +1,12 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Tabs, router } from 'expo-router';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { View } from 'react-native';
 import { BottomNav, type NavKey } from '../../components/galpi/bottom-nav';
 import { AddChoiceSheet } from '../../components/galpi/add-choice-sheet';
-import { useAppStore } from '../../lib/store';
 import type { Book } from '../../lib/data/books';
 
 export default function TabsLayout() {
-  const books = useAppStore((s) => s.books);
   const [addSheetOpen, setAddSheetOpen] = useState(false);
 
   function handleAddNewBook() {
@@ -26,6 +24,14 @@ export default function TabsLayout() {
     router.push('/reading-timer');
   }
 
+  // Stable identity: an inline `tabBar` function is a new prop on every
+  // layout render, which re-renders BottomNav (and its Reanimated lift)
+  // along with it.
+  const renderTabBar = useCallback(
+    (props: BottomTabBarProps) => <CustomTabBar {...props} onAddPress={() => setAddSheetOpen(true)} />,
+    [],
+  );
+
   return (
     <View className="flex-1 bg-background">
       {/*
@@ -41,16 +47,19 @@ export default function TabsLayout() {
         // land on until something forces a re-layout. See
         // https://github.com/expo/expo/issues/39587
         screenOptions={{ headerShown: false }}
-        tabBar={(props) => <CustomTabBar {...props} onAddPress={() => setAddSheetOpen(true)} />}
+        tabBar={renderTabBar}
       >
         <Tabs.Screen name="library" />
         <Tabs.Screen name="stats" />
         <Tabs.Screen name="mypage" />
       </Tabs>
 
+      {/*
+        The sheet reads `books` from the store itself, so book snapshots
+        only re-render it while it's open — not the whole Tabs tree.
+      */}
       {addSheetOpen ? (
         <AddChoiceSheet
-          books={books}
           onClose={() => setAddSheetOpen(false)}
           onAddNewBook={handleAddNewBook}
           onPickBook={handlePickBook}

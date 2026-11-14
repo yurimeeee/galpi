@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { router, useLocalSearchParams, Redirect } from 'expo-router';
 import { BookDetailScreen, BookDetailSkeleton } from '../../components/screens/book-detail-screen';
 import { useAppStore } from '../../lib/store';
@@ -16,6 +17,12 @@ export default function BookDetail() {
   const setSentenceFavorite = useAppStore((s) => s.setSentenceFavorite);
   const { triggerStartReadingNotification } = useReadingReminder();
 
+  // Stable array identity across renders that don't touch sentences, so
+  // BookDetailScreen's derived memos (share candidates etc.) aren't
+  // invalidated by unrelated store updates. Hooks run before the early
+  // returns below, so this is computed with `id` rather than `book.id`.
+  const sentences = useMemo(() => sentencesByBook(allSentences, id), [allSentences, id]);
+
   if (!book) {
     if (!booksLoaded) {
       return <BookDetailSkeleton onBack={() => router.back()} />;
@@ -26,7 +33,7 @@ export default function BookDetail() {
   return (
     <BookDetailScreen
       book={book}
-      sentences={sentencesByBook(allSentences, book.id)}
+      sentences={sentences}
       onBack={() => router.back()}
       onAddSentence={() => router.push(`/add-sentence?bookId=${book.id}`)}
       onEditSentence={(sentenceId) => router.push(`/edit-sentence?sentenceId=${sentenceId}`)}
@@ -43,7 +50,7 @@ export default function BookDetail() {
       onEditProgress={(patch) => updateBook(book.id, patch)}
       onDeleteBook={async () => {
         const deletedBook = book;
-        const deletedSentences = sentencesByBook(allSentences, book.id);
+        const deletedSentences = sentences;
         await deleteBook(book.id);
         showUndo('책을 삭제했어요', () => restoreBook(deletedBook, deletedSentences));
       }}

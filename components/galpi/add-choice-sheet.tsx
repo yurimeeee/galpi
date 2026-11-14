@@ -5,6 +5,7 @@ import { BottomSheet } from './bottom-sheet';
 import { type Book } from '../../lib/data/books';
 import { BookCover } from './book-cover';
 import { useThemeColors } from '../../lib/theme';
+import { useAppStore } from '../../lib/store';
 
 type Step = 'choice' | 'pick-book';
 
@@ -17,18 +18,19 @@ type Step = 'choice' | 'pick-book';
  * user switch books from within the timer screen itself.
  */
 export function AddChoiceSheet({
-  books,
   onClose,
   onAddNewBook,
   onPickBook,
   onStartTimer,
 }: {
-  books: Book[];
   onClose: () => void;
   onAddNewBook: () => void;
   onPickBook: (book: Book) => void;
   onStartTimer: () => void;
 }) {
+  // Subscribed here (not in the tabs layout) so only the open sheet
+  // re-renders when the library changes.
+  const books = useAppStore((s) => s.books);
   const [step, setStep] = useState<Step>('choice');
   const colors = useThemeColors();
 
