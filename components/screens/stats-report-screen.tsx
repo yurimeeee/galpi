@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Image, Platform, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Image, Platform, Pressable, ScrollView, Text, View } from 'react-native';
+import { showAlert } from '../../lib/alert';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
@@ -1015,13 +1016,13 @@ function ReportPublishModal({
       const uri = await captureViewAsImage(cardRef);
       await saveImageToDevice(uri, `galpi-report-${Date.now()}.png`);
       if (Platform.OS !== 'web') {
-        Alert.alert('저장 완료', '독서 리포트 이미지를 사진 보관함에 저장했어요.');
+        showAlert('저장 완료', '독서 리포트 이미지를 사진 보관함에 저장했어요.');
       }
     } catch (err) {
       if (err instanceof MediaPermissionError) {
-        Alert.alert('권한이 필요해요', err.message);
+        showAlert('권한이 필요해요', err.message);
       } else {
-        Alert.alert('저장 실패', '이미지를 저장하는 중 문제가 발생했어요.');
+        showAlert('저장 실패', '이미지를 저장하는 중 문제가 발생했어요.');
       }
     } finally {
       setBusy(null);
@@ -1040,9 +1041,9 @@ function ReportPublishModal({
       });
     } catch (err) {
       if (err instanceof ShareUnavailableError) {
-        Alert.alert('공유하기', err.message);
+        showAlert('공유하기', err.message);
       } else {
-        Alert.alert('공유 실패', '리포트를 공유하는 중 문제가 발생했어요.');
+        showAlert('공유 실패', '리포트를 공유하는 중 문제가 발생했어요.');
       }
     } finally {
       setBusy(null);

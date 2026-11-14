@@ -1,4 +1,5 @@
-import { Alert, Pressable, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
+import { showAlert } from '../../lib/alert';
 import { BookCheck, Bookmark, Flame, Lock, type LucideIcon } from 'lucide-react-native';
 import { type Badge, type BadgeCategory, type BadgeProgress } from '../../lib/badges';
 import { useThemeColors } from '../../lib/theme';
@@ -67,7 +68,7 @@ function BadgeTile({ badge }: { badge: BadgeProgress }) {
   return (
     <Pressable
       onPress={() =>
-        Alert.alert(badge.title, badge.achieved ? badge.description : `${badgeTargetLabel(badge)} 달성 시 잠금 해제돼요.`)
+        showAlert(badge.title, badge.achieved ? badge.description : `${badgeTargetLabel(badge)} 달성 시 잠금 해제돼요.`)
       }
       className="web:cursor-pointer w-full items-center gap-1.5 rounded-xl bg-card p-3"
     >

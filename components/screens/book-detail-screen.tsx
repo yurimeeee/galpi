@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
-import { Alert, FlatList, Image, Pressable, Text, View } from 'react-native';
+import { FlatList, Image, Pressable, Text, View } from 'react-native';
+import { showAlert } from '../../lib/alert';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   ChevronLeft,
@@ -75,7 +76,7 @@ export function BookDetailScreen({
 
   function handleSharePress() {
     if (sentences.length === 0) {
-      Alert.alert('공유할 갈피가 없어요', '먼저 이 책에 갈피를 남겨보세요.');
+      showAlert('공유할 갈피가 없어요', '먼저 이 책에 갈피를 남겨보세요.');
       return;
     }
     if (sentences.length === 1) {
@@ -86,7 +87,7 @@ export function BookDetailScreen({
   }
 
   function handleDelete() {
-    Alert.alert(
+    showAlert(
       '책을 삭제할까요?',
       `"${book.title}"과 여기에 남긴 모든 갈피가 함께 삭제돼요. 되돌릴 수 없어요.`,
       [
@@ -100,7 +101,7 @@ export function BookDetailScreen({
               await onDeleteBook();
               onBack();
             } catch (err) {
-              Alert.alert(
+              showAlert(
                 '책 삭제에 실패했어요',
                 err instanceof Error ? err.message : '잠시 후 다시 시도해주세요.',
               );

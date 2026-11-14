@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { showAlert } from '../../lib/alert';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Link2, Mail } from 'lucide-react-native';
 import { ScreenHeader } from '../galpi/screen-header';
@@ -47,13 +48,13 @@ export function LinkedAccountsScreen({ onBack }: { onBack: () => void }) {
 
   function handleUnlink() {
     if (!isPasswordLinked) {
-      Alert.alert(
+      showAlert(
         '연동을 해제할 수 없어요',
         '비밀번호가 설정되어 있지 않아요. 구글 연동을 해제하면 로그인할 방법이 없어져요.',
       );
       return;
     }
-    Alert.alert('구글 계정 연동을 해제할까요?', '다음부터는 이메일과 비밀번호로 로그인해야 해요.', [
+    showAlert('구글 계정 연동을 해제할까요?', '다음부터는 이메일과 비밀번호로 로그인해야 해요.', [
       { text: '취소', style: 'cancel' },
       {
         text: '연동 해제',
@@ -64,7 +65,7 @@ export function LinkedAccountsScreen({ onBack }: { onBack: () => void }) {
             await unlinkProvider(GOOGLE_PROVIDER_ID);
             refreshProviders();
           } catch (err) {
-            Alert.alert('연동 해제에 실패했어요', getAuthErrorMessage(err));
+            showAlert('연동 해제에 실패했어요', getAuthErrorMessage(err));
           } finally {
             setUnlinking(false);
           }

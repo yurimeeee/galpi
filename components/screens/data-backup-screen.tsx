@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { showAlert } from '../../lib/alert';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CloudDownload, CloudUpload, FileUp, Info } from 'lucide-react-native';
 import { ScreenHeader } from '../galpi/screen-header';
@@ -33,7 +34,7 @@ export function DataBackupScreen({
       const today = new Date().toISOString().slice(0, 10);
       await exportBackupFile(JSON.stringify(payload, null, 2), `galpi-backup-${today}.json`);
     } catch (err) {
-      Alert.alert(
+      showAlert(
         '백업 실패',
         err instanceof BackupFileUnavailableError ? err.message : '백업 파일을 만드는 중 문제가 발생했어요.',
       );
@@ -54,12 +55,12 @@ export function DataBackupScreen({
         result.skippedBooks > 0 || result.skippedSentences > 0
           ? `\n(이미 있는 책 ${result.skippedBooks}권, 갈피 ${result.skippedSentences}개는 건너뛰었어요.)`
           : '';
-      Alert.alert(
+      showAlert(
         '복구 완료',
         `책 ${result.books}권, 갈피 ${result.sentences}개를 새로 추가했어요.${skippedNote}`,
       );
     } catch (err) {
-      Alert.alert('복구 실패', err instanceof Error ? err.message : '잠시 후 다시 시도해주세요.');
+      showAlert('복구 실패', err instanceof Error ? err.message : '잠시 후 다시 시도해주세요.');
     }
   }
 
@@ -80,7 +81,7 @@ export function DataBackupScreen({
       const text = await pickBackupFileText();
       if (text) await runImport(text.trim());
     } catch {
-      Alert.alert('파일을 열 수 없어요', '선택한 파일을 읽는 중 문제가 발생했어요.');
+      showAlert('파일을 열 수 없어요', '선택한 파일을 읽는 중 문제가 발생했어요.');
     } finally {
       setPickingFile(false);
     }

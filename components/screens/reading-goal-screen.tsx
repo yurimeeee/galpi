@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { showAlert } from '../../lib/alert';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Flame,
@@ -284,7 +285,7 @@ export function ReadingGoalScreen({ onBack }: { onBack: () => void }) {
               await saveGoals(next);
               setEditOpen(false);
             } catch {
-              Alert.alert('저장 실패', '목표를 저장하는 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.');
+              showAlert('저장 실패', '목표를 저장하는 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.');
             }
           }}
         />

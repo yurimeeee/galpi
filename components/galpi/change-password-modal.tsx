@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { showAlert } from '../../lib/alert';
 import { Info, Lock, X } from 'lucide-react-native';
 import { BottomSheet } from './bottom-sheet';
 import { PasswordField } from './auth-field';
@@ -31,7 +32,7 @@ export function ChangePasswordModal({ onClose }: { onClose: () => void }) {
     setSubmitting(true);
     try {
       await changeUserPassword(currentPassword, newPassword);
-      Alert.alert('비밀번호가 변경되었어요', '다음 로그인부터 새 비밀번호를 사용해 주세요.');
+      showAlert('비밀번호가 변경되었어요', '다음 로그인부터 새 비밀번호를 사용해 주세요.');
       onClose();
     } catch (err) {
       setError(getAuthErrorMessage(err) || '비밀번호 변경에 실패했어요.');

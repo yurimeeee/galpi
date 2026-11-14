@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   FlatList,
   Image,
   Keyboard,
@@ -13,6 +12,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { showAlert } from '../../lib/alert';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
@@ -124,7 +124,7 @@ export function AddBookScreen({
   async function pickManualCover() {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
-      Alert.alert('사진 접근 권한이 필요해요', '기기 설정에서 갈피의 사진 보관함 접근을 허용해주세요.');
+      showAlert('사진 접근 권한이 필요해요', '기기 설정에서 갈피의 사진 보관함 접근을 허용해주세요.');
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -141,7 +141,7 @@ export function AddBookScreen({
   async function takeManualCover() {
     const permission = await ImagePicker.requestCameraPermissionsAsync();
     if (!permission.granted) {
-      Alert.alert('카메라 권한이 필요해요', '기기 설정에서 갈피의 카메라 접근을 허용해주세요.');
+      showAlert('카메라 권한이 필요해요', '기기 설정에서 갈피의 카메라 접근을 허용해주세요.');
       return;
     }
     const result = await ImagePicker.launchCameraAsync({

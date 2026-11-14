@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import {
-  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -9,6 +8,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { showAlert } from '../../lib/alert';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Share2, Trash2, Check } from 'lucide-react-native';
 import { Button } from '../galpi/button';
@@ -55,7 +55,7 @@ export function EditSentenceScreen({
       });
       onBack();
     } catch (err) {
-      Alert.alert(
+      showAlert(
         '갈피 수정에 실패했어요',
         err instanceof Error ? err.message : '잠시 후 다시 시도해주세요.',
       );
@@ -64,7 +64,7 @@ export function EditSentenceScreen({
   }
 
   function handleDelete() {
-    Alert.alert('갈피를 삭제할까요?', '삭제한 갈피는 되돌릴 수 없어요.', [
+    showAlert('갈피를 삭제할까요?', '삭제한 갈피는 되돌릴 수 없어요.', [
       { text: '취소', style: 'cancel' },
       {
         text: '삭제',
@@ -75,7 +75,7 @@ export function EditSentenceScreen({
             await onDelete();
             onBack();
           } catch (err) {
-            Alert.alert(
+            showAlert(
               '갈피 삭제에 실패했어요',
               err instanceof Error ? err.message : '잠시 후 다시 시도해주세요.',
             );

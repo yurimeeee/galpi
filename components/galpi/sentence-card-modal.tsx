@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
-import { Alert, Image, Platform, Pressable, Text, View } from 'react-native';
+import { Image, Platform, Pressable, Text, View } from 'react-native';
+import { showAlert } from '../../lib/alert';
 import { Bookmark, Check, Download, Quote, Share2, X } from 'lucide-react-native';
 import { Button } from './button';
 import { BottomSheet } from './bottom-sheet';
@@ -74,13 +75,13 @@ export function SentenceCardModal({
       const uri = await captureViewAsImage(cardRef);
       await saveImageToDevice(uri, `galpi-quote-${Date.now()}.png`);
       if (Platform.OS !== 'web') {
-        Alert.alert('저장 완료', '갈피 카드 이미지를 사진 보관함에 저장했어요.');
+        showAlert('저장 완료', '갈피 카드 이미지를 사진 보관함에 저장했어요.');
       }
     } catch (err) {
       if (err instanceof MediaPermissionError) {
-        Alert.alert('권한이 필요해요', err.message);
+        showAlert('권한이 필요해요', err.message);
       } else {
-        Alert.alert('저장 실패', '이미지를 저장하는 중 문제가 발생했어요.');
+        showAlert('저장 실패', '이미지를 저장하는 중 문제가 발생했어요.');
       }
     } finally {
       setBusy(null);
@@ -99,9 +100,9 @@ export function SentenceCardModal({
       });
     } catch (err) {
       if (err instanceof ShareUnavailableError) {
-        Alert.alert('공유하기', err.message);
+        showAlert('공유하기', err.message);
       } else {
-        Alert.alert('공유 실패', '카드를 공유하는 중 문제가 발생했어요.');
+        showAlert('공유 실패', '카드를 공유하는 중 문제가 발생했어요.');
       }
     } finally {
       setBusy(null);

@@ -1,7 +1,6 @@
 import { useRef, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -11,6 +10,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { showAlert } from '../../lib/alert';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -67,15 +67,15 @@ export function AddSentenceScreen({
   async function handleSave() {
     if (saving) return;
     if (mode === 'text' && !text.trim()) {
-      Alert.alert('문장을 입력해주세요', '담고 싶은 문장을 적어야 갈피를 남길 수 있어요.');
+      showAlert('문장을 입력해주세요', '담고 싶은 문장을 적어야 갈피를 남길 수 있어요.');
       return;
     }
     if (mode === 'scan' && !scanQuote.trim()) {
-      Alert.alert('담을 문장을 선택해주세요', '인식된 단어 중 담을 부분을 눌러 선택해주세요.');
+      showAlert('담을 문장을 선택해주세요', '인식된 단어 중 담을 부분을 눌러 선택해주세요.');
       return;
     }
     if (mode === 'photo' && !photoUri) {
-      Alert.alert('페이지 사진을 선택해주세요', '사진을 찍거나 앨범에서 골라주세요.');
+      showAlert('페이지 사진을 선택해주세요', '사진을 찍거나 앨범에서 골라주세요.');
       return;
     }
 
@@ -117,7 +117,7 @@ export function AddSentenceScreen({
       }
       onBack();
     } catch (err) {
-      Alert.alert(
+      showAlert(
         '갈피 저장에 실패했어요',
         err instanceof Error ? err.message : '잠시 후 다시 시도해주세요.',
       );
@@ -522,7 +522,7 @@ function PhotoMode({
   async function takePhoto() {
     const permission = await ImagePicker.requestCameraPermissionsAsync();
     if (!permission.granted) {
-      Alert.alert('카메라 권한이 필요해요', '기기 설정에서 갈피의 카메라 접근을 허용해주세요.');
+      showAlert('카메라 권한이 필요해요', '기기 설정에서 갈피의 카메라 접근을 허용해주세요.');
       return;
     }
     const result = await ImagePicker.launchCameraAsync({ quality: 0.8 });
@@ -534,7 +534,7 @@ function PhotoMode({
   async function pickFromLibrary() {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
-      Alert.alert('사진 접근 권한이 필요해요', '기기 설정에서 갈피의 사진 보관함 접근을 허용해주세요.');
+      showAlert('사진 접근 권한이 필요해요', '기기 설정에서 갈피의 사진 보관함 접근을 허용해주세요.');
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({

@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState, type ReactNode } from 'react';
-import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-native';
+import { showAlert } from '../../lib/alert';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BookCheck, Bookmark, CalendarDays, ChevronLeft, ChevronRight, Clock, Download, Flame, Quote, Share2, Sparkles, X } from 'lucide-react-native';
 import { IconButton } from '../galpi/icon-button';
@@ -383,9 +384,9 @@ function SummaryCard({
     try {
       const uri = await captureViewAsImage(cardRef);
       await saveImageToDevice(uri, `galpi-year-review-${year}.png`);
-      Alert.alert('저장 완료', '독서 결산 이미지를 사진 보관함에 저장했어요.');
+      showAlert('저장 완료', '독서 결산 이미지를 사진 보관함에 저장했어요.');
     } catch (err) {
-      Alert.alert(err instanceof MediaPermissionError ? '권한이 필요해요' : '저장 실패', err instanceof Error ? err.message : '이미지를 저장하는 중 문제가 발생했어요.');
+      showAlert(err instanceof MediaPermissionError ? '권한이 필요해요' : '저장 실패', err instanceof Error ? err.message : '이미지를 저장하는 중 문제가 발생했어요.');
     } finally {
       setBusy(null);
     }
@@ -399,9 +400,9 @@ function SummaryCard({
       await shareImage(uri, { filename: `galpi-year-review-${year}.png`, title: `${year}년 독서 결산`, dialogTitle: '독서 결산 공유하기' });
     } catch (err) {
       if (!(err instanceof ShareUnavailableError)) {
-        Alert.alert('공유 실패', '결산을 공유하는 중 문제가 발생했어요.');
+        showAlert('공유 실패', '결산을 공유하는 중 문제가 발생했어요.');
       } else {
-        Alert.alert('공유하기', err.message);
+        showAlert('공유하기', err.message);
       }
     } finally {
       setBusy(null);

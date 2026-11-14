@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { showAlert } from '../../lib/alert';
 import { AlertTriangle, Trash2, X } from 'lucide-react-native';
 import { BottomSheet } from './bottom-sheet';
 import { CheckOption, PasswordField } from './auth-field';
@@ -33,7 +34,7 @@ export function DeleteAccountModal({
   const canSubmit = acknowledged && (!isPassword || password.length > 0) && !submitting;
 
   function confirmAndDelete() {
-    Alert.alert(
+    showAlert(
       '정말 탈퇴할까요?',
       '등록한 모든 책과 갈피, 사진이 영구적으로 삭제되며 되돌릴 수 없어요.',
       [
