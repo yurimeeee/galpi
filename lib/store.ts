@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
+import { createJSONStorage, persist, type StateStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { User } from 'firebase/auth';
 import {
@@ -84,6 +84,46 @@ type AppState = {
   /** The book currently being read — default target for "갈피 남기기". */
   activeReadingBook: () => Book | undefined;
 };
+
+/**
+ * Trailing-debounced writes for the persist cache. Every store update that
+ * touches a partialized field (each Firestore snapshot, the per-minute
+ * readingLog tick, the optimistic set during a drag reorder) otherwise
+ * serializes the whole library to JSON and writes it to AsyncStorage on the
+ * main thread. Bursts collapse into one write per key; reads of a key with
+ * a pending write return the pending value so hydration never sees stale
+ * data. Losing the last <=`delayMs` of writes on a hard kill is acceptable:
+ * this cache only warms the first render, the live subscription is the
+ * source of truth.
+ */
+function debouncedStorage(storage: StateStorage, delayMs: number): StateStorage {
+  const pending = new Map<string, string>();
+  let timer: ReturnType<typeof setTimeout> | null = null;
+
+  function flush() {
+    timer = null;
+    for (const [name, value] of pending) {
+      void storage.setItem(name, value);
+    }
+    pending.clear();
+  }
+
+  return {
+    getItem: (name) => {
+      const queued = pending.get(name);
+      return queued !== undefined ? queued : storage.getItem(name);
+    },
+    setItem: (name, value) => {
+      pending.set(name, value);
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(flush, delayMs);
+    },
+    removeItem: (name) => {
+      pending.delete(name);
+      return storage.removeItem(name);
+    },
+  };
+}
 
 export const useAppStore = create<AppState>()(
   persist(
@@ -232,7 +272,7 @@ export const useAppStore = create<AppState>()(
        * the cache's.
        */
       name: 'galpi-cache',
-      storage: createJSONStorage(() => AsyncStorage),
+      storage: createJSONStorage(() => debouncedStorage(AsyncStorage, 400)),
       partialize: (state) => ({
         books: state.books,
         sentences: state.sentences,
