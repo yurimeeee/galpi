@@ -58,9 +58,9 @@
 
 | ID | 대상 | 파일 | 목표 | 완료 조건 | 의존 | 상태 |
 |---|---|---|---|---|---|---|
-| RS-01 | 웹/태블릿 컨테이너 | `components/layout/web-frame.tsx` | 베젤·고정 높이 제거, §8 컨테이너(480/560), 바깥 `bg-secondary` | 1366×768 노트북에서 잘림 없음, 모바일 웹 변화 없음 | — | 대기 |
-| RS-02 | 웹 문서 메타 | `app/+html.tsx`(신규) | `lang="ko"`, `<title>갈피</title>`, `theme-color` 라이트/다크 | 빌드 `index.html` 확인 | — | 대기 |
-| RS-03 | 그리드 열 수 | `library-screen.tsx` | 컨테이너 폭 기준 3/4/5열 | RS-01 후 폭별 확인 | RS-01, PG-02 | 대기 |
+| RS-01 | 웹/태블릿 컨테이너 | `components/layout/web-frame.tsx` | 베젤·고정 높이 제거, §8 컨테이너(480/560), 바깥 `bg-secondary` | 1366×768 노트북에서 잘림 없음, 모바일 웹 변화 없음 | — | 완료 `37de4bf` (폭 기준 적용, 네이티브 태블릿 동일) |
+| RS-02 | 웹 문서 메타 | `app/+html.tsx`(신규) | `lang="ko"`, `<title>갈피</title>`, `theme-color` 라이트/다크 | 빌드 `index.html` 확인 | — | 완료 `ea1787a` (export index.html 확인) |
+| RS-03 | 그리드 열 수 | `library-screen.tsx` | 컨테이너 폭 기준 3/4/5열 | RS-01 후 폭별 확인 | RS-01, PG-02 | 완료 `16db7c2` |
 
 ## 검증 체크리스트 (각 Phase 종료 시)
 
