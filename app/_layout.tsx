@@ -17,7 +17,7 @@ import { FONTS } from '../lib/fonts';
 import { WebFrame } from '../components/layout/web-frame';
 import { ReadingTimerWidget } from '../components/galpi/reading-timer-widget';
 import { UndoSnackbar } from '../components/galpi/undo-snackbar';
-import { getAnalyticsIfSupported } from '../lib/firebase';
+import { getAnalyticsIfSupported } from '../lib/analytics';
 import { useAuthSync } from '../lib/use-auth-sync';
 import { useOnThisDayReminder } from '../lib/use-on-this-day-reminder';
 import { useStreakRiskReminder } from '../lib/use-streak-risk-reminder';

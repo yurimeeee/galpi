@@ -9,7 +9,6 @@ import { type Auth, getAuth, initializeAuth, GoogleAuthProvider } from 'firebase
 import { getReactNativePersistence } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
-import { type Analytics, isSupported as isAnalyticsSupported } from 'firebase/analytics';
 
 const firebaseConfig = {
   apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
@@ -47,23 +46,5 @@ export const db = getFirestore(app);
 export const storage = getStorage(app);
 export const googleProvider = new GoogleAuthProvider();
 
-/**
- * `firebase/analytics` relies on browser-only APIs (window, IndexedDB) and
- * isn't available on native iOS/Android — only initialize it on web, and
- * only after confirming the runtime actually supports it.
- */
-let analyticsPromise: Promise<Analytics | null> | null = null;
-
-export function getAnalyticsIfSupported(): Promise<Analytics | null> {
-  if (Platform.OS !== 'web') {
-    return Promise.resolve(null);
-  }
-  if (!analyticsPromise) {
-    analyticsPromise = isAnalyticsSupported().then((supported) => {
-      if (!supported) return null;
-      const { getAnalytics } = require('firebase/analytics');
-      return getAnalytics(app);
-    });
-  }
-  return analyticsPromise;
-}
+// Analytics lives in lib/analytics(.web).ts so `firebase/analytics` is only
+// bundled for web.
