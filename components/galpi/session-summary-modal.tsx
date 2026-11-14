@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Text, TextInput, View } from 'react-native';
-import { Clock, Bookmark, BookCheck, Check, X } from 'lucide-react-native';
+import { Clock, Bookmark, BookCheck, Check, X } from '../../lib/icons';
 import { BookCover } from './book-cover';
 import { Button } from './button';
 import { IconButton } from './icon-button';

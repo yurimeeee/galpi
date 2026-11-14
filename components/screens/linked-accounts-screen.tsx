@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { showAlert } from '../../lib/alert';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Link2, Mail } from 'lucide-react-native';
+import { Link2, Mail } from '../../lib/icons';
 import { ScreenHeader } from '../galpi/screen-header';
 import {
   getAuthErrorMessage,

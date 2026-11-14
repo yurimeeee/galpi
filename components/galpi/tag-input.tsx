@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
-import { Plus, Tag as TagIcon, X } from 'lucide-react-native';
+import { Plus, Tag as TagIcon, X } from '../../lib/icons';
 import { useThemeColors } from '../../lib/theme';
 
 const MAX_TAGS = 5;

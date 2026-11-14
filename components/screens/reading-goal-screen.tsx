@@ -14,7 +14,7 @@ import {
   Medal,
   Zap,
   type LucideIcon,
-} from 'lucide-react-native';
+} from '../../lib/icons';
 import { GoalEditModal } from '../galpi/goal-edit-modal';
 import { ScreenHeader } from '../galpi/screen-header';
 import { dateKey } from '../../lib/date-utils';

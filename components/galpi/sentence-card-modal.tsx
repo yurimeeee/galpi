@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { Image, Platform, Pressable, Text, View } from 'react-native';
 import { showAlert } from '../../lib/alert';
-import { Bookmark, Check, Download, Quote, Share2, X } from 'lucide-react-native';
+import { Bookmark, Check, Download, Quote, Share2, X } from '../../lib/icons';
 import { Button } from './button';
 import { BottomSheet } from './bottom-sheet';
 import { captureViewAsImage, MediaPermissionError, saveImageToDevice, shareImage, ShareUnavailableError } from '../../lib/share-image';

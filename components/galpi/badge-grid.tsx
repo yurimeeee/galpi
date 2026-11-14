@@ -1,6 +1,6 @@
 import { Pressable, Text, View } from 'react-native';
 import { showAlert } from '../../lib/alert';
-import { BookCheck, Bookmark, Flame, Lock, type LucideIcon } from 'lucide-react-native';
+import { BookCheck, Bookmark, Flame, Lock, type LucideIcon } from '../../lib/icons';
 import { type Badge, type BadgeCategory, type BadgeProgress } from '../../lib/badges';
 import { useThemeColors } from '../../lib/theme';
 

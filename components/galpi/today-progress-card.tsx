@@ -1,5 +1,5 @@
 import { Pressable, Text, View } from 'react-native';
-import { Flame } from 'lucide-react-native';
+import { Flame } from '../../lib/icons';
 import { useThemeColors } from '../../lib/theme';
 import { useEffectiveScheme } from '../../lib/use-effective-scheme';
 

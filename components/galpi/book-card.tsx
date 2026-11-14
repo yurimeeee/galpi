@@ -1,5 +1,5 @@
 import { View, Text } from 'react-native';
-import { Bookmark, Star } from 'lucide-react-native';
+import { Bookmark, Star } from '../../lib/icons';
 import { type Book, STATUS_LABEL } from '../../lib/data/books';
 import { BookCover } from './book-cover';
 import { useThemeColors } from '../../lib/theme';

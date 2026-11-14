@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { showAlert } from '../../lib/alert';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { CloudDownload, CloudUpload, FileUp, Info } from 'lucide-react-native';
+import { CloudDownload, CloudUpload, FileUp, Info } from '../../lib/icons';
 import { ScreenHeader } from '../galpi/screen-header';
 import { buildBackupPayload, importBackupData, parseBackupPayload } from '../../lib/data-service';
 import { BackupFileUnavailableError, exportBackupFile, pickBackupFileText } from '../../lib/backup-file';

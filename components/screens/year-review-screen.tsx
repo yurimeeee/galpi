@@ -2,7 +2,7 @@ import { useMemo, useRef, useState, type ReactNode } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-native';
 import { showAlert } from '../../lib/alert';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { BookCheck, Bookmark, CalendarDays, ChevronLeft, ChevronRight, Clock, Download, Flame, Quote, Share2, Sparkles, X } from 'lucide-react-native';
+import { BookCheck, Bookmark, CalendarDays, ChevronLeft, ChevronRight, Clock, Download, Flame, Quote, Share2, Sparkles, X } from '../../lib/icons';
 import { IconButton } from '../galpi/icon-button';
 import { captureViewAsImage, saveImageToDevice, shareImage, MediaPermissionError, ShareUnavailableError } from '../../lib/share-image';
 import { BookCover } from '../galpi/book-cover';

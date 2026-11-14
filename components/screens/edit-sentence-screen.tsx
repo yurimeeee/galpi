@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { showAlert } from '../../lib/alert';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Share2, Trash2, Check } from 'lucide-react-native';
+import { Share2, Trash2, Check } from '../../lib/icons';
 import { Button } from '../galpi/button';
 import { IconButton } from '../galpi/icon-button';
 import { ScreenHeader } from '../galpi/screen-header';

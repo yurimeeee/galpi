@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { FlatList, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Bookmark, Tags } from 'lucide-react-native';
+import { Bookmark, Tags } from '../../lib/icons';
 import { ScreenHeader } from '../galpi/screen-header';
 import { type Book } from '../../lib/data/books';
 import { allTags, sentencesByTag, type Sentence, type TagCount } from '../../lib/data/sentences';

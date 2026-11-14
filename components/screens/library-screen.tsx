@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from 'react';
 import { FlatList, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ArrowUpDown, Bookmark, Check, Search, ChevronRight, Star, Tags, List, Grid2x2 } from 'lucide-react-native';
+import { ArrowUpDown, Bookmark, Check, Search, ChevronRight, Star, Tags, List, Grid2x2 } from '../../lib/icons';
 import { useContainerWidth } from '../layout/web-frame';
 import { GalpiHeaderLogo } from '../galpi/galpi-logo';
 import { BookCard } from '../galpi/book-card';

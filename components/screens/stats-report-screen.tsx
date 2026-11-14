@@ -28,7 +28,7 @@ import {
   ArrowUp,
   ArrowDown,
   type LucideIcon,
-} from 'lucide-react-native';
+} from '../../lib/icons';
 import { Skeleton } from '../galpi/skeleton';
 import { BottomSheet } from '../galpi/bottom-sheet';
 import { BookCover } from '../galpi/book-cover';

@@ -16,7 +16,7 @@ import {
   Pencil,
   Quote,
   type LucideIcon,
-} from 'lucide-react-native';
+} from '../../lib/icons';
 import { BookCover } from '../galpi/book-cover';
 import { IconButton } from '../galpi/icon-button';
 import { Skeleton } from '../galpi/skeleton';

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
-import { Clock, BookOpen, Target, X, type LucideIcon } from 'lucide-react-native';
+import { Clock, BookOpen, Target, X, type LucideIcon } from '../../lib/icons';
 import { BottomSheet } from './bottom-sheet';
 import { type ReadingGoals } from '../../lib/data-service';
 import { useThemeColors, ACCENT_BG_CLASS, type Accent } from '../../lib/theme';

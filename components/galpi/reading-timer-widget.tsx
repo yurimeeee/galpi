@@ -8,7 +8,7 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-import { BookOpen, Coffee } from 'lucide-react-native';
+import { BookOpen, Coffee } from '../../lib/icons';
 import { useReadingTimerStore, timerSecondsLeft } from '../../lib/reading-timer-store';
 import { useNow } from '../../lib/hooks/use-now';
 import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';

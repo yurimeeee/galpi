@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-native';
-import { X } from 'lucide-react-native';
+import { X } from '../../lib/icons';
 import { BottomSheet } from './bottom-sheet';
 import { useThemeColors } from '../../lib/theme';
 

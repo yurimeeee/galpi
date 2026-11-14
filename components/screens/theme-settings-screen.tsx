@@ -1,6 +1,6 @@
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Check, Smartphone, Sun, Moon, type LucideIcon } from 'lucide-react-native';
+import { Check, Smartphone, Sun, Moon, type LucideIcon } from '../../lib/icons';
 import { ScreenHeader } from '../galpi/screen-header';
 import { useThemeColors } from '../../lib/theme';
 import { useThemeStore, type ThemeMode } from '../../lib/theme-store';

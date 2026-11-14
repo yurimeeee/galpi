@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Flame, Info, X } from 'lucide-react-native';
+import { Flame, Info, X } from '../../lib/icons';
 import { ScreenHeader } from '../galpi/screen-header';
 import { TimePickerField } from '../galpi/time-picker-field';
 import { useReadingReminder } from '../../lib/use-reading-reminder';

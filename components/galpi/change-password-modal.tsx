@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { showAlert } from '../../lib/alert';
-import { Info, Lock, X } from 'lucide-react-native';
+import { Info, Lock, X } from '../../lib/icons';
 import { BottomSheet } from './bottom-sheet';
 import { PasswordField } from './auth-field';
 import { changeUserPassword, getAuthErrorMessage, isPasswordAccount } from '../../lib/auth';

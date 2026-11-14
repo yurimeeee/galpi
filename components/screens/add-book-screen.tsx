@@ -26,7 +26,7 @@ import {
   PenLine,
   RotateCcw,
   type LucideIcon,
-} from 'lucide-react-native';
+} from '../../lib/icons';
 import { Button } from '../galpi/button';
 import { ScreenHeader } from '../galpi/screen-header';
 import { searchAladinBooks, type AladinBookResult } from '../../lib/aladin-books';

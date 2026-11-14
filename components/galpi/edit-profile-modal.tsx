@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { ActivityIndicator, Image, Pressable, Text, TextInput, View } from 'react-native';
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
-import { UserRound, Image as ImageIcon, X } from 'lucide-react-native';
+import { UserRound, Image as ImageIcon, X } from '../../lib/icons';
 import { BottomSheet } from './bottom-sheet';
 import { updateUserProfile } from '../../lib/auth';
 import { updateUserDoc, uploadProfilePhoto } from '../../lib/data-service';

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { TextInput, View } from 'react-native';
-import { Clock } from 'lucide-react-native';
+import { Clock } from '../../lib/icons';
 import { useThemeColors } from '../../lib/theme';
 
 const TIME_RE = /^([01]\d|2[0-3]):([0-5]\d)$/;

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import { Library, Plus, BarChart3, UserRound, type LucideIcon } from 'lucide-react-native';
+import { Library, Plus, BarChart3, UserRound, type LucideIcon } from '../../lib/icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SHADOW, useThemeColors } from '../../lib/theme';
 

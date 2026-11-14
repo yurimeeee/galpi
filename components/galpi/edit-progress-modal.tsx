@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { runOnJS } from 'react-native-reanimated';
-import { X } from 'lucide-react-native';
+import { X } from '../../lib/icons';
 import { BottomSheet } from './bottom-sheet';
 import type { Book } from '../../lib/data/books';
 import { useThemeColors } from '../../lib/theme';

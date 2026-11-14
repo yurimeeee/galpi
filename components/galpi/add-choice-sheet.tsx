@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { FlatList, Pressable, Text, View } from 'react-native';
-import { Bookmark, ChevronLeft, Plus, Timer, X } from 'lucide-react-native';
+import { Bookmark, ChevronLeft, Plus, Timer, X } from '../../lib/icons';
 import { BottomSheet } from './bottom-sheet';
 import { type Book } from '../../lib/data/books';
 import { BookCover } from './book-cover';

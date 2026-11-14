@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Image, Text, View, type StyleProp, type ViewStyle } from 'react-native';
-import { Bookmark } from 'lucide-react-native';
+import { Bookmark } from '../../lib/icons';
 import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
 import { ACCENT_BG_CLASS, useThemeColors, type Accent } from '../../lib/theme';
 

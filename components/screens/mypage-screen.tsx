@@ -17,7 +17,7 @@ import {
   Award,
   Moon,
   type LucideIcon,
-} from 'lucide-react-native';
+} from '../../lib/icons';
 import { IconButton } from '../galpi/icon-button';
 import { Skeleton } from '../galpi/skeleton';
 import { EditProfileModal } from '../galpi/edit-profile-modal';

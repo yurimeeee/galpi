@@ -1,6 +1,6 @@
 import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Megaphone } from 'lucide-react-native';
+import { Megaphone } from '../../lib/icons';
 import { ScreenHeader } from '../galpi/screen-header';
 import { useThemeColors } from '../../lib/theme';
 import { NOTICES } from '../../lib/notices';

@@ -1,5 +1,5 @@
 import { ActivityIndicator, Pressable, type StyleProp, type ViewStyle } from 'react-native';
-import type { LucideIcon } from 'lucide-react-native';
+import type { LucideIcon } from '../../lib/icons';
 import { useThemeColors } from '../../lib/theme';
 
 type Variant = 'surface' | 'primary' | 'ghost';

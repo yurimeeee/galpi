@@ -24,7 +24,7 @@ import {
   RotateCcw,
   Images,
   type LucideIcon,
-} from 'lucide-react-native';
+} from '../../lib/icons';
 import type { EntryType, Sentence } from '../../lib/data/sentences';
 import { useThemeColors } from '../../lib/theme';
 import { scanBookText } from '../../lib/ocr';

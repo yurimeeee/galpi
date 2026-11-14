@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { showAlert } from '../../lib/alert';
-import { AlertTriangle, Trash2, X } from 'lucide-react-native';
+import { AlertTriangle, Trash2, X } from '../../lib/icons';
 import { BottomSheet } from './bottom-sheet';
 import { CheckOption, PasswordField } from './auth-field';
 import {

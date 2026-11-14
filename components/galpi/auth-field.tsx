@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
-import { Eye, EyeOff } from 'lucide-react-native';
+import { Eye, EyeOff } from '../../lib/icons';
 import Svg, { Path } from 'react-native-svg';
 import { useThemeColors } from '../../lib/theme';
 

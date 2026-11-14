@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ScanLine, CalendarHeart, BarChart3, ArrowRight } from 'lucide-react-native';
+import { ScanLine, CalendarHeart, BarChart3, ArrowRight } from '../../lib/icons';
 import { Button } from '../galpi/button';
 import { GalpiHeaderLogo } from '../galpi/galpi-logo';
 import { useThemeColors } from '../../lib/theme';

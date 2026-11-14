@@ -9,7 +9,7 @@ import {
   BookOpen,
   Coffee,
   X,
-} from 'lucide-react-native';
+} from '../../lib/icons';
 import { BookCover } from '../galpi/book-cover';
 import { BottomSheet } from '../galpi/bottom-sheet';
 import { Chip } from '../galpi/chip';

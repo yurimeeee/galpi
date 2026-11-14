@@ -7,7 +7,7 @@ import Animated, {
   withTiming,
   type SharedValue,
 } from 'react-native-reanimated';
-import { GripVertical } from 'lucide-react-native';
+import { GripVertical } from '../../lib/icons';
 import { type Book } from '../../lib/data/books';
 import { BookCover } from './book-cover';
 import { useThemeColors } from '../../lib/theme';

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Platform, Pressable, Text, View } from 'react-native';
 import DateTimePicker, { type DateTimePickerEvent } from '@react-native-community/datetimepicker';
-import { Clock } from 'lucide-react-native';
+import { Clock } from '../../lib/icons';
 import { useThemeColors } from '../../lib/theme';
 
 function toDate(time: string): Date {
