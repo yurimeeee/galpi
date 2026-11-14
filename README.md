@@ -6,7 +6,7 @@
 
 - 책 문장 기록 및 편집, 즐겨찾기, 컬렉션 관리
 - 카메라 OCR로 문장 스캔해서 바로 등록
-- 알라딘 API 연동 책 검색/조회
+- 예스24 Open API 연동 책 검색
 - 독서 타이머, 독서 목표, 뱃지 등 독서 습관 트래킹
 - 통계 리포트(요일/시간대, 장르별 독서 패턴)
 - Firebase 기반 계정(이메일/소셜 로그인 연동) 및 데이터 백업
@@ -37,7 +37,7 @@
 app/            Expo Router 화면 라우트
 components/     화면(screens), 레이아웃, 공용(galpi) 컴포넌트
 lib/            훅, 데이터 레이어
-api/            Vercel 서버리스 함수 (알라딘 검색/조회, OCR)
+api/            Vercel 서버리스 함수 (예스24 책 검색, OCR)
 assets/         아이콘, 폰트 등 정적 리소스
 ```
 
@@ -62,9 +62,10 @@ EXPO_PUBLIC_FIREBASE_APP_ID=
 EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID=
 EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID=
 
-# 알라딘 도서 API
-ALADIN_TTB_KEY=
-EXPO_PUBLIC_ALADIN_API_BASE=
+# 예스24 Open API (서버 전용 키 — https://apis.yes24.com 에서 발급)
+YES24_API_KEY=
+# 선택: expo start --web 로 UI만 띄울 때 별도 실행한 `vercel dev` 주소 (예: http://localhost:3000)
+EXPO_PUBLIC_BOOK_API_BASE=
 ```
 
 ### 실행

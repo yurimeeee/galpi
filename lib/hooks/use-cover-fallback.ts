@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 /**
- * Cover thumbnails (Aladin search results, uploaded covers) sometimes fail
+ * Cover thumbnails (YES24 search results, uploaded covers) sometimes fail
  * to load — expired links, network hiccups, broken images. Rendering used
  * to key off `coverUrl` truthiness alone, so a failed load left a blank gap
  * instead of falling back to the accent-color placeholder. This tracks load

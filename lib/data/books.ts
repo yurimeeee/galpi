@@ -11,13 +11,13 @@ export type Book = {
   progress: number;
   accent: 'blue' | 'green' | 'yellow' | 'ink';
   quote?: string;
-  /** Cover thumbnail URL, e.g. from Aladin book search. */
+  /** Cover thumbnail URL, e.g. from YES24 book search. */
   coverUrl?: string;
   /** Date the book was marked "done", as "YYYY.MM.DD". Set/cleared by updateBookDoc when status changes. */
   completedAt?: string;
-  /** Total page count, from Aladin's ItemLookUp when the book was added. */
+  /** Total page count, entered by the user (older books carry the value Aladin's lookup returned before that API shut down). */
   totalPages?: number;
-  /** Category path from Aladin, e.g. "국내도서>소설/시/희곡>한국소설". */
+  /** Category path with ">" separators, e.g. "국내도서>소설/시/희곡". YES24 results are normalized to this shape by api/yes24-book-search.ts. */
   genre?: string;
   /** Furthest page a saved 갈피 references — drives `progress` alongside totalPages. */
   furthestPage?: number;

@@ -87,7 +87,7 @@ function maxIndex(counts: number[]): number {
   return idx;
 }
 
-/** Aladin genres arrive as a full category path ("국내도서>소설/시/희곡>한국소설"); manually-entered ones are already just the leaf label — both cases collapse to the same last-segment value. */
+/** Searched books carry a full category path ("국내도서>소설/시/희곡>한국소설"); manually-entered ones are already just the leaf label — both cases collapse to the same last-segment value. */
 function bookGenreLabel(book: Book | undefined): string | undefined {
   return book?.genre?.split('>').pop()?.trim();
 }

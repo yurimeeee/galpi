@@ -46,10 +46,10 @@
 | rating | number 0~5 | 별점. 같은 별을 다시 누르면 0 |
 | galpiCount | number | 이 책에 저장된 갈피 수 (갈피 추가/삭제 시 자동 증감) |
 | progress | number 0~100 | 진행률. `furthestPage / totalPages`로 자동 계산 |
-| totalPages | number? | 총 페이지. 알라딘 조회 또는 직접 입력 |
+| totalPages | number? | 총 페이지. 사용자 직접 입력 (예스24 API는 페이지 수를 제공하지 않음) |
 | furthestPage | number? | 갈피가 참조한 가장 큰 페이지 번호 (갈피 저장 시 자동 갱신) |
-| coverUrl | string? | 표지 URL (알라딘 썸네일 또는 사용자 업로드) |
-| genre | string? | 알라딘 카테고리 경로, 예: `국내도서>소설/시/희곡>한국소설` |
+| coverUrl | string? | 표지 URL (예스24 표지 `https://image.yes24.com/goods/{itemId}/L` 또는 사용자 업로드) |
+| genre | string? | 카테고리 경로(`>` 구분), 예: `국내도서>소설/시/희곡`. 예스24 `goodsSortNm`의 `-`를 `>`로 정규화 |
 | accent | `'blue' \| 'green' \| 'yellow' \| 'ink'` | 책등(spine) 색. 등록 순서대로 4색 순환 자동 배정 |
 | completedAt | string? `"YYYY.MM.DD"` | 상태가 `done`이 된 날짜. 다른 상태로 바꾸면 삭제 |
 | review | string? | 완독 후 짧은 총평 |
@@ -138,18 +138,19 @@
 
 ## 4. 외부 연동 (서버 함수)
 
-클라이언트에 비밀키를 두지 않기 위해 서버리스 함수 3개를 둔다.
+클라이언트에 비밀키를 두지 않기 위해 서버리스 함수 2개를 둔다.
 
 | 엔드포인트 | 메서드 | 입력 | 출력 | 비고 |
 |---|---|---|---|---|
-| `/api/aladin-book-search` | GET | `query` | `{ books: [{ itemId, title, author, publisher, thumbnail, isbn, contents, genre }] }` | 알라딘 ItemSearch, 키워드, 최대 20건, 큰 표지. 응답 끝의 `;` 제거 후 파싱 |
-| `/api/aladin-book-lookup` | GET | `itemId` | `{ totalPages: number \| null }` | 알라딘 ItemLookUp의 `subInfo.itemPage`. 검색 결과를 **실제로 추가할 때만** 호출 |
+| `/api/yes24-book-search` | GET | `query` | `{ books: [{ itemId, title, author, publisher, thumbnail, isbn, contents, genre }] }` | 예스24 `GET https://apis.yes24.com/v1/goods/itemList?query=&page=1&pageSize=20&category=BOOK`, 헤더 `X-Api-Key`. `goodsType === '도서'`만 남기고, `goodsSortNm`의 `-` 구분자를 `>`로 바꿔 `genre`로 전달(기존 데이터와 동일 형식). `contents`는 `contentDetail.bookIntroduction`. 응답은 `{ success, message, errorCode, data: { items, totalCount } }` |
+
+예스24 API는 총 페이지 수를 제공하지 않는다(itemDetail·content·author 모두 없음). 검색으로 추가한 책의 `totalPages`는 비어 있고, 책 상세의 진행도 편집에서 사용자가 직접 입력한다. (알라딘 Open API 종료 전에는 `ItemLookUp`으로 자동 채웠다.)
 | `/api/ocr` | POST | `{ image: "data:image/..." }` | `{ sentence: string, tokens: string[] }` | 멀티모달 LLM에 책 페이지 사진을 보내 밑줄/하이라이트 또는 가장 두드러진 문단을 그대로 추출. 따옴표·설명 없이 문장만. 못 읽으면 빈 문자열. 30초 제한 |
 
 OCR 시스템 프롬프트(원문):
 > 너는 책 페이지 사진에서 문장을 읽어내는 OCR 도우미야. 사용자가 보내는 사진은 종이책의 한 페이지를 촬영한 것이고, 사진 중앙의 밑줄/하이라이트 영역이나 가장 두드러지는 한 문단의 문장을 최대한 정확하게 그대로 옮겨 적어. 따옴표, 설명, 페이지 번호, 서론 문구 없이 인식된 문장만 출력해. 문장을 전혀 읽을 수 없으면 빈 문자열만 출력해.
 
-필요 환경 변수: Firebase 클라이언트 설정 7종, Google OAuth 웹 클라이언트 ID, `ALADIN_TTB_KEY`(서버 전용), LLM 게이트웨이 키(서버 전용).
+필요 환경 변수: Firebase 클라이언트 설정 7종, Google OAuth 웹 클라이언트 ID, `YES24_API_KEY`(서버 전용), LLM 게이트웨이 키(서버 전용).
 
 ---
 

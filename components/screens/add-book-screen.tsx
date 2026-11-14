@@ -29,7 +29,7 @@ import {
 } from '../../lib/icons';
 import { Button } from '../galpi/button';
 import { ScreenHeader } from '../galpi/screen-header';
-import { searchAladinBooks, type AladinBookResult } from '../../lib/aladin-books';
+import { searchBooks, type BookSearchResult } from '../../lib/book-search';
 import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
 import { useThemeColors } from '../../lib/theme';
 
@@ -69,7 +69,7 @@ export function AddBookScreen({
   onUploadCover,
 }: {
   onBack: () => void;
-  onAdd: (result: AladinBookResult) => Promise<void>;
+  onAdd: (result: BookSearchResult) => Promise<void>;
   onAddManual: (input: ManualBookInput) => Promise<void>;
   onUploadCover: (dataUrl: string) => Promise<string>;
 }) {
@@ -77,7 +77,7 @@ export function AddBookScreen({
 
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState<Status>('idle');
-  const [results, setResults] = useState<AladinBookResult[]>([]);
+  const [results, setResults] = useState<BookSearchResult[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [addingIsbn, setAddingIsbn] = useState<string | null>(null);
   const [addError, setAddError] = useState('');
@@ -99,7 +99,7 @@ export function AddBookScreen({
     setErrorMessage('');
     setAddError('');
     try {
-      const books = await searchAladinBooks(q);
+      const books = await searchBooks(q);
       setResults(books);
       setStatus('success');
     } catch (err) {
@@ -108,7 +108,7 @@ export function AddBookScreen({
     }
   }
 
-  async function handleAdd(result: AladinBookResult) {
+  async function handleAdd(result: BookSearchResult) {
     if (addingIsbn) return;
     setAddError('');
     setAddingIsbn(result.isbn || result.title);
@@ -419,7 +419,7 @@ function ResultRow({
   adding,
   onAdd,
 }: {
-  result: AladinBookResult;
+  result: BookSearchResult;
   adding: boolean;
   onAdd: () => void;
 }) {

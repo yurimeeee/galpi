@@ -19,7 +19,7 @@ import { ACCENT_BG_CLASS, useThemeColors } from '../../lib/theme';
 
 type ViewMode = 'list' | 'card';
 
-/** Aladin genres arrive as a full category path ("국내도서>소설/시/희곡>한국소설"); manually-entered ones are already just the leaf label — both cases collapse to the same last-segment value. */
+/** Searched books carry a full category path ("국내도서>소설/시/희곡>한국소설"); manually-entered ones are already just the leaf label — both cases collapse to the same last-segment value. */
 function bookGenreLabel(book: Book): string | undefined {
   return book.genre?.split('>').pop()?.trim();
 }
