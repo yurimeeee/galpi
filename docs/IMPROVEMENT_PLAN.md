@@ -239,6 +239,14 @@
 | P2-11 컨테이너 | 완료 | `37de4bf`, `16db7c2` | 디자인 Phase E(RS-01/03)에서 처리 |
 | P2-12 HTML 메타 | 완료 | `ea1787a` | 디자인 Phase E(RS-02)에서 처리 |
 | P1-8/9/10 | 완료 | 디자인 Phase A~C | `DESIGN_TASKS.md` DS/CP/GX 참조 |
-| P1-4·5·6·7, P2-13·14·15 | 대기 | — | 별도 승인 후 |
+| P1-4 리렌더 | 완료 | `5608f97` | `AddChoiceSheet`가 `books`를 직접 구독, `tabBar` 렌더 함수 `useCallback`, `[id].tsx`의 `sentencesByBook` `useMemo` |
+| P1-5 스트릭 메모 | 완료 | `2a369d9` | `useReadingGoals` 파생값 전부 `useMemo`, `saveGoals` `useCallback`, 반환 객체 메모 |
+| P1-6 persist 디바운스 | 완료 | `d3ccf9b` | `lib/store.ts` `debouncedStorage(AsyncStorage, 400)` — 트레일링 디바운스, 대기 중 키는 `getItem`에서 대기값 반환 |
+| P2-13 analytics | 완료 | `8f97ccf` | 계획서의 "require로 이동"은 Metro가 정적 분석하므로 효과 없음 → `lib/analytics.web.ts` / `lib/analytics.ts` 플랫폼 분리로 처리 |
+| P1-7, P2-14·15 | 대기 | — | 별도 승인 후 |
+
+### 외부 사유 변경 (2026-11-14)
+
+알라딘 Open API 종료로 책 검색을 예스24 Open API로 교체(`3cffe42`). `api/yes24-book-search.ts` + `lib/book-search.ts`, 환경변수 `YES24_API_KEY`(서버) / `EXPO_PUBLIC_BOOK_API_BASE`(선택). 예스24는 페이지 수를 제공하지 않아 `aladin-book-lookup` 상당 기능은 제거, `totalPages`는 사용자 입력.
 
 P0-3 후속 후보: `expo-camera`(OCR 화면 전용)를 `add-sentence-screen`에서 지연 로드하면 엔트리를 추가로 줄일 수 있음 — 컴포넌트 구조 변경이 필요해 별도 작업.
