@@ -1,7 +1,8 @@
 import { useMemo, useRef, useState } from 'react';
-import { FlatList, Pressable, ScrollView, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import { FlatList, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowUpDown, Bookmark, Check, Search, ChevronRight, Star, Tags, List, Grid2x2 } from 'lucide-react-native';
+import { useContainerWidth } from '../layout/web-frame';
 import { GalpiHeaderLogo } from '../galpi/galpi-logo';
 import { BookCard } from '../galpi/book-card';
 import { BookCover } from '../galpi/book-cover';
@@ -66,7 +67,7 @@ export function MainLibraryScreen({
   const [reorderMode, setReorderMode] = useState(false);
   const listRef = useRef<FlatList<SearchRow>>(null);
   const colors = useThemeColors();
-  const { width } = useWindowDimensions();
+  const containerWidth = useContainerWidth();
 
   const genreOptions = useMemo(() => {
     const set = new Set<string>();
@@ -156,9 +157,11 @@ export function MainLibraryScreen({
 
   const featured = books.find((b) => b.status === 'reading') ?? books[0];
   const totalGalpi = books.reduce((sum, b) => sum + b.galpiCount, 0);
-  // Keeps every tile at least ~88px wide: three columns on narrow phones,
-  // four otherwise (wider containers are handled in RS-03).
-  const gridColumns = width < 360 ? 3 : 4;
+  // DESIGN_SYSTEM §8: columns follow the content column (not the window) so
+  // every tile stays ≥ ~88px wide — 3 on narrow phones, 4 on most phones,
+  // 5 once the WebFrame column widens on tablets/desktop.
+  const gridColumns = containerWidth < 420 ? 3 : containerWidth < 560 ? 4 : 5;
+  const tileWidthClass = gridColumns === 3 ? 'w-1/3' : gridColumns === 4 ? 'w-1/4' : 'w-1/5';
 
   const visible = useMemo(() => (filter === 'all' ? books : books.filter((b) => b.status === filter)), [books, filter]);
 
@@ -191,10 +194,6 @@ export function MainLibraryScreen({
       <FlatList
         key={searchOpen ? 'search' : `${viewMode}-${gridColumns}`}
         ref={listRef}
-        // Caps the grid to a sane card size on wide/tablet native screens —
-        // on web the phone-shaped WebFrame already does this, but native has
-        // no such ceiling, so 4 columns could stretch huge on an iPad.
-        style={!searchOpen && viewMode === 'card' ? { maxWidth: 480, width: '100%', alignSelf: 'center' } : undefined}
         data={searchOpen ? searchRows : visible.map((book): SearchRow => ({ kind: 'book', book }))}
         keyExtractor={(row) => (row.kind === 'header' ? row.key : row.kind === 'book' ? `book-${row.book.id}` : `sentence-${row.sentence.id}`)}
         numColumns={!searchOpen && viewMode === 'card' ? gridColumns : 1}
@@ -213,7 +212,7 @@ export function MainLibraryScreen({
                   onPress={() => onOpenBook(row.book)}
                   accessibilityRole="button"
                   accessibilityLabel={row.book.title}
-                  className={`web:cursor-pointer px-1.5 pb-4 ${gridColumns === 3 ? 'w-1/3' : 'w-1/4'}`}
+                  className={`web:cursor-pointer px-1.5 pb-4 ${tileWidthClass}`}
                   style={({ pressed }) => pressed && { transform: [{ scale: 0.97 }] }}
                 >
                   <BookCoverTile book={row.book} />
