@@ -226,3 +226,19 @@
 7. P2-11 / P2-14 / P2-15 → 별도 승인 후
 
 각 단계는 독립 커밋으로 분리한다.
+
+---
+
+## 진행 상태 (2026-11-14)
+
+| 항목 | 상태 | 커밋 | 결과 |
+|---|---|---|---|
+| P0-1 폰트 | 완료 | `9a98cd2` | 네이티브 9→5 웨이트(`lib/fonts.ts`), 웹은 Google Fonts woff2(`lib/fonts.web.ts` + `app/+html.tsx`), 첫 렌더 게이팅 해제. 웹 export `assets/` 53MB → 84KB |
+| P0-2 Alert 래퍼 | 완료 | `9814e61` | `lib/alert.ts`의 `showAlert`로 14개 파일 교체. 웹 `window.alert`/`window.confirm` 매핑 |
+| P0-3 번들 | 완료 | `6a4fece`, `c2c4886` | `EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH=1`은 효과 0 (5.89MB 동일). `lib/icons.ts` 개별 경로 re-export로 5.89→4.09MB. `share-image.web.ts` 분리로 html2canvas 청크 분할(46KB gzip) → 엔트리 3.87MB raw / 913KB gzip (시작 1.14MB gzip 대비 −20%) |
+| P2-11 컨테이너 | 완료 | `37de4bf`, `16db7c2` | 디자인 Phase E(RS-01/03)에서 처리 |
+| P2-12 HTML 메타 | 완료 | `ea1787a` | 디자인 Phase E(RS-02)에서 처리 |
+| P1-8/9/10 | 완료 | 디자인 Phase A~C | `DESIGN_TASKS.md` DS/CP/GX 참조 |
+| P1-4·5·6·7, P2-13·14·15 | 대기 | — | 별도 승인 후 |
+
+P0-3 후속 후보: `expo-camera`(OCR 화면 전용)를 `add-sentence-screen`에서 지연 로드하면 엔트리를 추가로 줄일 수 있음 — 컴포넌트 구조 변경이 필요해 별도 작업.
