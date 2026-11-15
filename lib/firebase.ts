@@ -13,7 +13,7 @@ import {
   getFirestore,
   initializeFirestore,
   persistentLocalCache,
-  persistentMultipleTabManager,
+  persistentSingleTabManager,
   terminate,
 } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
@@ -52,10 +52,16 @@ function createAuth(): Auth {
 /**
  * Web keeps Firestore's cache in IndexedDB so a reload resumes the books /
  * sentences listeners from cached documents and only reads what changed,
- * instead of re-reading the whole library. The multi-tab manager lets two
- * open tabs share that cache. Native stays on the default memory cache — the
- * JS SDK's persistent cache needs IndexedDB. initializeFirestore() throws if
- * called twice (Fast Refresh), so fall back like createAuth() does.
+ * instead of re-reading the whole library. Native stays on the default
+ * memory cache — the JS SDK's persistent cache needs IndexedDB.
+ *
+ * Single-tab on purpose: with the multi-tab manager only the primary tab
+ * talks to the backend, using *its* auth state for every tab's listeners,
+ * so a tab still signed out (e.g. left on /login) made a freshly signed-in
+ * tab's listeners fail with permission-denied. With one tab owning the
+ * cache, any other tab falls back to the memory cache and its own auth.
+ * initializeFirestore() throws if called twice (Fast Refresh), so fall back
+ * like createAuth() does.
  */
 function createDb(): Firestore {
   if (Platform.OS !== 'web') {
@@ -63,7 +69,7 @@ function createDb(): Firestore {
   }
   try {
     return initializeFirestore(app, {
-      localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
+      localCache: persistentLocalCache({ tabManager: persistentSingleTabManager(undefined) }),
     });
   } catch {
     return getFirestore(app);
@@ -79,9 +85,9 @@ export const googleProvider = new GoogleAuthProvider();
  * Web only: wipes the signed-out user's documents from the IndexedDB cache
  * so the next person on this browser can't read them from disk. Clearing
  * requires a terminated instance, and `db` can't be revived afterwards, so
- * this ends with a full page load of /login. If another tab still holds the
- * cache, clearing fails with `failed-precondition`; the reload still happens
- * and the cache is cleared on a later sign-out.
+ * this ends with a full page load of /login. If another tab owns the cache,
+ * clearing fails with `failed-precondition`; the reload still happens and
+ * the cache is cleared on a later sign-out from the owning tab.
  */
 export async function clearWebFirestoreCache(): Promise<void> {
   if (Platform.OS !== 'web') return;
