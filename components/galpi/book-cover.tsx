@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import { Image, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import { RemoteImage } from './remote-image';
 import { Bookmark } from '../../lib/icons';
 import { useCoverFallback } from '../../lib/hooks/use-cover-fallback';
 import { ACCENT_BG_CLASS, useThemeColors, type Accent } from '../../lib/theme';
@@ -57,10 +58,10 @@ export function BookCover({
       style={style}
     >
       {showCover ? (
-        <Image
+        <RemoteImage
           source={{ uri: coverUrl }}
           className="absolute inset-0 h-full w-full"
-          resizeMode="cover"
+          contentFit="cover"
           onError={onCoverError}
           accessibilityLabel={`${title} 표지`}
         />

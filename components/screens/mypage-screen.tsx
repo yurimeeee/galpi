@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Image, Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
+import { RemoteImage } from '../galpi/remote-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Constants from 'expo-constants';
 import {
@@ -100,7 +101,7 @@ export function MyPageScreen({
             <View className="flex-row items-center gap-4">
               <View className="h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-galpi-paper">
                 {photoURL ? (
-                  <Image source={{ uri: photoURL }} className="h-16 w-16" />
+                  <RemoteImage source={{ uri: photoURL }} className="h-16 w-16" />
                 ) : (
                   <UserRound size={32} color={colors.galpiInk} strokeWidth={1.6} />
                 )}

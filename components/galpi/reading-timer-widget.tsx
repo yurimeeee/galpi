@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Image, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
+import { RemoteImage } from './remote-image';
 import { usePathname, useRouter } from 'expo-router';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -130,10 +131,10 @@ export function ReadingTimerWidget() {
             >
               {showCover ? (
                 <>
-                  <Image
+                  <RemoteImage
                     source={{ uri: book!.coverUrl }}
                     className="absolute inset-0 h-full w-full"
-                    resizeMode="cover"
+                    contentFit="cover"
                     onError={onCoverError}
                   />
                   <View className="absolute inset-0 bg-galpi-ink/55" />

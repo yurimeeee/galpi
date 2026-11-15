@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
-import { FlatList, Image, Pressable, Text, View } from 'react-native';
+import { FlatList, Pressable, Text, View } from 'react-native';
+import { RemoteImage } from '../galpi/remote-image';
 import { showAlert } from '../../lib/alert';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
@@ -177,10 +178,10 @@ export function BookDetailScreen({
               {item.type === 'photo' ? (
                 item.photoUrl ? (
                   <View className="mt-3 ml-2 h-40 overflow-hidden rounded-xl bg-secondary">
-                    <Image
+                    <RemoteImage
                       source={{ uri: item.photoUrl }}
                       className="h-full w-full"
-                      resizeMode="cover"
+                      contentFit="cover"
                       accessibilityLabel="촬영한 페이지 미리보기"
                     />
                   </View>

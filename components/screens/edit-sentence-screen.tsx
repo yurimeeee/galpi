@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import {
-  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -8,6 +7,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { RemoteImage } from '../galpi/remote-image';
 import { showAlert } from '../../lib/alert';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Share2, Trash2, Check } from '../../lib/icons';
@@ -117,10 +117,10 @@ export function EditSentenceScreen({
             {sentence.type === 'photo' && sentence.photoUrl ? (
               <Field label="페이지 사진">
                 <View className="h-40 w-full overflow-hidden rounded-xl bg-secondary">
-                  <Image
+                  <RemoteImage
                     source={{ uri: sentence.photoUrl }}
                     className="h-full w-full"
-                    resizeMode="cover"
+                    contentFit="cover"
                     accessibilityLabel="촬영한 페이지 미리보기"
                   />
                 </View>

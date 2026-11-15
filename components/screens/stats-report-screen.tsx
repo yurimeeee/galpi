@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Image, Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
+import { RemoteImage } from '../galpi/remote-image';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -449,10 +450,10 @@ function CalendarCoverCell({ day, book, read }: { day: number; book: Book | unde
       >
         {read ? (
           showCover ? (
-            <Image
+            <RemoteImage
               source={{ uri: book?.coverUrl }}
               className="absolute inset-0 h-full w-full"
-              resizeMode="cover"
+              contentFit="cover"
               onError={onCoverError}
             />
           ) : (

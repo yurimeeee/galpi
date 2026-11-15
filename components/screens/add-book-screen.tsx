@@ -12,6 +12,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { RemoteImage } from '../galpi/remote-image';
 import { showAlert } from '../../lib/alert';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -429,10 +430,10 @@ function ResultRow({
   return (
     <View className="flex-row items-center gap-3 rounded-xl border border-border bg-card p-3">
       {showCover ? (
-        <Image
+        <RemoteImage
           source={{ uri: result.thumbnail }}
           className="h-16 w-11 rounded-md bg-secondary"
-          resizeMode="cover"
+          contentFit="cover"
           onError={onCoverError}
         />
       ) : (
