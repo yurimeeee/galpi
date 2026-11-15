@@ -7,7 +7,15 @@ import { type Auth, getAuth, initializeAuth, GoogleAuthProvider } from 'firebase
 // the web build, so tsc can't see it here — hence the standalone import.
 // @ts-expect-error — see comment above.
 import { getReactNativePersistence } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import {
+  type Firestore,
+  clearIndexedDbPersistence,
+  getFirestore,
+  initializeFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
+  terminate,
+} from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
@@ -41,10 +49,50 @@ function createAuth(): Auth {
   }
 }
 
+/**
+ * Web keeps Firestore's cache in IndexedDB so a reload resumes the books /
+ * sentences listeners from cached documents and only reads what changed,
+ * instead of re-reading the whole library. The multi-tab manager lets two
+ * open tabs share that cache. Native stays on the default memory cache — the
+ * JS SDK's persistent cache needs IndexedDB. initializeFirestore() throws if
+ * called twice (Fast Refresh), so fall back like createAuth() does.
+ */
+function createDb(): Firestore {
+  if (Platform.OS !== 'web') {
+    return getFirestore(app);
+  }
+  try {
+    return initializeFirestore(app, {
+      localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
+    });
+  } catch {
+    return getFirestore(app);
+  }
+}
+
 export const auth = createAuth();
-export const db = getFirestore(app);
+export const db = createDb();
 export const storage = getStorage(app);
 export const googleProvider = new GoogleAuthProvider();
+
+/**
+ * Web only: wipes the signed-out user's documents from the IndexedDB cache
+ * so the next person on this browser can't read them from disk. Clearing
+ * requires a terminated instance, and `db` can't be revived afterwards, so
+ * this ends with a full page load of /login. If another tab still holds the
+ * cache, clearing fails with `failed-precondition`; the reload still happens
+ * and the cache is cleared on a later sign-out.
+ */
+export async function clearWebFirestoreCache(): Promise<void> {
+  if (Platform.OS !== 'web') return;
+  try {
+    await terminate(db);
+    await clearIndexedDbPersistence(db);
+  } catch {
+    // See above — another tab has the cache open.
+  }
+  window.location.replace('/login');
+}
 
 // Analytics lives in lib/analytics(.web).ts so `firebase/analytics` is only
 // bundled for web.

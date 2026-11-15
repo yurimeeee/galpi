@@ -19,7 +19,7 @@ import {
   updateProfile,
   type User,
 } from 'firebase/auth';
-import { auth, googleProvider } from './firebase';
+import { auth, clearWebFirestoreCache, googleProvider } from './firebase';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -137,6 +137,7 @@ export async function signUpWithEmail(name: string, email: string, password: str
 
 export async function signOutUser() {
   await signOut(auth);
+  await clearWebFirestoreCache();
 }
 
 /** True when the account has an email/password credential attached (as opposed to Google/Kakao-only). */
@@ -191,6 +192,7 @@ export async function deleteCurrentUser(): Promise<void> {
   const user = auth.currentUser;
   if (!user) throw new Error('로그인이 필요해요.');
   await deleteUser(user);
+  await clearWebFirestoreCache();
 }
 
 export function getAuthErrorMessage(error: unknown): string {
