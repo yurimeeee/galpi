@@ -8,30 +8,10 @@ import { captureViewAsImage, saveImageToDevice, shareImage, MediaPermissionError
 import { BookCover } from '../galpi/book-cover';
 import { useThemeColors } from '../../lib/theme';
 import { activeReadingDays, getTopBookOfYear, yearBestStreak, yearlyReadingMinutes } from '../../lib/reading-goals';
-import {
-  DistributionBars,
-  INTENSITY_CLASS,
-  WEEKDAY_LABELS,
-  buildYearHeatmap,
-  getTimePattern,
-  getTopGenres,
-  getYearMetrics,
-} from './stats-report-screen';
+import { DistributionBars, INTENSITY_CLASS } from './stats-report-screen';
+import { WEEKDAY_LABELS, buildYearHeatmap, getTimePattern, getTopGenres, getYearMetrics, maxIndex } from '../../lib/stats';
 import type { Book } from '../../lib/data/books';
 import type { Sentence } from '../../lib/data/sentences';
-
-/** Index of the largest value, or -1 if every value is 0 — mirrors stats-report-screen's private helper (not exported, small enough to duplicate). */
-function maxIndex(counts: number[]): number {
-  let idx = -1;
-  let max = 0;
-  for (let i = 0; i < counts.length; i++) {
-    if (counts[i] > max) {
-      max = counts[i];
-      idx = i;
-    }
-  }
-  return idx;
-}
 
 function formatMinutes(totalMinutes: number): string {
   if (totalMinutes <= 0) return '0분';
