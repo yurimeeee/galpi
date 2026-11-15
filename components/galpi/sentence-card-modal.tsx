@@ -45,7 +45,7 @@ function cardPalette(theme: CardTheme, book: Book): { bg: string; text: string }
 
 /**
  * Turns a single 갈피 (quote) into a shareable image card — the per-sentence
- * counterpart to the monthly/yearly report card in stats-report-screen.tsx.
+ * counterpart to the monthly/yearly report card in report-publish-modal.tsx.
  * Reuses the same "small preview + off-screen full-size capture target"
  * trick so the exported PNG is sharp regardless of the sheet's on-screen
  * width.

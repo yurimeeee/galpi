@@ -6,9 +6,9 @@ import { BookCheck, Bookmark, CalendarDays, ChevronLeft, ChevronRight, Clock, Do
 import { IconButton } from '../galpi/icon-button';
 import { captureViewAsImage, saveImageToDevice, shareImage, MediaPermissionError, ShareUnavailableError } from '../../lib/share-image';
 import { BookCover } from '../galpi/book-cover';
-import { useThemeColors } from '../../lib/theme';
+import { useThemeColors, INTENSITY_CLASS } from '../../lib/theme';
 import { activeReadingDays, getTopBookOfYear, yearBestStreak, yearlyReadingMinutes } from '../../lib/reading-goals';
-import { DistributionBars, INTENSITY_CLASS } from './stats-report-screen';
+import { DistributionBars } from './stats-report-screen';
 import { WEEKDAY_LABELS, buildYearHeatmap, getTimePattern, getTopGenres, getYearMetrics, maxIndex } from '../../lib/stats';
 import type { Book } from '../../lib/data/books';
 import type { Sentence } from '../../lib/data/sentences';

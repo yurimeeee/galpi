@@ -97,6 +97,9 @@ export const ACCENT_BG_CLASS: Record<Accent, string> = {
   ink: 'bg-galpi-ink',
 };
 
+/** Heatmap cell colors by activity intensity (0 = none … 4 = most), shared by the stats screen, year review and report card. */
+export const INTENSITY_CLASS = ['bg-secondary', 'bg-galpi-green/50', 'bg-galpi-green', 'bg-galpi-blue', 'bg-foreground'];
+
 /** Rotation order for auto-assigning a spine color to newly added books. */
 export const ACCENT_CYCLE: Accent[] = ['blue', 'green', 'yellow', 'ink'];
 
