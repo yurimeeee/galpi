@@ -245,10 +245,11 @@
 | P2-13 analytics | 완료 | `8f97ccf` | 계획서의 "require로 이동"은 Metro가 정적 분석하므로 효과 없음 → `lib/analytics.web.ts` / `lib/analytics.ts` 플랫폼 분리로 처리 |
 | P1-7 Firestore 캐시 | 완료 | `59dab5b` | 웹만 `initializeFirestore` + `persistentLocalCache(persistentMultipleTabManager())`. 로그아웃·탈퇴 시 `clearWebFirestoreCache()`가 `terminate` → `clearIndexedDbPersistence` → `/login` 전체 새로고침(공용 브라우저에 이전 사용자 문서가 남지 않도록). 다른 탭이 열려 있으면 삭제는 건너뛰고 다음 로그아웃 때 처리 |
 | P2-14 통계 분리 | 완료 | `7329967`, `f1f35d4` | 순수 함수 → `lib/stats.ts`(year-review 중복 `maxIndex` 제거), `ReportPublishModal` → `components/galpi/report-publish-modal.tsx`, `INTENSITY_CLASS` → `lib/theme.ts`. 화면 1,425 → 747줄, 이동 코드는 diff로 동일 확인 |
-| P2-15 | 대기 | — | `expo-image` 신규 의존성 — 별도 승인 후 |
+| P2-15 표지 캐시 | 완료 | `6eaacde` | `expo-image ~3.0.11` 도입. `components/galpi/remote-image.tsx`(`cssInterop`으로 className 매핑)를 BookCover·타이머 위젯·통계 달력 셀·검색 썸네일·페이지 사진·프로필 사진에 적용. 공유 카드 캡처 대상(html2canvas가 `object-fit` 미지원)과 로컬 미리보기는 RN `Image` 유지. 웹 엔트리 +10KB gzip. **네이티브 모듈이라 개발 빌드/스토어 빌드 재생성 필요** |
+| P0-3 후속 카메라 지연 로드 | 완료 | `42a0e09` | `ScanMode` → `add-sentence-scan-mode.tsx`, `React.lazy` + `Suspense`. 웹에서 expo-camera·OCR이 별도 청크(32.6KB / 9.9KB gzip)로 분리, 카메라 스캔 탭을 처음 열 때 로드 |
 
 ### 외부 사유 변경 (2026-11-14)
 
 알라딘 Open API 종료로 책 검색을 예스24 Open API로 교체(`3cffe42`). `api/yes24-book-search.ts` + `lib/book-search.ts`, 환경변수 `YES24_API_KEY`(서버) / `EXPO_PUBLIC_BOOK_API_BASE`(선택). 예스24는 페이지 수를 제공하지 않아 `aladin-book-lookup` 상당 기능은 제거, `totalPages`는 사용자 입력.
 
-P0-3 후속 후보: `expo-camera`(OCR 화면 전용)를 `add-sentence-screen`에서 지연 로드하면 엔트리를 추가로 줄일 수 있음 — 컴포넌트 구조 변경이 필요해 별도 작업.
+P0-3 후속(`expo-camera` 지연 로드)은 `42a0e09`에서 처리. 개선 계획 15개 항목 전부 완료.
