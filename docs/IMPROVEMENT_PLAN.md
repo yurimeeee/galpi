@@ -229,7 +229,7 @@
 
 ---
 
-## 진행 상태 (2026-11-14)
+## 진행 상태 (2026-11-15)
 
 | 항목 | 상태 | 커밋 | 결과 |
 |---|---|---|---|
@@ -243,7 +243,9 @@
 | P1-5 스트릭 메모 | 완료 | `2a369d9` | `useReadingGoals` 파생값 전부 `useMemo`, `saveGoals` `useCallback`, 반환 객체 메모 |
 | P1-6 persist 디바운스 | 완료 | `d3ccf9b` | `lib/store.ts` `debouncedStorage(AsyncStorage, 400)` — 트레일링 디바운스, 대기 중 키는 `getItem`에서 대기값 반환 |
 | P2-13 analytics | 완료 | `8f97ccf` | 계획서의 "require로 이동"은 Metro가 정적 분석하므로 효과 없음 → `lib/analytics.web.ts` / `lib/analytics.ts` 플랫폼 분리로 처리 |
-| P1-7, P2-14·15 | 대기 | — | 별도 승인 후 |
+| P1-7 Firestore 캐시 | 완료 | `59dab5b` | 웹만 `initializeFirestore` + `persistentLocalCache(persistentMultipleTabManager())`. 로그아웃·탈퇴 시 `clearWebFirestoreCache()`가 `terminate` → `clearIndexedDbPersistence` → `/login` 전체 새로고침(공용 브라우저에 이전 사용자 문서가 남지 않도록). 다른 탭이 열려 있으면 삭제는 건너뛰고 다음 로그아웃 때 처리 |
+| P2-14 통계 분리 | 완료 | `7329967`, `f1f35d4` | 순수 함수 → `lib/stats.ts`(year-review 중복 `maxIndex` 제거), `ReportPublishModal` → `components/galpi/report-publish-modal.tsx`, `INTENSITY_CLASS` → `lib/theme.ts`. 화면 1,425 → 747줄, 이동 코드는 diff로 동일 확인 |
+| P2-15 | 대기 | — | `expo-image` 신규 의존성 — 별도 승인 후 |
 
 ### 외부 사유 변경 (2026-11-14)
 
