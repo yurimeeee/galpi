@@ -14,6 +14,7 @@ import {
   where,
   writeBatch,
   type CollectionReference,
+  type FirestoreError,
   type Unsubscribe,
 } from 'firebase/firestore';
 import { deleteObject, getDownloadURL, listAll, ref, uploadBytes, type StorageReference } from 'firebase/storage';
@@ -41,19 +42,32 @@ function withoutUndefined<T extends object>(obj: T): Partial<T> {
   ) as Partial<T>;
 }
 
-export function subscribeBooks(uid: string, onChange: (books: Book[]) => void): Unsubscribe {
-  return onSnapshot(query(booksCol(uid), orderBy('order', 'asc')), (snap) => {
-    onChange(snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Book, 'id'>) })));
-  });
+export function subscribeBooks(
+  uid: string,
+  onChange: (books: Book[]) => void,
+  onError?: (error: FirestoreError) => void,
+): Unsubscribe {
+  return onSnapshot(
+    query(booksCol(uid), orderBy('order', 'asc')),
+    (snap) => {
+      onChange(snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Book, 'id'>) })));
+    },
+    onError,
+  );
 }
 
 export function subscribeSentences(
   uid: string,
   onChange: (sentences: Sentence[]) => void,
+  onError?: (error: FirestoreError) => void,
 ): Unsubscribe {
-  return onSnapshot(query(sentencesCol(uid), orderBy('date', 'desc')), (snap) => {
-    onChange(snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Sentence, 'id'>) })));
-  });
+  return onSnapshot(
+    query(sentencesCol(uid), orderBy('date', 'desc')),
+    (snap) => {
+      onChange(snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Sentence, 'id'>) })));
+    },
+    onError,
+  );
 }
 
 /**
@@ -201,14 +215,22 @@ function readingGoalsDoc(uid: string) {
 }
 
 /** Live — mirrors subscribeBooks/subscribeSentences so every mounted screen sees goal edits immediately instead of only the screen that made them. */
-export function subscribeReadingGoals(uid: string, onChange: (goals: ReadingGoals) => void): Unsubscribe {
-  return onSnapshot(readingGoalsDoc(uid), (snap) => {
-    onChange(
-      snap.exists()
-        ? { ...DEFAULT_READING_GOALS, ...(snap.data() as Partial<ReadingGoals>) }
-        : DEFAULT_READING_GOALS,
-    );
-  });
+export function subscribeReadingGoals(
+  uid: string,
+  onChange: (goals: ReadingGoals) => void,
+  onError?: (error: FirestoreError) => void,
+): Unsubscribe {
+  return onSnapshot(
+    readingGoalsDoc(uid),
+    (snap) => {
+      onChange(
+        snap.exists()
+          ? { ...DEFAULT_READING_GOALS, ...(snap.data() as Partial<ReadingGoals>) }
+          : DEFAULT_READING_GOALS,
+      );
+    },
+    onError,
+  );
 }
 
 export async function saveReadingGoals(uid: string, goals: ReadingGoals): Promise<void> {
@@ -221,10 +243,18 @@ function readingLogDoc(uid: string) {
 }
 
 /** Live — a reading-timer session logged from any screen shows up immediately everywhere readingLog is read (today's progress card, streak-risk reminder, year review), not just on next relaunch. */
-export function subscribeReadingLog(uid: string, onChange: (log: Record<string, number>) => void): Unsubscribe {
-  return onSnapshot(readingLogDoc(uid), (snap) => {
-    onChange(snap.exists() ? (snap.data() as Record<string, number>) : {});
-  });
+export function subscribeReadingLog(
+  uid: string,
+  onChange: (log: Record<string, number>) => void,
+  onError?: (error: FirestoreError) => void,
+): Unsubscribe {
+  return onSnapshot(
+    readingLogDoc(uid),
+    (snap) => {
+      onChange(snap.exists() ? (snap.data() as Record<string, number>) : {});
+    },
+    onError,
+  );
 }
 
 export async function logReadingMinutes(uid: string, minutes: number): Promise<void> {

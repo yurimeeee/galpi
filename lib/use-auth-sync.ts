@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
+import type { FirestoreError, Unsubscribe } from 'firebase/firestore';
 import { auth } from './firebase';
 import {
   subscribeBooks,
@@ -9,6 +10,50 @@ import {
   DEFAULT_READING_GOALS,
 } from './data-service';
 import { useAppStore } from './store';
+
+const MAX_LISTENER_RETRIES = 3;
+
+/**
+ * Wraps one Firestore listener for `uid`. Firestore drops a listener for
+ * good after its first error, so without this a transient permission-denied
+ * — the request reaching the backend before the new user's token, right
+ * after sign-in — left the library empty until relaunch. While the same user
+ * is still signed in, resubscribe with backoff (1s, 2s, 3s). Errors after
+ * sign-out (listeners racing the uid effect's cleanup) are expected and only
+ * logged instead of surfacing as uncaught errors.
+ */
+function resilientListener(
+  uid: string,
+  subscribe: (onError: (error: FirestoreError) => void) => Unsubscribe,
+): Unsubscribe {
+  let unsubscribe: Unsubscribe | null = null;
+  let retryTimer: ReturnType<typeof setTimeout> | null = null;
+  let attempts = 0;
+  let stopped = false;
+
+  function onError(error: FirestoreError) {
+    if (stopped) return;
+    const sameUser = auth.currentUser?.uid === uid;
+    if (error.code === 'permission-denied' && sameUser && attempts < MAX_LISTENER_RETRIES) {
+      attempts += 1;
+      retryTimer = setTimeout(start, attempts * 1000);
+      return;
+    }
+    if (sameUser) console.warn(`[galpi] Firestore listener stopped (${error.code}): ${error.message}`);
+  }
+
+  function start() {
+    retryTimer = null;
+    if (!stopped) unsubscribe = subscribe(onError);
+  }
+
+  start();
+  return () => {
+    stopped = true;
+    if (retryTimer) clearTimeout(retryTimer);
+    unsubscribe?.();
+  };
+}
 
 /**
  * Bridges Firebase auth state and the user's Firestore library into the
@@ -46,13 +91,17 @@ export function useAuthSync(): { authResolved: boolean } {
       useAppStore.getState().setReadingGoals(DEFAULT_READING_GOALS);
       return;
     }
-    const unsubscribeBooks = subscribeBooks(uid, (books) => useAppStore.getState().setBooks(books));
-    const unsubscribeSentences = subscribeSentences(uid, (sentences) =>
-      useAppStore.getState().setSentences(sentences),
+    const unsubscribeBooks = resilientListener(uid, (onError) =>
+      subscribeBooks(uid, (books) => useAppStore.getState().setBooks(books), onError),
     );
-    const unsubscribeReadingLog = subscribeReadingLog(uid, (log) => useAppStore.getState().setReadingLog(log));
-    const unsubscribeReadingGoals = subscribeReadingGoals(uid, (goals) =>
-      useAppStore.getState().setReadingGoals(goals),
+    const unsubscribeSentences = resilientListener(uid, (onError) =>
+      subscribeSentences(uid, (sentences) => useAppStore.getState().setSentences(sentences), onError),
+    );
+    const unsubscribeReadingLog = resilientListener(uid, (onError) =>
+      subscribeReadingLog(uid, (log) => useAppStore.getState().setReadingLog(log), onError),
+    );
+    const unsubscribeReadingGoals = resilientListener(uid, (onError) =>
+      subscribeReadingGoals(uid, (goals) => useAppStore.getState().setReadingGoals(goals), onError),
     );
     return () => {
       unsubscribeBooks();
