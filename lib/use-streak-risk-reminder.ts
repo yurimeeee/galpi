@@ -42,6 +42,10 @@ export function useStreakRiskReminder() {
         const prefs = await getNotificationPreferences(uid);
         if (cancelled) return;
         setEnabled(!!prefs?.streakRiskReminderEnabled);
+      } catch (err) {
+        // Defaults (reminder off) stay in place; without this catch a failed read
+        // (e.g. permission-denied) surfaced as an uncaught promise rejection.
+        console.warn('[galpi] Failed to load streak-risk reminder preferences:', err);
       } finally {
         if (!cancelled) setLoading(false);
       }

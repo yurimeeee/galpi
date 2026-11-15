@@ -44,6 +44,10 @@ export function useOnThisDayReminder() {
         const prefs = await getNotificationPreferences(uid);
         if (cancelled) return;
         setEnabled(!!prefs?.onThisDayEnabled);
+      } catch (err) {
+        // Defaults (reminder off) stay in place; without this catch a failed read
+        // (e.g. permission-denied) surfaced as an uncaught promise rejection.
+        console.warn('[galpi] Failed to load on-this-day reminder preferences:', err);
       } finally {
         if (!cancelled) setLoading(false);
       }

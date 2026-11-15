@@ -65,6 +65,10 @@ export function useReadingReminder() {
         if (cancelled) return;
         setEnabled(!!prefs?.dailyReminderEnabled);
         setTime(prefs?.dailyReminderTime ?? DEFAULT_TIME);
+      } catch (err) {
+        // Defaults (reminder off) stay in place; without this catch a failed read
+        // (e.g. permission-denied) surfaced as an uncaught promise rejection.
+        console.warn('[galpi] Failed to load reading reminder preferences:', err);
       } finally {
         if (!cancelled) setLoading(false);
       }
