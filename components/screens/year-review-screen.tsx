@@ -1,11 +1,12 @@
-import { useMemo, useRef, useState, type ReactNode } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-native';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { showAlert } from '../../lib/alert';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BookCheck, Bookmark, CalendarDays, ChevronLeft, ChevronRight, Clock, Download, Flame, Quote, Share2, Sparkles, X } from '../../lib/icons';
 import { IconButton } from '../galpi/icon-button';
 import { captureViewAsImage, saveImageToDevice, shareImage, MediaPermissionError, ShareUnavailableError } from '../../lib/share-image';
 import { BookCover } from '../galpi/book-cover';
+import { useContainerWidth } from '../layout/web-frame';
 import { useThemeColors, INTENSITY_CLASS } from '../../lib/theme';
 import { activeReadingDays, getTopBookOfYear, yearBestStreak, yearlyReadingMinutes } from '../../lib/reading-goals';
 import { DistributionBars } from './stats-report-screen';
@@ -37,10 +38,24 @@ export function YearReviewScreen({
   displayName: string;
   onBack: () => void;
 }) {
-  const { width } = useWindowDimensions();
+  // The deck pages by the width of the column the app actually renders in —
+  // on desktop web that's WebFrame's 480/560px container, not the window.
+  // Sizing cards by the window width overflowed the column and threw every
+  // paging offset off, so measure the real width and fall back to the
+  // container width only until the first layout lands.
+  const containerWidth = useContainerWidth();
+  const [measuredWidth, setMeasuredWidth] = useState(0);
+  const cardWidth = measuredWidth || containerWidth;
   const colors = useThemeColors();
   const [pageIndex, setPageIndex] = useState(0);
   const scrollRef = useRef<ScrollView>(null);
+
+  // Keep the current card in view when the width changes (window resize,
+  // rotation) — otherwise the old offset lands between two cards.
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ x: pageIndex * cardWidth, animated: false });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cardWidth]);
 
   const bookById = useMemo(() => new Map(books.map((b) => [b.id, b])), [books]);
   const { doneCount, galpiCount, readDaysCount } = useMemo(() => getYearMetrics(books, sentences, year), [books, sentences, year]);
@@ -58,11 +73,12 @@ export function YearReviewScreen({
 
   const hasAnyData = galpiCount > 0 || doneCount > 0;
 
-  const cardWidth = width;
   const cards = ['intro', 'books', 'weekday', 'streak', 'time', 'genres', 'topBook', 'summary'] as const;
 
   function onScrollEnd(offsetX: number) {
-    setPageIndex(Math.round(offsetX / cardWidth));
+    if (cardWidth <= 0) return;
+    const next = Math.max(0, Math.min(cards.length - 1, Math.round(offsetX / cardWidth)));
+    if (next !== pageIndex) setPageIndex(next);
   }
 
   /**
@@ -99,7 +115,7 @@ export function YearReviewScreen({
           </Text>
         </View>
       ) : (
-        <View className="flex-1">
+        <View className="flex-1" onLayout={(e) => setMeasuredWidth(e.nativeEvent.layout.width)}>
           <ScrollView
             ref={scrollRef}
             horizontal
@@ -107,6 +123,10 @@ export function YearReviewScreen({
             showsHorizontalScrollIndicator={false}
             className="flex-1"
             onMomentumScrollEnd={(e) => onScrollEnd(e.nativeEvent.contentOffset.x)}
+            // Web never fires onMomentumScrollEnd, so a touch swipe on mobile
+            // web would leave the progress bar and arrows stale without this.
+            onScroll={(e) => onScrollEnd(e.nativeEvent.contentOffset.x)}
+            scrollEventThrottle={64}
           >
             <View style={{ width: cardWidth }} className="flex-1 items-center justify-center px-8">
               <IntroCard year={year} displayName={displayName} doneCount={doneCount} galpiCount={galpiCount} />
