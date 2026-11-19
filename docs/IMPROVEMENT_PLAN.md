@@ -253,3 +253,15 @@
 알라딘 Open API 종료로 책 검색을 예스24 Open API로 교체(`3cffe42`). `api/yes24-book-search.ts` + `lib/book-search.ts`, 환경변수 `YES24_API_KEY`(서버) / `EXPO_PUBLIC_BOOK_API_BASE`(선택). 예스24는 페이지 수를 제공하지 않아 `aladin-book-lookup` 상당 기능은 제거, `totalPages`는 사용자 입력.
 
 P0-3 후속(`expo-camera` 지연 로드)은 `42a0e09`에서 처리. 개선 계획 15개 항목 전부 완료.
+
+### 외부 사유 변경 (2026-11-19) — Expo SDK 57
+
+iOS 27 SDK(Xcode 27)로 빌드한 앱은 UIScene 생명주기를 쓰지 않으면 실행 직후 종료된다(`UIScene life cycle is required for apps built with this SDK`). SDK 54가 생성하는 AppDelegate는 이를 지원하지 않아 SDK 57로 업그레이드(`fea6367`).
+
+- expo 54 → 57, React Native 0.81 → 0.86, React 19.2, TypeScript 6
+- SDK 57만으로는 부족: `expo-build-properties`의 `ios.enableSceneSupport: true`를 켜야 prebuild가 `EXExpoAppSceneDelegate`를 연결
+- 동반 수정: `BottomTabBarProps`는 `expo-router/tabs`에서 import, `css.d.ts`(TS 6 side-effect import 검사), babel의 중복 worklets 플러그인 제거
+- `expo-system-ui` 추가, 루트 배경색이 테마를 따름(`f889a7e`)
+- `npm audit fix`(비파괴) 적용: 운영 의존성 경고 21 → 10건(`f8e32fb`). 남은 항목은 expo-router 58 메이저 업그레이드가 필요하거나 firebase 9로의 잘못된 다운그레이드 제안
+- 확인: tsc, expo-doctor, 웹 export, iOS 27 시뮬레이터 실행. **미확인**: 실기기 로그인 후 화면, 딥링크/구글 로그인 리다이렉트. Metro에 `Couldn't find a navigation context` 오류가 1회 기록됨 — 딥링크 처리 중 발생으로 추정, 실기기 재현 필요
+- 로컬 환경 메모: Xcode 27에는 Simulator 앱이 없어 `expo run:ios`가 실패한다. `xcodebuild` + `simctl install/launch`로 빌드·실행
