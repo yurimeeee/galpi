@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { Tabs, router } from 'expo-router';
-import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import type { BottomTabBarProps } from 'expo-router/tabs';
 import { View } from 'react-native';
 import { BottomNav, type NavKey } from '../../components/galpi/bottom-nav';
 import { AddChoiceSheet } from '../../components/galpi/add-choice-sheet';

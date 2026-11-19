@@ -71,6 +71,17 @@
           "photosPermission": "갈피가 독서 리포트 이미지를 사진 보관함에 저장할 수 있도록 허용해주세요.",
           "savePhotosPermission": "갈피가 독서 리포트 이미지를 사진 보관함에 저장할 수 있도록 허용해주세요."
         }
+      ],
+      "expo-image",
+      "expo-sharing",
+      "expo-status-bar",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "enableSceneSupport": true
+          }
+        }
       ]
     ]
   }
