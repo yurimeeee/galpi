@@ -5,13 +5,15 @@
 import 'react-native-gesture-handler';
 
 import { useEffect } from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 import { Stack } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
+import * as SystemUI from 'expo-system-ui';
 import { useEffectiveScheme } from '../lib/use-effective-scheme';
+import { useThemeColors } from '../lib/theme';
 import { useFonts } from 'expo-font';
 import { FONTS } from '../lib/fonts';
 import { WebFrame } from '../components/layout/web-frame';
@@ -32,6 +34,16 @@ export default function RootLayout() {
   }, []);
 
   const colorScheme = useEffectiveScheme();
+  const { background } = useThemeColors();
+  // The native root view sits behind every screen and shows through during
+  // stack transitions and keyboard/modal animations. app.json's
+  // `backgroundColor` only sets its launch color (light), so follow the
+  // active theme here or dark mode flashes light gray. Web has no root view.
+  useEffect(() => {
+    if (Platform.OS !== 'web') {
+      SystemUI.setBackgroundColorAsync(background);
+    }
+  }, [background]);
   const { authResolved } = useAuthSync();
   // Recomputes/reschedules today's "1년 전 오늘" notification on every launch —
   // mounted here (not just the settings screen) so it runs regardless of
