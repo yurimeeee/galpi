@@ -29,14 +29,18 @@ export function TodayProgressCard({
   const todayLabel = goalMet
     ? '오늘 목표 달성'
     : dailyGoalMinutes > 0
-      ? `오늘 ${todayMinutes}분 / ${dailyGoalMinutes}분`
+      ? `${todayMinutes}/${dailyGoalMinutes}분`
       : `오늘 ${todayMinutes}분`;
+
+  // The visible label is compacted to fit one line at 360px; say it in full.
+  const spokenTodayLabel =
+    !goalMet && dailyGoalMinutes > 0 ? `오늘 ${todayMinutes}분, 목표 ${dailyGoalMinutes}분` : todayLabel;
 
   return (
     <Pressable
       onPress={onStartTimer}
       accessibilityRole="button"
-      accessibilityLabel={`독서 타이머 시작. ${streakLabel}, ${todayLabel}`}
+      accessibilityLabel={`독서 타이머 시작. ${streakLabel}, ${spokenTodayLabel}`}
       className={`mb-3 flex-row items-center gap-2.5 rounded-full bg-galpi-ink py-2 pl-4 pr-2 ${
         scheme === 'dark' ? 'border border-galpi-paper/20' : ''
       }`}
@@ -44,7 +48,7 @@ export function TodayProgressCard({
     >
       <Flame size={16} color={colors.galpiYellow} strokeWidth={2} />
       <View className="min-w-0 flex-1 flex-row items-baseline gap-2">
-        <Text numberOfLines={1} className="shrink text-sm font-bold text-galpi-paper">
+        <Text numberOfLines={1} className="shrink-0 text-sm font-bold text-galpi-paper">
           {streakLabel}
         </Text>
         <Text numberOfLines={1} className="shrink text-xs font-medium text-galpi-paper/60">
