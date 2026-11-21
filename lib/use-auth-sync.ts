@@ -83,14 +83,26 @@ export function useAuthSync(): { authResolved: boolean } {
 
   const uid = useAppStore((s) => s.user?.uid);
 
+  // Clears the library only once auth has resolved to "signed out". Before
+  // that, `uid` is also undefined on every cold start; clearing then (and
+  // through the setters, which flag the data as loaded) wiped the warm cache
+  // and made a deep link like /book/:id redirect to the library because the
+  // book "finished loading" as missing.
   useEffect(() => {
-    if (!uid) {
-      useAppStore.getState().setBooks([]);
-      useAppStore.getState().setSentences([]);
-      useAppStore.getState().setReadingLog({});
-      useAppStore.getState().setReadingGoals(DEFAULT_READING_GOALS);
-      return;
-    }
+    if (!authResolved || uid) return;
+    useAppStore.setState({
+      books: [],
+      sentences: [],
+      readingLog: {},
+      readingGoals: DEFAULT_READING_GOALS,
+      booksLoaded: false,
+      sentencesLoaded: false,
+      readingGoalsLoaded: false,
+    });
+  }, [authResolved, uid]);
+
+  useEffect(() => {
+    if (!uid) return;
     const unsubscribeBooks = resilientListener(uid, (onError) =>
       subscribeBooks(uid, (books) => useAppStore.getState().setBooks(books), onError),
     );
