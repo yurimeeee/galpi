@@ -1,5 +1,6 @@
-import { PropsWithChildren } from 'react';
+import { PropsWithChildren, useMemo } from 'react';
 import { Keyboard, Platform, Pressable, useWindowDimensions, View } from 'react-native';
+import { SafeAreaInsetsContext, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // DESIGN_SYSTEM §8 — container strategy shared by web and native tablets.
 //   < 640       full-bleed
@@ -9,6 +10,9 @@ const CONTAINER_BREAKPOINT = 640;
 const WIDE_BREAKPOINT = 1024;
 const CONTAINER_WIDTH = 480;
 const WIDE_CONTAINER_WIDTH = 560;
+// Browsers report a 0 top inset, which left every screen header (sized for
+// a status bar above it) pressed against the top edge of the page.
+const WEB_MIN_TOP_INSET = 12;
 
 /** Width of the column the app content actually renders in (not the window). */
 export function getContainerWidth(windowWidth: number): number {
@@ -31,6 +35,11 @@ export function useContainerWidth(): number {
 export function WebFrame({ children }: PropsWithChildren) {
   const { width } = useWindowDimensions();
   const containerWidth = getContainerWidth(width);
+  const insets = useSafeAreaInsets();
+  const webInsets = useMemo(
+    () => ({ ...insets, top: Math.max(insets.top, WEB_MIN_TOP_INSET) }),
+    [insets],
+  );
 
   // Dismisses the keyboard on any tap that isn't claimed by a nested
   // touchable/input first — gives every screen a tap-outside-to-close
@@ -39,7 +48,9 @@ export function WebFrame({ children }: PropsWithChildren) {
   // inputs in it would blur them the instant they're focused.
   const content =
     Platform.OS === 'web' ? (
-      <View className="flex-1 min-h-0">{children}</View>
+      <SafeAreaInsetsContext.Provider value={webInsets}>
+        <View className="flex-1 min-h-0">{children}</View>
+      </SafeAreaInsetsContext.Provider>
     ) : (
       <Pressable className="flex-1 min-h-0" onPress={() => Keyboard.dismiss()} accessible={false}>
         {children}
