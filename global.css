@@ -52,3 +52,12 @@
   --color-input: 49 49 54;
   --color-ring: 236 236 238;
 }
+
+/*
+ * Web only (native ignores this file's element selectors): wrap Korean at
+ * word boundaries like iOS does, instead of mid-word ("동/의합니다").
+ * Long unbroken tokens (URLs) still wrap via RN-web's break-word default.
+ */
+html {
+  word-break: keep-all;
+}
