@@ -334,7 +334,19 @@ export function BookDetailScreen({
 
             {/* 진행률 요약 */}
             <View className="mt-5 flex-row items-center gap-3 border-y border-border py-3.5">
-              <StatBit label="진행도" value={`${book.progress}%`} onPress={() => setProgressModalOpen(true)} />
+              {book.totalPages ? (
+                <StatBit label="진행도" value={`${book.progress}%`} onPress={() => setProgressModalOpen(true)} />
+              ) : (
+                // Searched books arrive without a page count (YES24 doesn't
+                // provide one), so a bare "0%" here never moved — ask for it.
+                <StatBit
+                  label="진행도"
+                  value="페이지 입력"
+                  prompt
+                  accessibilityLabel="총 페이지 입력"
+                  onPress={() => setProgressModalOpen(true)}
+                />
+              )}
               <View className="h-8 w-px bg-border" />
               <StatBit label="남긴 갈피" value={`${book.galpiCount}개`} />
               <View className="h-8 w-px bg-border" />
@@ -464,10 +476,27 @@ function SharePickerRow({ sentence, onPress }: { sentence: Sentence; onPress: ()
   );
 }
 
-function StatBit({ label, value, onPress }: { label: string; value: string; onPress?: () => void }) {
+function StatBit({
+  label,
+  value,
+  onPress,
+  prompt = false,
+  accessibilityLabel,
+}: {
+  label: string;
+  value: string;
+  onPress?: () => void;
+  /** Renders `value` as a call to action instead of a figure. */
+  prompt?: boolean;
+  accessibilityLabel?: string;
+}) {
   const content = (
     <>
-      <Text className="text-base font-black text-foreground">{value}</Text>
+      {prompt ? (
+        <Text className="text-sm font-bold leading-6 text-foreground underline">{value}</Text>
+      ) : (
+        <Text className="text-base font-black text-foreground">{value}</Text>
+      )}
       <Text className="mt-0.5 text-2xs font-medium text-muted-foreground">{label}</Text>
     </>
   );
@@ -475,7 +504,12 @@ function StatBit({ label, value, onPress }: { label: string; value: string; onPr
     return <View className="flex-1 items-center">{content}</View>;
   }
   return (
-    <Pressable onPress={onPress} accessibilityLabel={`${label} 수정`} className="web:cursor-pointer flex-1 items-center">
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel ?? `${label} 수정`}
+      className="web:cursor-pointer flex-1 items-center"
+    >
       {content}
     </Pressable>
   );
