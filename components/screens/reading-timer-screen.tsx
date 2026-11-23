@@ -162,8 +162,8 @@ export function ReadingTimerScreen({
         </View>
 
         {/* 원형 타이머 */}
-        <View pointerEvents="none" className="relative mx-auto my-2 h-[300px] w-[300px] items-center justify-center">
-          <View pointerEvents="none" className="absolute inset-0" style={{ transform: [{ rotate: '-90deg' }] }}>
+        <View className="relative mx-auto my-2 h-[300px] w-[300px] items-center justify-center" style={{ pointerEvents: 'none' }}>
+          <View className="absolute inset-0" style={{ pointerEvents: 'none', transform: [{ rotate: '-90deg' }] }}>
             <Svg width={300} height={300} viewBox="0 0 300 300">
               <Circle cx={150} cy={150} r={R} fill="none" stroke={colors.secondary} strokeWidth={10} />
               <Circle

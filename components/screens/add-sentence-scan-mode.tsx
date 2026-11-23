@@ -132,8 +132,7 @@ export function ScanMode({
         {phase === 'live' ? (
           <View
             className="absolute inset-x-8 h-16 rounded-lg border-2 border-galpi-yellow"
-            style={{ top: '50%', marginTop: -32 }}
-            pointerEvents="none"
+            style={{ pointerEvents: 'none', top: '50%', marginTop: -32 }}
           >
             <View className="absolute -top-6 left-0 flex-row items-center gap-1">
               <ScanLine size={12} color={colors.galpiYellow} />

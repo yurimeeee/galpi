@@ -206,7 +206,7 @@ export function ReportPublishModal({
 
         {/* 캡처 전용 실제 크기 카드: 화면 밖에 렌더링되어 보이지 않음 */}
         {realCardWidth > 0 ? (
-          <View pointerEvents="none" style={{ position: 'absolute', left: -99999, top: 0 }}>
+          <View style={{ pointerEvents: 'none', position: 'absolute', left: -99999, top: 0 }}>
             <View
               ref={cardRef}
               collapsable={false}

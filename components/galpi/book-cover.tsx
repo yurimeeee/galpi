@@ -76,7 +76,7 @@ export function BookCover({
           ) : null}
         </View>
       )}
-      <View pointerEvents="none" className={`absolute inset-0 border border-galpi-ink/5 ${radius}`} />
+      <View className={`absolute inset-0 border border-galpi-ink/5 ${radius}`} style={{ pointerEvents: 'none' }} />
       {children}
     </View>
   );

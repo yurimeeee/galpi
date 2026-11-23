@@ -154,7 +154,7 @@ function PeriodToggle({ period, onChange }: { period: Period; onChange: (period:
       onLayout={(e) => setTrackWidth(e.nativeEvent.layout.width)}
     >
       {segmentWidth > 0 && (
-        <View pointerEvents="none" className="absolute bottom-1 left-1 right-1 top-1">
+        <View className="absolute bottom-1 left-1 right-1 top-1" style={{ pointerEvents: 'none' }}>
           <Animated.View style={indicatorStyle}>
             <View className="h-full rounded-xl bg-card" />
           </Animated.View>

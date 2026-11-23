@@ -195,7 +195,7 @@ export function SentenceCardModal({
 
         {/* 캡처 전용 실제 크기 카드: 화면 밖에 렌더링되어 보이지 않음 */}
         {realCardWidth > 0 ? (
-          <View pointerEvents="none" style={{ position: 'absolute', left: -99999, top: 0 }}>
+          <View style={{ pointerEvents: 'none', position: 'absolute', left: -99999, top: 0 }}>
             <View
               ref={cardRef}
               collapsable={false}
@@ -269,8 +269,7 @@ function SentenceCardBody({
     <View className="relative flex-1 justify-between overflow-hidden">
       {/* 배경 장식: 큰 인용부호로 여백을 채워 카드가 비어 보이지 않게 함 */}
       <Text
-        pointerEvents="none"
-        style={{ position: 'absolute', top: 0, left: -6, color: text, opacity: 0.1 }}
+        style={{ pointerEvents: 'none', position: 'absolute', top: 0, left: -6, color: text, opacity: 0.1 }}
         className="text-8xl font-black leading-none"
       >
         “

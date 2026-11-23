@@ -29,9 +29,8 @@ export function UndoSnackbar() {
 
   return (
     <View
-      pointerEvents="box-none"
       className="absolute inset-x-0 bottom-0 items-center"
-      style={{ paddingBottom: insets.bottom + 12 }}
+      style={{ pointerEvents: 'box-none', paddingBottom: insets.bottom + 12 }}
     >
       <View className="mx-5 w-full max-w-[420px] flex-row items-center justify-between rounded-xl bg-galpi-ink px-4 py-3.5">
         <Text className="mr-3 flex-1 text-sm font-bold text-galpi-paper" numberOfLines={1}>

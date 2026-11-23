@@ -376,7 +376,7 @@ export function BookDetailScreen({
           This scrim fades the background in behind the button so that looks
           intentional instead of like clipped/broken content.
         */}
-        <View pointerEvents="none" className="absolute inset-x-0 bottom-0 h-24">
+        <View className="absolute inset-x-0 bottom-0 h-24" style={{ pointerEvents: 'none' }}>
           {[0.05, 0.15, 0.3, 0.5, 0.7, 0.85, 0.95, 1].map((opacity, i) => (
             <View key={i} style={{ flex: 1, backgroundColor: colors.background, opacity }} />
           ))}

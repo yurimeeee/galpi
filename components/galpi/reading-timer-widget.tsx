@@ -115,7 +115,7 @@ export function ReadingTimerWidget() {
   }
 
   return (
-    <View pointerEvents="box-none" className="absolute inset-0" onLayout={(e) => setBounds(e.nativeEvent.layout)}>
+    <View className="absolute inset-0" onLayout={(e) => setBounds(e.nativeEvent.layout)} style={{ pointerEvents: 'box-none' }}>
       {visible ? (
         <GestureDetector gesture={gesture}>
           <Animated.View

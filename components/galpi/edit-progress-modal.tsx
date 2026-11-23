@@ -129,9 +129,9 @@ export function EditProgressModal({
                 <View className="h-full rounded-full bg-primary" style={{ width: `${previewProgress}%` }} />
               </View>
               <View
-                pointerEvents="none"
                 className="absolute h-6 w-6 items-center justify-center rounded-full bg-primary"
                 style={{
+                  pointerEvents: 'none',
                   left: `${previewProgress}%`,
                   marginLeft: -12,
                   shadowColor: '#000',
