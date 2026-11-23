@@ -221,15 +221,13 @@ export function ReadingTimerScreen({
           <Pressable
             onPress={resetTimer}
             accessibilityLabel="처음부터"
-            className="web:cursor-pointer h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-secondary"
-            style={({ pressed }) => pressed && { transform: [{ scale: 0.95 }] }}
+            className="web:cursor-pointer h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-secondary active:scale-95"
           >
             <RotateCcw size={20} color={colors.foreground} />
           </Pressable>
           <Pressable
             onPress={handlePlayPause}
-            className="web:cursor-pointer h-14 flex-1 flex-row items-center justify-center gap-2 rounded-xl bg-primary"
-            style={({ pressed }) => pressed && { transform: [{ scale: 0.98 }] }}
+            className="web:cursor-pointer h-14 flex-1 flex-row items-center justify-center gap-2 rounded-xl bg-primary active:scale-[0.98]"
           >
             {running ? <Pause size={18} color={colors.primaryForeground} /> : <Play size={18} color={colors.primaryForeground} />}
             <Text className="text-base font-bold text-primary-foreground">{running ? '일시정지' : '독서 시작'}</Text>

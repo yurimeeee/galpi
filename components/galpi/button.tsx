@@ -53,9 +53,8 @@ export function Button({
       accessibilityLabel={label}
       accessibilityState={{ disabled: inactive, busy: loading }}
       className={`web:cursor-pointer w-full flex-row items-center justify-center gap-2 ${box} ${
-        inactive ? 'opacity-60' : ''
+        inactive ? 'opacity-60' : 'active:scale-[0.98]'
       } ${className}`}
-      style={({ pressed }) => pressed && !inactive && { transform: [{ scale: 0.98 }] }}
     >
       {loading ? (
         <ActivityIndicator size="small" color={contentColor} />

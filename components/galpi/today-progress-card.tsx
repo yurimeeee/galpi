@@ -48,8 +48,7 @@ export function TodayProgressCard({
       accessibilityLabel={`독서 타이머 시작. ${streakLabel}, ${spokenTodayLabel}`}
       className={`mb-3 flex-row items-center gap-2.5 rounded-full bg-galpi-ink py-2 pl-4 pr-2 ${
         scheme === 'dark' ? 'border border-galpi-paper/20' : ''
-      }`}
-      style={({ pressed }) => pressed && { opacity: 0.85 }}
+      } active:opacity-[0.85]`}
     >
       <Flame size={16} color={colors.galpiYellow} strokeWidth={2} />
       <View className="min-w-0 flex-1 flex-row items-baseline gap-2">

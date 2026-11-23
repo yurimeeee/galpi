@@ -94,8 +94,7 @@ function TagRow({ tag, onOpen }: { tag: TagCount; onOpen: () => void }) {
   return (
     <Pressable
       onPress={onOpen}
-      className="web:cursor-pointer flex-row items-center gap-3 rounded-xl bg-card p-4"
-      style={({ pressed }) => pressed && { transform: [{ scale: 0.99 }] }}
+      className="web:cursor-pointer flex-row items-center gap-3 rounded-xl bg-card p-4 active:scale-[0.99]"
     >
       <View className="h-10 w-10 items-center justify-center rounded-xl bg-galpi-yellow">
         <Tags size={16} color={colors.galpiInk} />
@@ -121,8 +120,7 @@ function TaggedSentenceCard({
   return (
     <Pressable
       onPress={onOpen}
-      className="web:cursor-pointer rounded-xl bg-card p-4"
-      style={({ pressed }) => pressed && { transform: [{ scale: 0.99 }] }}
+      className="web:cursor-pointer rounded-xl bg-card p-4 active:scale-[0.99]"
     >
       <View className="flex-row items-center justify-between">
         <View className="min-w-0 flex-1 flex-row items-center gap-1.5">

@@ -83,9 +83,8 @@ export function GoalEditModal({
         onPress={handleSave}
         disabled={saving}
         className={`web:cursor-pointer mt-6 w-full flex-row items-center justify-center gap-2 rounded-xl bg-primary py-4 ${
-          saving ? 'opacity-60' : ''
+          saving ? 'opacity-60' : 'active:scale-[0.98]'
         }`}
-        style={({ pressed }) => pressed && !saving && { transform: [{ scale: 0.98 }] }}
       >
         {saving ? <ActivityIndicator color={colors.primaryForeground} /> : null}
         <Text className="text-sm font-bold text-primary-foreground">

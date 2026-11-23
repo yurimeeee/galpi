@@ -30,8 +30,7 @@ export function Chip({
       accessibilityState={{ selected }}
       className={`web:cursor-pointer shrink-0 flex-row items-baseline gap-1.5 rounded-full px-4 py-2 ${
         selected ? 'bg-galpi-ink' : 'bg-card'
-      } ${className}`}
-      style={({ pressed }) => pressed && { opacity: 0.85 }}
+      } ${className} active:opacity-[0.85]`}
     >
       <Text className={`text-sm font-medium ${selected ? 'text-galpi-paper' : 'text-muted-foreground'}`}>{label}</Text>
       {count !== undefined ? (

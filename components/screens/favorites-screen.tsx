@@ -79,8 +79,7 @@ function FavoriteSentenceCard({
   return (
     <Pressable
       onPress={onOpen}
-      className="web:cursor-pointer rounded-xl bg-card p-4"
-      style={({ pressed }) => pressed && { transform: [{ scale: 0.99 }] }}
+      className="web:cursor-pointer rounded-xl bg-card p-4 active:scale-[0.99]"
     >
       <View className="flex-row items-center justify-between">
         <View className="min-w-0 flex-1 flex-row items-center gap-1.5">

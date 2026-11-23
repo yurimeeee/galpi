@@ -212,21 +212,20 @@ export function MainLibraryScreen({
                   onPress={() => onOpenBook(row.book)}
                   accessibilityRole="button"
                   accessibilityLabel={row.book.title}
-                  className={`web:cursor-pointer px-1.5 pb-4 ${tileWidthClass}`}
-                  style={({ pressed }) => pressed && { transform: [{ scale: 0.97 }] }}
+                  className={`web:cursor-pointer px-1.5 pb-4 ${tileWidthClass} active:scale-[0.97]`}
                 >
                   <BookCoverTile book={row.book} />
                 </Pressable>
               );
             }
             return (
-              <Pressable onPress={() => onOpenBook(row.book)} className="web:cursor-pointer" style={({ pressed }) => pressed && { transform: [{ scale: 0.99 }] }}>
+              <Pressable onPress={() => onOpenBook(row.book)} className="web:cursor-pointer active:scale-[0.99]">
                 <BookCard book={row.book} />
               </Pressable>
             );
           }
           return (
-            <Pressable onPress={() => onOpenSentence(row.sentence)} className="web:cursor-pointer" style={({ pressed }) => pressed && { transform: [{ scale: 0.99 }] }}>
+            <Pressable onPress={() => onOpenSentence(row.sentence)} className="web:cursor-pointer active:scale-[0.99]">
               <SentenceResultCard sentence={row.sentence} book={row.book} query={trimmedQuery} />
             </Pressable>
           );
@@ -408,8 +407,7 @@ function FeaturedBookCard({ book, onPress }: { book: Book; onPress: () => void }
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={`지금 읽는 중: ${book.title}`}
-      className={`web:cursor-pointer mb-7 flex-row gap-4 overflow-hidden rounded-2xl ${ACCENT_BG_CLASS[book.accent]} p-4`}
-      style={({ pressed }) => pressed && { transform: [{ scale: 0.99 }] }}
+      className={`web:cursor-pointer mb-7 flex-row gap-4 overflow-hidden rounded-2xl ${ACCENT_BG_CLASS[book.accent]} p-4 active:scale-[0.99]`}
     >
       <BookCover coverUrl={book.coverUrl} title={book.title} accent={book.accent} size="lg" />
 
