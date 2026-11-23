@@ -2,6 +2,7 @@ import { Pressable, Text, View } from 'react-native';
 import { Flame } from '../../lib/icons';
 import { useThemeColors } from '../../lib/theme';
 import { useEffectiveScheme } from '../../lib/use-effective-scheme';
+import { useContainerWidth } from '../layout/web-frame';
 
 /**
  * Habit nudge pinned atop the library tab — one tappable strip with the
@@ -24,6 +25,10 @@ export function TodayProgressCard({
 }) {
   const colors = useThemeColors();
   const scheme = useEffectiveScheme();
+  // Below 360pt (iPhone SE 1st gen, narrow web) both labels can't fit beside
+  // the pill; the minutes would truncate to "0…", so drop them there — the
+  // spoken label and the reading-goal screen still carry them.
+  const showTodayLabel = useContainerWidth() >= 360;
   const goalMet = dailyGoalMinutes > 0 && todayMinutes >= dailyGoalMinutes;
   const streakLabel = currentStreak > 0 ? `${currentStreak}일 연속 기록 중` : '오늘부터 스트릭 시작';
   const todayLabel = goalMet
@@ -51,9 +56,11 @@ export function TodayProgressCard({
         <Text numberOfLines={1} className="shrink-0 text-sm font-bold text-galpi-paper">
           {streakLabel}
         </Text>
-        <Text numberOfLines={1} className="shrink text-xs font-medium text-galpi-paper/60">
-          {todayLabel}
-        </Text>
+        {showTodayLabel ? (
+          <Text numberOfLines={1} className="shrink text-xs font-medium text-galpi-paper/60">
+            {todayLabel}
+          </Text>
+        ) : null}
       </View>
       <View className="shrink-0 rounded-full bg-galpi-yellow px-3 py-1.5">
         <Text className="text-xs font-black text-galpi-ink">읽기 시작</Text>
