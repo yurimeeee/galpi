@@ -1,4 +1,4 @@
-import type { ViewStyle } from 'react-native';
+import { Platform, type ViewStyle } from 'react-native';
 import { useEffectiveScheme } from './use-effective-scheme';
 
 /**
@@ -113,19 +113,27 @@ export const ACCENT_CYCLE: Accent[] = ['blue', 'green', 'yellow', 'ink'];
  * Shadow color stays fixed ink in both themes (a dark shadow is right on a
  * dark surface too), matching the fixed-brand `galpiInk` above.
  */
+/**
+ * react-native-web deprecates the shadow* props in favor of CSS `boxShadow`
+ * (and warns on every use). Native keeps the shadow props and elevation so iOS/Android
+ * render exactly as before — CALayer's shadowRadius and CSS blur aren't the
+ * same scale, so a blind conversion would sharpen the native shadows. The web
+ * values below are what react-native-web already generated from the shadow*
+ * props, so web output is unchanged too.
+ */
+function shadow(opacity: number, radius: number, offsetY: number, elevation: number): ViewStyle {
+  return Platform.OS === 'web'
+    ? { boxShadow: `0px ${offsetY}px ${radius}px rgba(32, 32, 32, ${opacity})` }
+    : {
+        shadowColor: LIGHT_COLORS.galpiInk,
+        shadowOpacity: opacity,
+        shadowRadius: radius,
+        shadowOffset: { width: 0, height: offsetY },
+        elevation,
+      };
+}
+
 export const SHADOW = {
-  floating: {
-    shadowColor: LIGHT_COLORS.galpiInk,
-    shadowOpacity: 0.18,
-    shadowRadius: 14,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 6,
-  },
-  cover: {
-    shadowColor: LIGHT_COLORS.galpiInk,
-    shadowOpacity: 0.1,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 4,
-  },
+  floating: shadow(0.18, 14, 6, 6),
+  cover: shadow(0.1, 16, 8, 4),
 } as const satisfies Record<string, ViewStyle>;

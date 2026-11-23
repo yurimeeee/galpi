@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, Text, TextInput, View, Platform } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { runOnJS } from 'react-native-reanimated';
 import { X } from '../../lib/icons';
@@ -134,10 +134,9 @@ export function EditProgressModal({
                   pointerEvents: 'none',
                   left: `${previewProgress}%`,
                   marginLeft: -12,
-                  shadowColor: '#000',
-                  shadowOpacity: 0.25,
-                  shadowRadius: 4,
-                  shadowOffset: { width: 0, height: 2 },
+                  ...(Platform.OS === 'web'
+                    ? { boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.25)' }
+                    : { shadowColor: '#000', shadowOpacity: 0.25, shadowRadius: 4, shadowOffset: { width: 0, height: 2 } }),
                 }}
               />
             </View>
