@@ -383,8 +383,8 @@ export function BookDetailScreen({
         </View>
         <Pressable
           onPress={onAddSentence}
-          className="web:cursor-pointer flex-row items-center gap-2 rounded-full bg-primary px-6 py-3.5"
-          style={({ pressed }) => [SHADOW.floating, pressed && { transform: [{ scale: 0.95 }] }]}
+          className="web:cursor-pointer flex-row items-center gap-2 rounded-full bg-primary px-6 py-3.5 active:scale-95"
+          style={SHADOW.floating}
         >
           <Plus size={16} color={colors.primaryForeground} />
           <Text className="text-sm font-bold text-primary-foreground">갈피 남기기</Text>

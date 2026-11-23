@@ -39,8 +39,8 @@ export function BottomNav({
       <Pressable
         onPress={() => onChange('add')}
         accessibilityLabel="갈피 추가"
-        className="web:cursor-pointer -mt-8 h-14 w-14 items-center justify-center rounded-xl bg-primary"
-        style={({ pressed }) => [SHADOW.floating, pressed && { transform: [{ scale: 0.95 }] }]}
+        className="web:cursor-pointer -mt-8 h-14 w-14 items-center justify-center rounded-xl bg-primary active:scale-95"
+        style={SHADOW.floating}
       >
         <Plus size={24} color={colors.primaryForeground} />
       </Pressable>
